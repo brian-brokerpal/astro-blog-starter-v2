@@ -1,34 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; // or Layout depending on your template
+import Header from '../components/Header.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
+
+<!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<title>Welcome to Broker Pal, LLC</title>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<header>
-			<nav>
-				<a href="/">Home</a>
-				<a href="/about">About</a>
-			</nav>
-		</header>
-		<main style="max-width: 800px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif; line-height: 1.6;">
-			<h1>Welcome to yourbrokerpal.com!</h1>
-			
-			<p>I'm Brian, and I'm excited to introduce Broker Pal, LLC. My mortgage journey began in July 2000 in Bozeman, Montana. My dad, Steve Knight, owned a mortgage company in the Lilburn, Georgia area in the 1990s, and that experience had a lasting impact on me.</p>
-
-			<p>Growing up in a family of six, I had no clear idea what I wanted to do after high school. Then my parents made a life-changing decision to move west. My mom wanted to retire in Wyoming, while my dad was drawn to the excitement of Las Vegas. After my mom fell in love with the ranch life out west, she encouraged my dad to make the move. He soon sold his business and relocated to Montana to supervise a new log home build.</p>
-
-			<p>While out west, my dad started a business from his hotel and quickly realized banks were not offering government loans with low down payment options, especially with the assistance programs that made 100% financing possible. His business took off, and he called me to ask if I wanted to learn the trade. At the time, I had no clear direction, so I said yes.</p>
-
-			<p>He began by teaching me the ins and outs of the business as a loan processor, emphasizing that to be good at this work, I had to understand every part of the process. Over the years, I've held roles as Processing Support Manager, Senior Compliance Analyst, Senior Credit Risk Support Specialist, QC Analyst, QC Auditor, Due Diligence Underwriter, and licensed mortgage broker through my previous company, Knight Financial.</p>
-
-			<p>Nearly 26 years later, I'm proud to say that experience has shaped my career and prepared me to help individuals and families with their financing needs.</p>
-
-			<p>I'm excited to bring that knowledge, dedication, and personal experience to Broker Pal, LLC, and to help my clients navigate the mortgage process with confidence.</p>
+		<Header />
+		<main>
+			<h1>Welcome to Broker Pal</h1>
+			<p>Your content goes here.</p>
 		</main>
+		<Footer />
 	</body>
 </html>
