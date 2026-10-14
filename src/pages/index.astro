@@ -1,11 +1,11 @@
 ---
-import Header from '../components/Header.astro';
 import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
@@ -14,7 +14,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 		<Header />
 		<main>
 			<h1>Welcome to Broker Pal</h1>
-			<p>Your content goes here.</p>
+			<p>Your homepage content goes here.</p>
 		</main>
 		<Footer />
 	</body>
