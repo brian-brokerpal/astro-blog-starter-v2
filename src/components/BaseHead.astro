@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 interface Props {
 	title: string;
@@ -8,7 +7,7 @@ interface Props {
 	image?: string;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://yourbrokerpal.com');
 
 const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 ---
