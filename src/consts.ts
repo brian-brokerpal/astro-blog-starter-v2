@@ -1,5 +1,2 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
-export const SITE_TITLE = 'Broker Pal';
-export const SITE_DESCRIPTION = 'Welcome to my website!';
+export const SITE_TITLE = 'YourBrokerPal | DSCR Investment Property Financing';
+export const SITE_DESCRIPTION = 'Investor-focused DSCR financing for rental property purchases and refinances. Clear communication and a streamlined path from application to closing.';
