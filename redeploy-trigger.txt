@@ -1,1 +1,2 @@
-Redeploy trigger for the latest YourBrokerPal website source.
+Redeploy trigger for YourBrokerPal website.
+Requested deployment retry: 2026-11-03.
