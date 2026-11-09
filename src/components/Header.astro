@@ -1,17 +1,18 @@
 ---
 import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
 ---
 <header class="site-header">
-  <a class="brand" href="/" aria-label="YourBrokerPal home"><span class="brand-mark">YB<span>P</span></span><span class="brand-name">YourBrokerPal<small>DSCR LENDING</small></span></a>
+  <a class="brand" href="/" aria-label="YourBrokerPal home">
+    <img src="/broker-pal-logo.svg" alt="YourBrokerPal — DSCR Investment Financing" width="248" height="56" />
+  </a>
   <nav aria-label="Main navigation">
     <HeaderLink href="/">Home</HeaderLink>
     <HeaderLink href="/how-it-works">How It Works</HeaderLink>
     <HeaderLink href="/about">About</HeaderLink>
     <HeaderLink href="/contact">Contact</HeaderLink>
-    <a class="nav-cta" href="/apply">Apply Now <span>↗</span></a>
+    <a class="nav-cta" href="/apply">Apply Now <span aria-hidden="true">↗</span></a>
   </nav>
 </header>
 <style>
-.site-header{max-width:1180px;margin:auto;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#10243c}.brand-mark{width:45px;height:45px;border-radius:12px;background:#102b49;color:#fff;display:grid;place-items:center;font-weight:800;letter-spacing:-2px;font-size:17px}.brand-mark span{color:#d8ad62}.brand-name{font-size:18px;font-weight:800;letter-spacing:-.5px;line-height:1.1}.brand-name small{display:block;font-size:9px;letter-spacing:2px;color:#a17c42;margin-top:5px}.site-header nav{display:flex;align-items:center;gap:28px}.site-header nav a{color:#40536a;text-decoration:none;font-size:14px;font-weight:650}.site-header nav a.active{color:#b48745}.site-header nav .nav-cta{background:#c69b59;color:#10243c;padding:12px 19px;border-radius:5px}.nav-cta span{margin-left:7px}@media(max-width:700px){.site-header{padding:16px 18px;align-items:flex-start;flex-direction:column}.site-header nav{width:100%;gap:15px;flex-wrap:wrap}.site-header nav a{font-size:13px}.site-header nav .nav-cta{padding:9px 13px}}
+.site-header{max-width:1180px;margin:auto;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:inline-flex;align-items:center;text-decoration:none;flex:0 0 auto}.brand img{display:block;width:248px;height:auto;max-width:100%}.site-header nav{display:flex;align-items:center;gap:28px}.site-header nav a{color:#40536a;text-decoration:none;font-size:14px;font-weight:650}.site-header nav a.active{color:#b48745}.site-header nav .nav-cta{background:#c69b59;color:#10243c;padding:12px 19px;border-radius:5px}.nav-cta span{margin-left:7px}@media(max-width:700px){.site-header{padding:14px 18px;align-items:flex-start;flex-direction:column;gap:12px}.brand img{width:218px}.site-header nav{width:100%;gap:15px;flex-wrap:wrap}.site-header nav a{font-size:13px}.site-header nav .nav-cta{padding:9px 13px}}
 </style>
