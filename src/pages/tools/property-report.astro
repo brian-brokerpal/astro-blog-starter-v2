@@ -46,7 +46,7 @@ async function research(){
   if(m){geo=m;const c=m.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County',c.COUNTY?c.NAME+' County, '+(c.STATE||''):'Not returned'],['Census tract',c.TRACT||'Not returned'],['Census block group',c.BLKGRP||'Not returned'],['Census GEOID',c.GEOID||'Not returned']);
    if(c.STATE&&c.COUNTY&&c.TRACT){
     try{
-     const params=new URLSearchParams({get:'NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E',for:'tract:'+c.TRACT,in:'state:'+c.STATE+' county:'+c.COUNTY});
+     const params=new URLSearchParams();params.set('get','NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E');params.set('for','tract:'+c.TRACT);params.append('in','state:'+c.STATE);params.append('in','county:'+c.COUNTY);
      const acs=await getJson('https://api.census.gov/data/2024/acs/acs5?'+params.toString());
      const row=acs?.[1]||[];const number=(v)=>v&&v!=='-666666666'?Number(v):null;
      const pop=number(row[1]),income=number(row[2]),renters=number(row[3]),medianRent=number(row[4]),vacant=number(row[5]);
