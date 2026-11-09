@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="140" viewBox="0 0 620 140" role="img" aria-labelledby="title desc">
+  <title id="title">YourBrokerPal</title><desc id="desc">YourBrokerPal graphic logo with a navy and gold investment-property emblem.</desc>
+  <g transform="translate(8 8)">
+    <rect x="0" y="0" width="124" height="124" rx="24" fill="#fff"/>
+    <path d="M25 60 62 29 99 60" fill="none" stroke="#b48745" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 57v43h52V57" fill="none" stroke="#102b49" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M55 100V77h15v23" fill="#b48745"/>
+    <circle cx="91" cy="32" r="8" fill="#b48745"/>
+    <path d="M91 40v10" stroke="#b48745" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="154" y="78" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="800" letter-spacing="-2" fill="#fff">YourBroker<tspan fill="#d8ad62">Pal</tspan></text>
+  <text x="158" y="108" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="5" fill="#d8ad62">DSCR INVESTMENT FINANCING</text>
+</svg>
