@@ -44,6 +44,17 @@ async function research(){
   const g=await getJson('https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address='+q+'&benchmark=Public_AR_Current&format=json');
   const m=g?.result?.addressMatches?.[0];
   if(m){geo=m;const c=m.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County',c.COUNTY?c.NAME+' County, '+(c.STATE||''):'Not returned'],['Census tract',c.TRACT||'Not returned'],['Census block group',c.BLKGRP||'Not returned'],['Census GEOID',c.GEOID||'Not returned']);
+   const countyGeo=m.geographies?.['Counties']?.[0]||{};
+   if((countyGeo.NAME||'').toLowerCase().includes('fulton')&&(el('state').value.trim().toUpperCase()==='GA')){
+    try{
+     const street=el('address').value.trim().replace(/'/g,"''");
+     const parcelParams=new URLSearchParams({where:"Address LIKE '%"+street+"%'",outFields:'ParcelID,TaxYear,Address,LivUnits,LandAcres,NbrHood,Subdiv',returnGeometry:'false',resultRecordCount:'5',f:'json'});
+     const parcelData=await getJson('https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0/query?'+parcelParams.toString());
+     const parcel=parcelData?.features?.[0]?.attributes;
+     if(parcel){publicItems.push(['Fulton County parcel ID',parcel.ParcelID||'Not reported'],['Parcel data tax year',parcel.TaxYear||'Not reported'],['Recorded property address',parcel.Address||'Not reported'],['Recorded living units',parcel.LivUnits??'Not reported'],['Parcel acreage',parcel.LandAcres!=null?Number(parcel.LandAcres).toFixed(3):'Not reported'],['Neighborhood / subdivision',[parcel.NbrHood,parcel.Subdiv].filter(Boolean).join(' / ')||'Not reported'],['Parcel data source','Fulton County GIS · Tax Parcels Feature Service']);}
+     else publicItems.push(['Fulton County parcel lookup','No exact street-address match returned. Verify the address in the county assessor portal.']);
+    }catch(e){publicItems.push(['Fulton County parcel lookup','County parcel service unavailable ('+e.message+').']);}
+   }
    if(c.STATE&&c.COUNTY&&c.TRACT){
     try{
      const params=new URLSearchParams();params.set('get','NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E');params.set('for','tract:'+c.TRACT);params.append('in','state:'+c.STATE);params.append('in','county:'+c.COUNTY);
@@ -71,7 +82,7 @@ async function research(){
  cards('publicdata',publicItems);
  const gross=rent*12, yieldPct=value?gross/value*100:null, taxRate=value&&tax?tax/value*100:null;
  cards('metrics',[['Annual gross rent',rent?fmt(gross):'Enter rent'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Enter value and rent'],['Monthly property tax equivalent',tax?fmt(tax/12):'Not entered'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Not entered'],['Annual tax / estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Not available']]);
- const q=encodeURIComponent(address);const links=[['County assessor and parcel search','https://www.google.com/search?q='+q+'+county+assessor+parcel+search'],['County tax records','https://www.google.com/search?q='+q+'+property+tax+records'],['FEMA official flood map','https://msc.fema.gov/portal/search?Address='+q],['Google Maps location','https://www.google.com/maps/search/?api=1&query='+q],['HUD Fair Market Rent data','https://www.huduser.gov/portal/datasets/fmr.html'],['Census data profiles','https://data.census.gov/']];
+ const q=encodeURIComponent(address);const links=[['Official Georgia county property-record directory','https://dor.georgia.gov/property-records-online'],['County tax records','https://www.google.com/search?q='+q+'+property+tax+records'],['FEMA official flood map','https://msc.fema.gov/portal/search?Address='+q],['Google Maps location','https://www.google.com/maps/search/?api=1&query='+q],['HUD Fair Market Rent data','https://www.huduser.gov/portal/datasets/fmr.html'],['Census data profiles','https://data.census.gov/']];
  el('links').innerHTML=links.map(s=>link(s[0],s[1])).join('');
  if(geo?.coordinates){const x=geo.coordinates.x,y=geo.coordinates.y;el('maplink').innerHTML='<a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q='+y+','+x+'">Open mapped property location ↗</a>'}else el('maplink').textContent='Map coordinates were not returned.';
  el('rnotes').textContent=el('notes').value.trim()||'No additional notes entered.';
