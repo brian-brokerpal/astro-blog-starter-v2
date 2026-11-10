@@ -36,7 +36,7 @@ async function research(){
  if(!el('address').value.trim()||!el('city').value.trim()||!el('state').value.trim()){el('status').textContent='Enter the street address, city and state to research this property.';return}
  el('make').disabled=true;el('status').textContent='Looking up the address and checking public data sources…';
  const value=val('value'),rent=val('rent'),tax=val('tax'),insurance=val('insurance');
- const property=[['Property type',el('type').value],['Estimated value',value?fmt(value):'Data Not Available'],['Estimated monthly rent',rent?fmt(rent):'Not entered'],['Annual property tax',tax?fmt(tax):'Not entered'],['Annual insurance',insurance?fmt(insurance):'Not entered']];
+ const property=[['Property type',el('type').value],['Estimated value',value?fmt(value):'Data Not Available'],['Estimated monthly rent',rent?fmt(rent):'Data Not Available'],['Annual property tax',tax?fmt(tax):'Data Not Available'],['Annual insurance',insurance?fmt(insurance):'Data Not Available']];
  cards('facts',property);el('raddress').textContent=address;el('generated').textContent='Report generated '+new Date().toLocaleString();
  const publicItems=[];let geo=null,geoError='';
  try{
@@ -45,7 +45,7 @@ async function research(){
   const m=g?.result?.addressMatches?.[0];
   let geographyMatch=null;
   try { const gg=await getJson('https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address='+q+'&benchmark=Public_AR_Current&vintage=Current_Current&layers=all&format=json'); geographyMatch=gg?.result?.addressMatches?.[0]||null; } catch {}
-  if(m){geo={...m,geographies:geographyMatch?.geographies||{}};const c=geo.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County',c.COUNTY?c.NAME+' County, '+(c.STATE||''):'Data Not Available'],['Census tract',c.TRACT||'Not returned'],['Census block group',c.BLKGRP||'Not returned'],['Census GEOID',c.GEOID||'Not returned']);
+  if(m){geo={...m,geographies:geographyMatch?.geographies||{}};const c=geo.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County',c.COUNTY?c.NAME+' County, '+(c.STATE||''):'Data Not Available'],['Census tract',c.TRACT||'Data Not Available'],['Census block group',c.BLKGRP||'Data Not Available'],['Census GEOID',c.GEOID||'Data Not Available']);
    const countyGeo=geo.geographies?.['Counties']?.[0]||{};
    if((countyGeo.NAME||'').toLowerCase().includes('fulton')&&(el('state').value.trim().toUpperCase()==='GA')){
     try{
@@ -53,9 +53,20 @@ async function research(){
      const parcelParams=new URLSearchParams({where:"Address LIKE '%"+street+"%'",outFields:'ParcelID,TaxYear,Address,LivUnits,LandAcres,NbrHood,Subdiv',returnGeometry:'false',resultRecordCount:'5',f:'json'});
      const parcelData=await getJson('https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0/query?'+parcelParams.toString());
      const parcel=parcelData?.features?.[0]?.attributes;
-     if(parcel){publicItems.push(['Fulton County parcel ID',parcel.ParcelID||'Data Not Available'],['Parcel data tax year',parcel.TaxYear||'Not reported'],['Recorded property address',parcel.Address||'Not reported'],['Recorded living units',parcel.LivUnits??'Not reported'],['Parcel acreage',parcel.LandAcres!=null?Number(parcel.LandAcres).toFixed(3):'Not reported'],['Neighborhood / subdivision',[parcel.NbrHood,parcel.Subdiv].filter(Boolean).join(' / ')||'Not reported'],['Parcel data source','Fulton County GIS · Tax Parcels Feature Service']);}
+     if(parcel){publicItems.push(['Fulton County parcel ID',parcel.ParcelID||'Data Not Available'],['Parcel data tax year',parcel.TaxYear||'Data Not Available'],['Recorded property address',parcel.Address||'Data Not Available'],['Recorded living units',parcel.LivUnits??'Data Not Available'],['Parcel acreage',parcel.LandAcres!=null?Number(parcel.LandAcres).toFixed(3):'Data Not Available'],['Neighborhood / subdivision',[parcel.NbrHood,parcel.Subdiv].filter(Boolean).join(' / ')||'Data Not Available'],['Parcel data source','Fulton County GIS · Tax Parcels Feature Service']);}
      else publicItems.push(['Fulton County parcel lookup','No exact street-address match returned. Verify the address in the county assessor portal.']);
     }catch(e){publicItems.push(['Fulton County parcel lookup','County parcel service unavailable ('+e.message+').']);}
+   } else if((countyGeo.NAME||'').toLowerCase().includes('dekalb')&&(el('state').value.trim().toUpperCase()==='GA')) {
+    try {
+     const street=el('address').value.trim().replaceAll("'","''");
+     const parcelParams=new URLSearchParams({where:"UPPER(SITEADDRESS) LIKE UPPER('%"+street+"%')",outFields:'SITEADDRESS,PARCELID,OWNERNME1,PSTLADDRESS,PSTLCITYSTATEZIP,TOTAPR1,LANDUSE,ZONING,CITY,ZIP,ACREAGE,STATEDAREA,CLASSDSCRP,CVTTXDSCRP,LIVUNITS',returnGeometry:'false',resultRecordCount:'10',f:'json'});
+     const parcelData=await getJson('https://dcgis.dekalbcountyga.gov/mapping/rest/services/TaxParcels/FeatureServer/0/query?'+parcelParams.toString());
+     const p=parcelData?.features?.[0]?.attributes;
+     if(p) publicItems.push(['DeKalb parcel ID',p.PARCELID||'Data Not Available'],['Recorded address',p.SITEADDRESS||'Data Not Available'],['Owner name',p.OWNERNME1||'Data Not Available'],['Owner mailing address',[p.PSTLADDRESS,p.PSTLCITYSTATEZIP].filter(Boolean).join(', ')||'Data Not Available'],['Appraised value',p.TOTAPR1!=null?fmt(Number(p.TOTAPR1)):'Data Not Available'],['Parcel acreage',p.ACREAGE!=null?Number(p.ACREAGE).toFixed(3):'Data Not Available'],['Recorded units',p.LIVUNITS??'Data Not Available'],['Zoning / land use',[p.ZONING,p.LANDUSE].filter(Boolean).join(' / ')||'Data Not Available'],['Property class',p.CLASSDSCRP||'Data Not Available'],['Tax district',p.CVTTXDSCRP||'Data Not Available'],['Parcel data source','DeKalb County GIS · TaxParcels FeatureServer']);
+     else publicItems.push(['DeKalb County parcel lookup','Data Not Available — no matching parcel was returned.']);
+    } catch { publicItems.push(['DeKalb County parcel lookup','Data Not Available — county parcel service unavailable.']); }
+   } else if(countyGeo.NAME && el('state').value.trim().toUpperCase()==='GA') {
+    publicItems.push(['County parcel record','Data Not Available — automated parcel data is not connected for '+countyGeo.NAME+'. Use the official county assessor link below.']);
    }
    if(c.STATE&&c.COUNTY&&c.TRACT){
     try{
@@ -63,7 +74,7 @@ async function research(){
      const acs=await getJson('https://api.census.gov/data/2024/acs/acs5?'+params.toString());
      const row=acs?.[1]||[];const number=(v)=>v&&v!=='-666666666'?Number(v):null;
      const pop=number(row[1]),income=number(row[2]),renters=number(row[3]),medianRent=number(row[4]),vacant=number(row[5]);
-     publicItems.push(['Neighborhood population (ACS 2024)',pop!==null?pop.toLocaleString():'Not reported'],['Median household income (ACS 2024)',income!==null?fmt(income):'Not reported'],['Renter-occupied units (ACS 2024)',renters!==null?renters.toLocaleString():'Not reported'],['Median gross rent (ACS 2024)',medianRent!==null?fmt(medianRent):'Not reported'],['Vacant housing units (ACS 2024)',vacant!==null?vacant.toLocaleString():'Not reported'],['Neighborhood data source','U.S. Census ACS 2024 5-year estimates · Census tract']);
+     publicItems.push(['Neighborhood population (ACS 2024)',pop!==null?pop.toLocaleString():'Data Not Available'],['Median household income (ACS 2024)',income!==null?fmt(income):'Data Not Available'],['Renter-occupied units (ACS 2024)',renters!==null?renters.toLocaleString():'Data Not Available'],['Median gross rent (ACS 2024)',medianRent!==null?fmt(medianRent):'Data Not Available'],['Vacant housing units (ACS 2024)',vacant!==null?vacant.toLocaleString():'Data Not Available'],['Neighborhood data source','U.S. Census ACS 2024 5-year estimates · Census tract']);
     }catch(e){publicItems.push(['Neighborhood demographics','Census ACS data unavailable ('+e.message+').']);}
    }else publicItems.push(['Neighborhood demographics','Census tract was not returned; demographic lookup skipped.']);
   }
@@ -76,19 +87,19 @@ async function research(){
    const url='https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/identify?f=json&tolerance=2&returnGeometry=false&returnFieldName=true&imageDisplay=800%2C600%2C96&mapExtent='+(x-0.002)+','+(y-0.002)+','+(x+0.002)+','+(y+0.002)+'&geometry='+x+','+y+'&geometryType=esriGeometryPoint&sr=4326&layers=all';
    const data=await getJson(url);const matches=(data.results||[]).filter(z=>/flood hazard|special flood|sfha|flood zone/i.test(z.layerName||''));
    if(matches.length){const attrs=matches[0].attributes||{};flood=attrs.FLD_ZONE||attrs.ZONE_SUBTY||attrs.SFHA_TF||matches[0].value||'FEMA flood layer intersected';floodNote='FEMA National Flood Hazard Layer identify result. Review the official map for exact parcel boundaries and insurance requirements.';}
-   else {flood='No matching flood-zone feature returned';floodNote='This is not a determination that the property is outside a flood hazard area. Check the official FEMA map.'}
-  }catch(e){flood='Could not retrieve FEMA layer';floodNote='Use the official FEMA map link below to check the address.'}
+   else {flood='Data Not Available — no matching flood-zone feature returned';floodNote='This is not a determination that the property is outside a flood hazard area. Check the official FEMA map.'}
+  }catch(e){flood='Data Not Available';floodNote='Use the official FEMA map link below to check the address.'}
  }
  publicItems.push(['FEMA flood layer',flood],['Flood data note',floodNote]);
  if(geoError)publicItems.push(['Geocoding status',geoError]);
  cards('publicdata',publicItems);
  const gross=rent*12, yieldPct=value?gross/value*100:null, taxRate=value&&tax?tax/value*100:null;
- cards('metrics',[['Annual gross rent',rent?fmt(gross):'Enter rent'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Enter value and rent'],['Monthly property tax equivalent',tax?fmt(tax/12):'Not entered'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Not entered'],['Annual tax / estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Data Not Available']]);
+ cards('metrics',[['Annual gross rent',rent?fmt(gross):'Data Not Available'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Data Not Available'],['Monthly property tax equivalent',tax?fmt(tax/12):'Data Not Available'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Data Not Available'],['Annual tax / estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Data Not Available']]);
  const q=encodeURIComponent(address);const stateCode=el('state').value.trim().toUpperCase();const countyName=(geo?.geographies?.['Counties']?.[0]?.NAME||'').replace(/ County$/i,'');const gaCountyLinks={'Fulton':'https://www.fultonassessor.org/','DeKalb':'https://www.dekalbcountyga.gov/tax-assessor','Gwinnett':'https://www.gwinnettcounty.com/government/departments/county-administrator/assessor/property-ownership-database','Cobb':'https://cobbassessor.org/','Hall':'https://qpublic.schneidercorp.com/Application.aspx?App=HallCountyGA','Habersham':'https://qpublic.net/ga/habersham/'};const officialCountyUrl=stateCode==='GA'?(gaCountyLinks[countyName]||'https://dor.georgia.gov/property-records-online'):'https://www.google.com/search?q='+encodeURIComponent(countyName+' County '+stateCode+' official property assessor parcel search');const links=[['Official county property / assessor records',officialCountyUrl],['County tax records','https://www.google.com/search?q='+q+'+property+tax+records'],['FEMA official flood map','https://msc.fema.gov/portal/search?Address='+q],['Google Maps location','https://www.google.com/maps/search/?api=1&query='+q],['HUD Fair Market Rent data','https://www.huduser.gov/portal/datasets/fmr.html'],['Census data profiles','https://data.census.gov/']];
  el('links').innerHTML=links.map(s=>link(s[0],s[1])).join('');
  if(geo?.coordinates){const x=geo.coordinates.x,y=geo.coordinates.y;el('maplink').innerHTML='<a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q='+y+','+x+'">Open mapped property location ↗</a>'}else el('maplink').textContent='Map coordinates were not returned.';
  el('rnotes').textContent=el('notes').value.trim()||'No additional notes entered.';
- const summary='Preliminary Broker Pal property report for '+address+'\nProperty type: '+el('type').value+'\nEstimated value: '+(value?fmt(value):'Not entered')+'\nMonthly rent: '+(rent?fmt(rent):'Not entered')+'\nAnnual gross rent: '+(rent?fmt(gross):'Not available')+'\nGross yield: '+(yieldPct!==null?yieldPct.toFixed(2)+'%':'Not available')+'\nFEMA layer: '+flood+'\n\nThis report contains preliminary public data and user-entered estimates. Verify all information independently.';
+ const summary='Preliminary Broker Pal property report for '+address+'\nProperty type: '+el('type').value+'\nEstimated value: '+(value?fmt(value):'Data Not Available')+'\nMonthly rent: '+(rent?fmt(rent):'Data Not Available')+'\nAnnual gross rent: '+(rent?fmt(gross):'Data Not Available')+'\nGross yield: '+(yieldPct!==null?yieldPct.toFixed(2)+'%':'Data Not Available')+'\nFEMA layer: '+flood+'\n\nThis report contains preliminary public data and user-entered estimates. Verify all information independently.';
  el('email').href='mailto:brian@yourbrokerpal.com?subject='+encodeURIComponent('Broker Pal Property Report: '+address)+'&body='+encodeURIComponent(summary);
  el('report').hidden=false;el('status').textContent='Report built. Automated public-data results are shown below; unavailable sources are identified rather than guessed.';el('report').scrollIntoView({behavior:'smooth'});
 }
