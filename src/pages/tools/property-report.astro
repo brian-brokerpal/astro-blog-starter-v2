@@ -31,6 +31,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function cards(target,items){el(target).innerHTML=items.map(([k,v])=>'<div><small>'+esc(k)+'</small><b>'+esc(v)+'</b></div>').join('')}
 function link(label,url){return '<li><a target="_blank" rel="noopener noreferrer" href="'+url+'">'+esc(label)+' ↗</a></li>'}
 async function getJson(url){const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Source returned '+r.status);return r.json()}
+function getJsonp(url){return new Promise((resolve,reject)=>{const callback='bpCensus_'+Date.now()+'_'+Math.random().toString(36).slice(2);const script=document.createElement('script');let timer;const cleanup=()=>{if(timer)clearTimeout(timer);try{delete window[callback]}catch{}script.remove()};window[callback]=(data)=>{cleanup();resolve(data)};script.onerror=()=>{cleanup();reject(new Error('Census Geocoder JSONP request failed'))};timer=setTimeout(()=>{cleanup();reject(new Error('Census Geocoder request timed out'))},12000);script.src=url.replace('format=json','format=jsonp')+'&callback='+callback;document.head.appendChild(script)})}
 async function research(){
  const address=[el('address').value.trim(),el('city').value.trim(),el('state').value.trim(),el('zip').value.trim()].filter(Boolean).join(', ');
  if(!el('address').value.trim()||!el('city').value.trim()||!el('state').value.trim()){el('status').textContent='Enter the street address, city and state to research this property.';return}
@@ -41,10 +42,10 @@ async function research(){
  const publicItems=[];let geo=null,geoError='';
  try{
   const q=encodeURIComponent(address);
-  const g=await getJson('https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address='+q+'&benchmark=Public_AR_Current&format=json');
+  const g=await getJsonp('https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address='+q+'&benchmark=Public_AR_Current&format=json');
   const m=g?.result?.addressMatches?.[0];
   let geographyMatch=null;
-  try { const gg=await getJson('https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address='+q+'&benchmark=Public_AR_Current&vintage=Current_Current&layers=all&format=json'); geographyMatch=gg?.result?.addressMatches?.[0]||null; } catch {}
+  try { const gg=await getJsonp('https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address='+q+'&benchmark=Public_AR_Current&vintage=Current_Current&layers=all&format=json'); geographyMatch=gg?.result?.addressMatches?.[0]||null; } catch {}
   if(m){geo={...m,geographies:geographyMatch?.geographies||{}};const c=geo.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County FIPS',c.COUNTY||'Data Not Available'],['Census tract',c.TRACT||'Data Not Available'],['Census block group',c.BLKGRP||'Data Not Available'],['Census GEOID',c.GEOID||'Data Not Available']);
    const countyGeo=geo.geographies?.['Counties']?.[0]||{};publicItems.push(['County',countyGeo.NAME?countyGeo.NAME+', '+(countyGeo.STATE||''):'Data Not Available']);
    if((countyGeo.NAME||'').toLowerCase().includes('fulton')&&(el('state').value.trim().toUpperCase()==='GA')){
