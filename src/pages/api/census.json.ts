@@ -31,6 +31,23 @@ export async function GET({ request, locals }) {
       });
     }
 
+    if (incoming.searchParams.get("diagnostic") === "tract-list") {
+      if (!apiKey) return json({ error: "Census API key is not configured." }, 503);
+      const check = new URL("https://api.census.gov/data/2024/acs/acs5");
+      check.searchParams.set("get", "NAME,B01003_001E");
+      check.searchParams.set("for", "tract:*");
+      check.searchParams.set("in", "state:13");
+      check.searchParams.append("in", "county:121");
+      check.searchParams.set("key", apiKey);
+      const checkResponse = await fetch(check.toString());
+      const checkBody = await checkResponse.text();
+      return json({
+        status: checkResponse.status,
+        contentType: checkResponse.headers.get("content-type"),
+        bodyPreview: checkBody.slice(0, 1200)
+      }, 200);
+    }
+
     if (!apiKey) {
       return json({ error: "Census API key is not configured on the server.", route: "census-api-active" }, 503);
     }
