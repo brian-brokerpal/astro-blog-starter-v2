@@ -38,3 +38,11 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Attach Census API key to production Worker
+        if: ${{ env.CENSUS_API_KEY != '' }}
+        run: printf '%s' "$CENSUS_API_KEY" | npx wrangler secret put CENSUS_API_KEY
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
