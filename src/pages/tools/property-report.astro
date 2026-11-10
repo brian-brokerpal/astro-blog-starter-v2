@@ -4,11 +4,11 @@ import Layout from '../../layouts/BlogPost.astro';
 <Layout title="Free Investment Property Data Report | broker pal" description="Generate an investment property research report with automated location, Census and FEMA flood data.">
 <section class="tool">
 <p class="kicker">BROKER PAL INVESTOR TOOLKIT</p><h1>Investment Property Report</h1>
-<p class="lead">Enter an address to build a useful first-look report for a 1–4 unit investment property. We'll retrieve available public location and hazard data, calculate key rental metrics, and organize the next research steps.</p>
+<p class="lead">Enter any U.S. property address to build a first-look report. We retrieve public location, neighborhood and hazard data where available, include information you enter, and clearly mark unavailable fields. Coverage is not limited to Georgia or to 1–4 unit properties.</p>
 <div class="panel">
 <label>Property street address<input id="address" autocomplete="street-address" placeholder="123 Main Street"></label>
 <div class="two"><label>City<input id="city" autocomplete="address-level2" placeholder="Atlanta"></label><label>State<input id="state" maxlength="2" autocomplete="address-level1" placeholder="GA"></label></div>
-<div class="two"><label>ZIP code<input id="zip" autocomplete="postal-code" inputmode="numeric" placeholder="30303"></label><label>Property type<select id="type"><option>Single-family</option><option>Duplex</option><option>Triplex</option><option>Fourplex</option></select></label></div>
+<div class="two"><label>ZIP code<input id="zip" autocomplete="postal-code" inputmode="numeric" placeholder="30303"></label><label>Property type<select id="type"><option>Single-family</option><option>Duplex</option><option>Triplex</option><option>Fourplex</option><option>Multifamily (5+ units)</option><option>Condominium</option><option>Townhome</option><option>Manufactured / mobile home</option><option>Commercial</option><option>Land / lot</option><option>Other / not sure</option></select></label></div>
 <div class="two"><label>Estimated market value ($)<input id="value" type="number" min="0" placeholder="350000"></label><label>Estimated monthly rent ($)<input id="rent" type="number" min="0" placeholder="2800"></label></div>
 <div class="two"><label>Annual property tax ($)<input id="tax" type="number" min="0" placeholder="4200"></label><label>Annual insurance ($)<input id="insurance" type="number" min="0" placeholder="1800"></label></div>
 <label>Known repairs / condition / other notes<textarea id="notes" rows="3" placeholder="Roof age, updates, deferred maintenance, rent assumptions..."></textarea></label>
@@ -16,7 +16,7 @@ import Layout from '../../layouts/BlogPost.astro';
 </div>
 <section id="report" class="report" hidden>
 <div class="reporthead"><div><span>BROKER PAL · INVESTMENT LOANS</span><h2>Investment Property Intelligence Report</h2><b id="raddress"></b><p id="generated"></p></div><button id="print" type="button">Print / Save PDF</button></div>
-<div class="section"><h3>Property snapshot</h3><div class="facts" id="facts"></div></div>
+<div class="section"><h3>Property details <small>Requester-entered information is not independently verified</small></h3><div class="facts" id="facts"></div></div>
 <div class="section"><h3>Automated public data</h3><div id="publicdata" class="data-grid"></div></div>
 <div class="section"><h3>Investment metrics</h3><div class="facts" id="metrics"></div><p class="muted">Gross yield is annual gross rent divided by estimated value. It is not a cap rate or cash-on-cash return.</p></div>
 <div class="section"><h3>Location & research</h3><div id="maplink"></div><ul id="links"></ul></div>
@@ -36,22 +36,24 @@ async function research(){
  if(!el('address').value.trim()||!el('city').value.trim()||!el('state').value.trim()){el('status').textContent='Enter the street address, city and state to research this property.';return}
  el('make').disabled=true;el('status').textContent='Looking up the address and checking public data sources…';
  const value=val('value'),rent=val('rent'),tax=val('tax'),insurance=val('insurance');
- const property=[['Property type',el('type').value],['Estimated value',value?fmt(value):'Not entered'],['Estimated monthly rent',rent?fmt(rent):'Not entered'],['Annual property tax',tax?fmt(tax):'Not entered'],['Annual insurance',insurance?fmt(insurance):'Not entered']];
+ const property=[['Property type',el('type').value],['Estimated value',value?fmt(value):'Data Not Available'],['Estimated monthly rent',rent?fmt(rent):'Not entered'],['Annual property tax',tax?fmt(tax):'Not entered'],['Annual insurance',insurance?fmt(insurance):'Not entered']];
  cards('facts',property);el('raddress').textContent=address;el('generated').textContent='Report generated '+new Date().toLocaleString();
  const publicItems=[];let geo=null,geoError='';
  try{
   const q=encodeURIComponent(address);
   const g=await getJson('https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address='+q+'&benchmark=Public_AR_Current&format=json');
   const m=g?.result?.addressMatches?.[0];
-  if(m){geo=m;const c=m.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County',c.COUNTY?c.NAME+' County, '+(c.STATE||''):'Not returned'],['Census tract',c.TRACT||'Not returned'],['Census block group',c.BLKGRP||'Not returned'],['Census GEOID',c.GEOID||'Not returned']);
-   const countyGeo=m.geographies?.['Counties']?.[0]||{};
+  let geographyMatch=null;
+  try { const gg=await getJson('https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address='+q+'&benchmark=Public_AR_Current&vintage=Current_Current&layers=all&format=json'); geographyMatch=gg?.result?.addressMatches?.[0]||null; } catch {}
+  if(m){geo={...m,geographies:geographyMatch?.geographies||{}};const c=geo.geographies?.['Census Tracts']?.[0]||{};publicItems.push(['Address match',m.matchedAddress||address],['Coordinates',m.coordinates?m.coordinates.y.toFixed(5)+', '+m.coordinates.x.toFixed(5):'Available'],['County',c.COUNTY?c.NAME+' County, '+(c.STATE||''):'Data Not Available'],['Census tract',c.TRACT||'Not returned'],['Census block group',c.BLKGRP||'Not returned'],['Census GEOID',c.GEOID||'Not returned']);
+   const countyGeo=geo.geographies?.['Counties']?.[0]||{};
    if((countyGeo.NAME||'').toLowerCase().includes('fulton')&&(el('state').value.trim().toUpperCase()==='GA')){
     try{
      const street=el('address').value.trim().replace(/'/g,"''");
      const parcelParams=new URLSearchParams({where:"Address LIKE '%"+street+"%'",outFields:'ParcelID,TaxYear,Address,LivUnits,LandAcres,NbrHood,Subdiv',returnGeometry:'false',resultRecordCount:'5',f:'json'});
      const parcelData=await getJson('https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0/query?'+parcelParams.toString());
      const parcel=parcelData?.features?.[0]?.attributes;
-     if(parcel){publicItems.push(['Fulton County parcel ID',parcel.ParcelID||'Not reported'],['Parcel data tax year',parcel.TaxYear||'Not reported'],['Recorded property address',parcel.Address||'Not reported'],['Recorded living units',parcel.LivUnits??'Not reported'],['Parcel acreage',parcel.LandAcres!=null?Number(parcel.LandAcres).toFixed(3):'Not reported'],['Neighborhood / subdivision',[parcel.NbrHood,parcel.Subdiv].filter(Boolean).join(' / ')||'Not reported'],['Parcel data source','Fulton County GIS · Tax Parcels Feature Service']);}
+     if(parcel){publicItems.push(['Fulton County parcel ID',parcel.ParcelID||'Data Not Available'],['Parcel data tax year',parcel.TaxYear||'Not reported'],['Recorded property address',parcel.Address||'Not reported'],['Recorded living units',parcel.LivUnits??'Not reported'],['Parcel acreage',parcel.LandAcres!=null?Number(parcel.LandAcres).toFixed(3):'Not reported'],['Neighborhood / subdivision',[parcel.NbrHood,parcel.Subdiv].filter(Boolean).join(' / ')||'Not reported'],['Parcel data source','Fulton County GIS · Tax Parcels Feature Service']);}
      else publicItems.push(['Fulton County parcel lookup','No exact street-address match returned. Verify the address in the county assessor portal.']);
     }catch(e){publicItems.push(['Fulton County parcel lookup','County parcel service unavailable ('+e.message+').']);}
    }
@@ -67,7 +69,7 @@ async function research(){
   }
   else geoError='The Census geocoder did not return a match. Check the address spelling and ZIP code.';
  }catch(e){geoError='Census geocoding is temporarily unavailable ('+e.message+').'}
- let flood='Not checked';let floodNote='Address coordinates are needed to query FEMA flood mapping.';
+ let flood='Data Not Available';let floodNote='Address coordinates are needed to query FEMA flood mapping.';
  if(geo?.coordinates){
   const x=geo.coordinates.x,y=geo.coordinates.y;
   try{
@@ -81,8 +83,8 @@ async function research(){
  if(geoError)publicItems.push(['Geocoding status',geoError]);
  cards('publicdata',publicItems);
  const gross=rent*12, yieldPct=value?gross/value*100:null, taxRate=value&&tax?tax/value*100:null;
- cards('metrics',[['Annual gross rent',rent?fmt(gross):'Enter rent'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Enter value and rent'],['Monthly property tax equivalent',tax?fmt(tax/12):'Not entered'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Not entered'],['Annual tax / estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Not available']]);
- const q=encodeURIComponent(address);const links=[['Official Georgia county property-record directory','https://dor.georgia.gov/property-records-online'],['County tax records','https://www.google.com/search?q='+q+'+property+tax+records'],['FEMA official flood map','https://msc.fema.gov/portal/search?Address='+q],['Google Maps location','https://www.google.com/maps/search/?api=1&query='+q],['HUD Fair Market Rent data','https://www.huduser.gov/portal/datasets/fmr.html'],['Census data profiles','https://data.census.gov/']];
+ cards('metrics',[['Annual gross rent',rent?fmt(gross):'Enter rent'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Enter value and rent'],['Monthly property tax equivalent',tax?fmt(tax/12):'Not entered'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Not entered'],['Annual tax / estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Data Not Available']]);
+ const q=encodeURIComponent(address);const stateCode=el('state').value.trim().toUpperCase();const countyName=(geo?.geographies?.['Counties']?.[0]?.NAME||'').replace(/ County$/i,'');const gaCountyLinks={'Fulton':'https://www.fultonassessor.org/','DeKalb':'https://www.dekalbcountyga.gov/tax-assessor','Gwinnett':'https://www.gwinnettcounty.com/government/departments/county-administrator/assessor/property-ownership-database','Cobb':'https://cobbassessor.org/','Hall':'https://qpublic.schneidercorp.com/Application.aspx?App=HallCountyGA','Habersham':'https://qpublic.net/ga/habersham/'};const officialCountyUrl=stateCode==='GA'?(gaCountyLinks[countyName]||'https://dor.georgia.gov/property-records-online'):'https://www.google.com/search?q='+encodeURIComponent(countyName+' County '+stateCode+' official property assessor parcel search');const links=[['Official county property / assessor records',officialCountyUrl],['County tax records','https://www.google.com/search?q='+q+'+property+tax+records'],['FEMA official flood map','https://msc.fema.gov/portal/search?Address='+q],['Google Maps location','https://www.google.com/maps/search/?api=1&query='+q],['HUD Fair Market Rent data','https://www.huduser.gov/portal/datasets/fmr.html'],['Census data profiles','https://data.census.gov/']];
  el('links').innerHTML=links.map(s=>link(s[0],s[1])).join('');
  if(geo?.coordinates){const x=geo.coordinates.x,y=geo.coordinates.y;el('maplink').innerHTML='<a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q='+y+','+x+'">Open mapped property location ↗</a>'}else el('maplink').textContent='Map coordinates were not returned.';
  el('rnotes').textContent=el('notes').value.trim()||'No additional notes entered.';
