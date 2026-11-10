@@ -55,7 +55,7 @@ async function research(){
      const parcelData=await getJson('https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0/query?'+parcelParams.toString());
      const parcel=parcelData?.features?.[0]?.attributes;
      if(parcel){publicItems.push(['Fulton County parcel ID',parcel.ParcelID||'Data Not Available'],['Parcel data tax year',parcel.TaxYear||'Data Not Available'],['Recorded property address',parcel.Address||'Data Not Available'],['Recorded living units',parcel.LivUnits??'Data Not Available'],['Parcel acreage',parcel.LandAcres!=null?Number(parcel.LandAcres).toFixed(3):'Data Not Available'],['Neighborhood / subdivision',[parcel.NbrHood,parcel.Subdiv].filter(Boolean).join(' / ')||'Data Not Available'],['Parcel data source','Fulton County GIS · Tax Parcels Feature Service']);}
-     else publicItems.push(['Fulton County parcel lookup','No exact street-address match returned. Verify the address in the county assessor portal.']);
+     else publicItems.push(['Fulton County parcel lookup','Data Not Available — no matching parcel was returned for this address. Verify the street address and parcel in the official county assessor portal.']);
     }catch(e){publicItems.push(['Fulton County parcel lookup','County parcel service unavailable ('+e.message+').']);}
    } else if((countyGeo.NAME||'').toLowerCase().includes('dekalb')&&(el('state').value.trim().toUpperCase()==='GA')) {
     try {
@@ -76,7 +76,7 @@ async function research(){
      const row=acs?.[1]||[];const number=(v)=>v&&v!=='-666666666'?Number(v):null;
      const pop=number(row[1]),income=number(row[2]),renters=number(row[3]),medianRent=number(row[4]),vacant=number(row[5]);
      publicItems.push(['Neighborhood population (ACS 2024)',pop!==null?pop.toLocaleString():'Data Not Available'],['Median household income (ACS 2024)',income!==null?fmt(income):'Data Not Available'],['Renter-occupied units (ACS 2024)',renters!==null?renters.toLocaleString():'Data Not Available'],['Median gross rent (ACS 2024)',medianRent!==null?fmt(medianRent):'Data Not Available'],['Vacant housing units (ACS 2024)',vacant!==null?vacant.toLocaleString():'Data Not Available'],['Neighborhood data source','U.S. Census ACS 2024 5-year estimates · Census tract']);
-    }catch(e){publicItems.push(['Neighborhood demographics','Census ACS data unavailable ('+e.message+').']);}
+    }catch(e){publicItems.push(['Neighborhood demographics','Data Not Available — Census ACS could not return this tract’s data. A valid Census API key may be required, or the public service may be unavailable.']);}
    }else publicItems.push(['Neighborhood demographics','Data Not Available — Census tract was not returned; demographic lookup skipped.']);
   }
   else geoError='The Census geocoder did not return a match. Check the address spelling and ZIP code.';
