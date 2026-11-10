@@ -2,50 +2,72 @@ export const prerender = false;
 
 const ALLOWED_VARIABLES = "NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E";
 
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "X-BrokerPal-Census-Route": "active"
+    }
+  });
+}
+
 export async function GET({ request, locals }) {
-  const runtime = locals.runtime;
-  const env = runtime?.env || {};
-  const apiKey = env.CENSUS_API_KEY;
-
-  if (!apiKey) {
-    return Response.json(
-      { error: "Census API key is not configured on the server." },
-      { status: 503, headers: { "Cache-Control": "no-store" } }
-    );
-  }
-
-  const incoming = new URL(request.url);
-  const tract = incoming.searchParams.get("for");
-  const state = incoming.searchParams.get("state");
-  const county = incoming.searchParams.get("county");
-
-  if (!/^\d{6}$/.test(tract || "") || !/^\d{2}$/.test(state || "") || !/^\d{3}$/.test(county || "")) {
-    return Response.json({ error: "Invalid Census geography parameters." }, { status: 400 });
-  }
-
-  const upstream = new URL("https://api.census.gov/data/2024/acs/acs5");
-  upstream.searchParams.set("get", ALLOWED_VARIABLES);
-  upstream.searchParams.set("for", "tract:" + tract);
-  upstream.searchParams.set("in", "state:" + state);
-  upstream.searchParams.append("in", "county:" + county);
-  upstream.searchParams.set("key", apiKey);
-
   try {
-    const response = await fetch(upstream.toString(), {
-      headers: { Accept: "application/json" }
-    });
+    const runtime = locals?.runtime;
+    const env = runtime?.env ?? {};
+    const apiKey = env.CENSUS_API_KEY;
+    const incoming = new URL(request.url);
+
+    // Safe diagnostic: confirms route and secret binding without exposing the key.
+    if (incoming.searchParams.get("diagnostic") === "1") {
+      return json({
+        route: "census-api-active",
+        runtimeAvailable: Boolean(runtime),
+        envAvailable: Boolean(runtime?.env),
+        censusApiKeyAvailable: Boolean(apiKey),
+        worker: "astro-blog-starter-v2"
+      });
+    }
+
+    if (!apiKey) {
+      return json({ error: "Census API key is not configured on the server.", route: "census-api-active" }, 503);
+    }
+
+    const tract = incoming.searchParams.get("for");
+    const state = incoming.searchParams.get("state");
+    const county = incoming.searchParams.get("county");
+
+    if (!/^\\d{6}$/.test(tract || "") || !/^\\d{2}$/.test(state || "") || !/^\\d{3}$/.test(county || "")) {
+      return json({ error: "Invalid Census geography parameters.", route: "census-api-active" }, 400);
+    }
+
+    const upstream = new URL("https://api.census.gov/data/2024/acs/acs5");
+    upstream.searchParams.set("get", ALLOWED_VARIABLES);
+    upstream.searchParams.set("for", "tract:" + tract);
+    upstream.searchParams.set("in", "state:" + state);
+    upstream.searchParams.append("in", "county:" + county);
+    upstream.searchParams.set("key", apiKey);
+
+    const response = await fetch(upstream.toString(), { headers: { Accept: "application/json" } });
     const body = await response.text();
-    return new Response(body, {
-      status: response.status,
+
+    return new Response(body || JSON.stringify({
+      error: "Census returned an empty response.",
+      upstreamStatus: response.status
+    }), {
+      status: body ? response.status : 502,
       headers: {
         "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "public, max-age=86400"
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+        "X-BrokerPal-Census-Route": "active"
       }
     });
-  } catch {
-    return Response.json(
-      { error: "Census data service is temporarily unavailable." },
-      { status: 502, headers: { "Cache-Control": "no-store" } }
-    );
+  } catch (error) {
+    return json({
+      error: "Census API route failed before completing the request.",
+      detail: error instanceof Error ? error.message : "Unknown runtime error"
+    }, 500);
   }
 }
