@@ -72,7 +72,7 @@ async function research(){
    if(c.STATE&&c.COUNTY&&c.TRACT){
     try{
      const params=new URLSearchParams();params.set('get','NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E');params.set('for','tract:'+c.TRACT);params.append('in','state:'+c.STATE);params.append('in','county:'+c.COUNTY);
-     const acs=await getJson('https://api.census.gov/data/2024/acs/acs5?'+params.toString());
+     const acs=await getJson('/api/census.json?for='+encodeURIComponent(c.TRACT)+'&state='+encodeURIComponent(c.STATE)+'&county='+encodeURIComponent(c.COUNTY));
      const row=acs?.[1]||[];const number=(v)=>v&&v!=='-666666666'?Number(v):null;
      const pop=number(row[1]),income=number(row[2]),renters=number(row[3]),medianRent=number(row[4]),vacant=number(row[5]);
      publicItems.push(['Neighborhood population (ACS 2024)',pop!==null?pop.toLocaleString():'Data Not Available'],['Median household income (ACS 2024)',income!==null?fmt(income):'Data Not Available'],['Renter-occupied units (ACS 2024)',renters!==null?renters.toLocaleString():'Data Not Available'],['Median gross rent (ACS 2024)',medianRent!==null?fmt(medianRent):'Data Not Available'],['Vacant housing units (ACS 2024)',vacant!==null?vacant.toLocaleString():'Data Not Available'],['Neighborhood data source','U.S. Census ACS 2024 5-year estimates · Census tract']);
