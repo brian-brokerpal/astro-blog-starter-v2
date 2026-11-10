@@ -2,6 +2,9 @@ name: Deploy Broker Pal website to Cloudflare
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
