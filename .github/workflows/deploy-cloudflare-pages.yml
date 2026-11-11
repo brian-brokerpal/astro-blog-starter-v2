@@ -68,13 +68,38 @@ jobs:
           if (!match) process.exit(1);
           NODE
 
-      - name: Identify the exact Cloudflare token used by GitHub
+      - name: Test Cloudflare D1 API authorization directly
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          curl --fail --silent --show-error https://api.cloudflare.com/client/v4/user/tokens/verify \
+          set +e
+          META_STATUS=$(curl -sS -o /tmp/d1-meta.json -w "%{http_code}" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/3089c709-9f68-4740-b15e-2c7d6060a0b6" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
+          QUERY_STATUS=$(curl -sS -o /tmp/d1-query.json -w "%{http_code}" \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/3089c709-9f68-4740-b15e-2c7d6060a0b6/query" \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const x=JSON.parse(s);if(!x.success)process.exit(1);console.log('GitHub deployment token ID:',x.result.id);console.log('Token status:',x.result.status);});"
+            -H "Content-Type: application/json" \
+            --data '{"sql":"SELECT 1 AS connection_test"}')
+          node <<'NODE'
+          const fs = require('fs');
+          for (const [label, status, file] of [
+            ['D1 database metadata GET', process.env.META_STATUS, '/tmp/d1-meta.json'],
+            ['D1 SQL query POST', process.env.QUERY_STATUS, '/tmp/d1-query.json']
+          ]) {
+            let data = {};
+            try { data = JSON.parse(fs.readFileSync(file, 'utf8')); } catch {}
+            console.log(label + ' HTTP status:', status);
+            console.log(label + ' API success:', data.success === true);
+            if (data.errors?.length) console.log(label + ' API errors:', JSON.stringify(data.errors));
+            if (data.success && label.includes('query')) console.log('Direct D1 SQL query succeeded.');
+          }
+          if (process.env.META_STATUS !== '200' || process.env.QUERY_STATUS !== '200') process.exit(1);
+          NODE
+        env:
+          META_STATUS: ${META_STATUS}
+          QUERY_STATUS: ${QUERY_STATUS}
 
       - name: Test read-only access to the configured D1 database
         run: npx wrangler d1 execute yourbrokerpal-property-usage --remote --command="SELECT 1 AS connection_test"
