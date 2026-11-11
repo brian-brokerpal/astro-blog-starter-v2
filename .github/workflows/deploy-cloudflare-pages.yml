@@ -68,6 +68,14 @@ jobs:
           if (!match) process.exit(1);
           NODE
 
+      - name: Identify the exact Cloudflare token used by GitHub
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          curl --fail --silent --show-error https://api.cloudflare.com/client/v4/user/tokens/verify \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const x=JSON.parse(s);if(!x.success)process.exit(1);console.log('GitHub deployment token ID:',x.result.id);console.log('Token status:',x.result.status);});"
+
       - name: Test read-only access to the configured D1 database
         run: npx wrangler d1 execute yourbrokerpal-property-usage --remote --command="SELECT 1 AS connection_test"
         env:
