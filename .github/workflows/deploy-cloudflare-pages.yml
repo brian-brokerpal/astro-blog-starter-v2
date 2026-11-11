@@ -39,18 +39,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Verify D1 database is visible to this token
+      - name: Verify D1 database is visible to Wrangler
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          D1_DATABASE_ID: 3089c709-9f68-4740-b15e-2c7d6060a0b6
         run: |
-          http_status=$(curl -sS -o d1-response.json -w "%{http_code}" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID")
-          echo "D1 API HTTP status: $http_status"
-          echo "D1 API response:"
-          cat d1-response.json
-          if [ "$http_status" != "200" ]; then exit 1; fi
-          node -e 'const fs=require("fs");const r=JSON.parse(fs.readFileSync("d1-response.json","utf8"));console.log(JSON.stringify({success:r.success,errors:r.errors,result:r.result?{name:r.result.name,uuid:r.result.uuid,version:r.result.version}:null}));if(!r.success)process.exit(1);'
+          npx wrangler d1 list
       - name: Deploy to Cloudflare Workers
         run: npx wrangler deploy
         env:
