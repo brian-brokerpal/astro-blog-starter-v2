@@ -1,7 +1,9 @@
 {
   "name": "astro-blog-starter-v2",
   "compatibility_date": "2025-10-08",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "./dist/_worker.js/index.js",
   "assets": {
     "directory": "./dist",
@@ -10,5 +12,13 @@
   "observability": {
     "enabled": true
   },
-  "upload_source_maps": true
+  "upload_source_maps": true,
+  "d1_databases": [
+    {
+      "binding": "PROPERTY_USAGE_DB",
+      "database_name": "yourbrokerpal-property-usage",
+      "database_id": "3089c709-9f68-4740-b15e-2c7d6060a0b6",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
