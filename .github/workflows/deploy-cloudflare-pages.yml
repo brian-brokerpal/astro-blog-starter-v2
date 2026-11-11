@@ -82,6 +82,7 @@ jobs:
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             --data '{"sql":"SELECT 1 AS connection_test"}')
+          export META_STATUS QUERY_STATUS
           node <<'NODE'
           const fs = require('fs');
           for (const [label, status, file] of [
@@ -97,9 +98,6 @@ jobs:
           }
           if (process.env.META_STATUS !== '200' || process.env.QUERY_STATUS !== '200') process.exit(1);
           NODE
-        env:
-          META_STATUS: ${META_STATUS}
-          QUERY_STATUS: ${QUERY_STATUS}
 
       - name: Test read-only access to the configured D1 database
         run: npx wrangler d1 execute yourbrokerpal-property-usage --remote --command="SELECT 1 AS connection_test"
