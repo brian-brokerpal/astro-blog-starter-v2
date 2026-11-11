@@ -74,6 +74,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set +e
+          TOKEN_STATUS=$(curl -sS -o /tmp/token-verify.json -w "%{http_code}" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/verify" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
           META_STATUS=$(curl -sS -o /tmp/d1-meta.json -w "%{http_code}" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/3089c709-9f68-4740-b15e-2c7d6060a0b6" \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
@@ -82,9 +85,12 @@ jobs:
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             --data '{"sql":"SELECT 1 AS connection_test"}')
-          export META_STATUS QUERY_STATUS
+          export META_STATUS QUERY_STATUS TOKEN_STATUS
           node <<'NODE'
           const fs = require('fs');
+          const token = JSON.parse(fs.readFileSync('/tmp/token-verify.json', 'utf8'));
+          console.log('Account token verification HTTP status:', process.env.TOKEN_STATUS);
+          console.log('Account token status:', token.result?.status ?? 'not returned');
           for (const [label, status, file] of [
             ['D1 database metadata GET', process.env.META_STATUS, '/tmp/d1-meta.json'],
             ['D1 SQL query POST', process.env.QUERY_STATUS, '/tmp/d1-query.json']
