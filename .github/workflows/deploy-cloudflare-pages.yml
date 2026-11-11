@@ -45,13 +45,12 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: 3089c709-9f68-4740-b15e-2c7d6060a0b6
         run: |
-          response=$(curl -sS -w '\\nHTTP_STATUS:%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID")
-          body=$(printf '%s' "$response" | sed '/HTTP_STATUS:/d')
-          status=$(printf '%s' "$response" | sed -n 's/.*HTTP_STATUS://p')
-          printf '%s' "$body" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(s);console.log(JSON.stringify({success:r.success,errors:r.errors,result:r.result?{name:r.result.name,uuid:r.result.uuid,version:r.result.version}:null}));})'
-          echo "D1 API HTTP status: $status"
-          test "$status" = "200"
-
+          http_status=$(curl -sS -o d1-response.json -w "%{http_code}" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID")
+          echo "D1 API HTTP status: $http_status"
+          echo "D1 API response:"
+          cat d1-response.json
+          if [ "$http_status" != "200" ]; then exit 1; fi
+          node -e 'const fs=require("fs");const r=JSON.parse(fs.readFileSync("d1-response.json","utf8"));console.log(JSON.stringify({success:r.success,errors:r.errors,result:r.result?{name:r.result.name,uuid:r.result.uuid,version:r.result.version}:null}));if(!r.success)process.exit(1);'
       - name: Deploy to Cloudflare Workers
         run: npx wrangler deploy
         env:
