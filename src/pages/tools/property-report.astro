@@ -9,7 +9,7 @@ import Layout from '../../layouts/BlogPost.astro';
 <label>Property street address<input id="address" autocomplete="street-address" placeholder="123 Main Street"></label>
 <div class="two"><label>City<input id="city" autocomplete="address-level2" placeholder="Atlanta"></label><label>State<input id="state" maxlength="2" autocomplete="address-level1" placeholder="GA"></label></div>
 <div class="two"><label>ZIP code<input id="zip" autocomplete="postal-code" inputmode="numeric" placeholder="30303"></label><label>Property type<select id="type"><option>Single-family</option><option>Duplex</option><option>Triplex</option><option>Fourplex</option><option>Multifamily (5+ units)</option><option>Condominium</option><option>Townhome</option><option>Manufactured / mobile home</option><option>Commercial</option><option>Land / lot</option><option>Other / not sure</option></select></label></div>
-<div class="two"><label>Estimated market value ($)<input id="value" type="number" min="0" placeholder="350000"></label><label>Estimated monthly rent ($)<input id="rent" type="number" min="0" placeholder="2800"></label></div>
+<div class="two"><label>Asking price ($) — optional<input id="asking" type="number" min="0" placeholder="350000"></label><label>Estimated monthly rent ($) — optional<input id="rent" type="number" min="0" placeholder="2800"></label></div>
 <div class="two"><label>Annual property tax ($)<input id="tax" type="number" min="0" placeholder="4200"></label><label>Annual insurance ($)<input id="insurance" type="number" min="0" placeholder="1800"></label></div>
 <label>Known repairs / condition / other notes<textarea id="notes" rows="3" placeholder="Roof age, updates, deferred maintenance, rent assumptions..."></textarea></label>
 <button id="make" type="button">Research address & build report</button><p id="status" class="status" role="status">Public data lookup runs when you build the report. No paid data subscription is used.</p>
@@ -17,6 +17,7 @@ import Layout from '../../layouts/BlogPost.astro';
 <section id="report" class="report" hidden>
 <div class="reporthead"><div><span>BROKER PAL · INVESTMENT LOANS</span><h2>Investment Property Intelligence Report</h2><b id="raddress"></b><p id="generated"></p></div><div class="pdf-actions"><button id="print" type="button">Download PDF</button><small>Choose “Save as PDF” in your browser’s print window.</small></div></div>
 <div class="section"><h3>Property details <small>Requester-entered information is not independently verified</small></h3><div class="facts" id="facts"></div></div>
+<div class="section"><h3>Independent market value estimate</h3><div class="facts" id="valuation"></div><p id="valuationnote" class="muted"></p><div id="comps" class="data-grid"></div></div>
 <div class="section"><h3>Automated public data</h3><div id="publicdata" class="data-grid"></div></div>
 <div class="section"><h3>Investment metrics</h3><div class="facts" id="metrics"></div><p class="muted">Gross yield is annual gross rent divided by estimated value. It is not a cap rate or cash-on-cash return.</p></div>
 <div class="section"><h3>Location & research</h3><div id="maplink"></div><ul id="links"></ul></div>
@@ -36,9 +37,36 @@ async function research(){
  const address=[el('address').value.trim(),el('city').value.trim(),el('state').value.trim(),el('zip').value.trim()].filter(Boolean).join(', ');
  if(!el('address').value.trim()||!el('city').value.trim()||!el('state').value.trim()){el('status').textContent='Enter the street address, city and state to research this property.';return}
  el('make').disabled=true;el('status').textContent='Looking up the address and checking public data sources…';
- const value=val('value'),rent=val('rent'),tax=val('tax'),insurance=val('insurance');
- const property=[['Property type',el('type').value],['Estimated value',value?fmt(value):'Data Not Available'],['Estimated monthly rent',rent?fmt(rent):'Data Not Available'],['Annual property tax',tax?fmt(tax):'Data Not Available'],['Annual insurance',insurance?fmt(insurance):'Data Not Available']];
+ const askingPrice=val('asking'),rent=val('rent'),tax=val('tax'),insurance=val('insurance');
+ const property=[['Property type',el('type').value],['Asking price',askingPrice?fmt(askingPrice):'Not provided'],['Estimated monthly rent',rent?fmt(rent):'Not provided'],['Annual property tax',tax?fmt(tax):'Not provided'],['Annual insurance',insurance?fmt(insurance):'Not provided']];
  cards('facts',property);el('raddress').textContent=address;el('generated').textContent='Report generated '+new Date().toLocaleString();
+
+ const providerTypeMap={'Single-family':'Single Family','Duplex':'Multi-Family','Triplex':'Multi-Family','Fourplex':'Multi-Family','Multifamily (5+ units)':'Multi-Family','Condominium':'Condo','Townhome':'Townhouse','Manufactured / mobile home':'Manufactured','Land / lot':'Land'};
+ const providerType=providerTypeMap[el('type').value];
+ let valuation=null,valuationError='';
+ if(providerType){
+  try{
+   const vp=new URLSearchParams({address,propertyType:providerType});
+   const response=await fetch('/api/property-valuation.json?'+vp.toString(),{headers:{Accept:'application/json'}});
+   const result=await response.json();
+   if(!response.ok)throw new Error(result.error||'Independent valuation is currently unavailable.');
+   valuation=result;
+  }catch(error){valuationError=error instanceof Error?error.message:'Independent valuation is currently unavailable.';}
+ }else{
+  valuationError='The connected automated valuation feed does not currently support this property category. No value has been guessed.';
+ }
+ const value=valuation?.price||0;
+ if(valuation){
+  const compareText=askingPrice?((askingPrice-value)/value*100).toFixed(1)+'% '+(askingPrice>value?'above':askingPrice<value?'below':'at')+' the automated estimate':'No asking price provided for comparison';
+  cards('valuation',[['RentCast estimated market value',fmt(valuation.price)],['Estimated value range',fmt(valuation.priceRangeLow)+' – '+fmt(valuation.priceRangeHigh)],['Asking price comparison',compareText],['Valuation source','RentCast automated valuation model']]);
+  el('valuationnote').textContent='The provider describes this range as an 85% confidence interval. This is an automated estimate, not an appraisal or lending valuation. '+(valuation.cached?'Previously retrieved estimate reused; no new API request was made.':'');
+  const comps=Array.isArray(valuation.comparables)?valuation.comparables:[];
+  el('comps').innerHTML=comps.length?comps.slice(0,5).map((c,i)=>'<div><small>Comparable '+(i+1)+'</small><b>'+esc(c.formattedAddress||c.addressLine1||'Address unavailable')+'</b><small>'+esc(c.status||c.listingType||'Comparable listing')+' · '+(typeof c.price==='number'?esc(fmt(c.price)):'Price unavailable')+' · '+(typeof c.distance==='number'?esc(c.distance.toFixed(2)+' mi'):'Distance unavailable')+'</small></div>').join(''):'<div><small>Comparable sales</small><b>Data Not Available</b></div>';
+ }else{
+  cards('valuation',[['Independent market value','Data Not Available'],['Valuation status',valuationError||'No estimate returned'],['Asking price',askingPrice?fmt(askingPrice):'Not provided']]);
+  el('valuationnote').textContent='The report will not substitute the asking price or a user-entered figure for an independent market estimate.';
+  el('comps').innerHTML='<div><small>Comparable sales</small><b>Data Not Available — no verified comparables were returned.</b></div>';
+ }
  const publicItems=[];let geo=null,geoError='';
  try{
   const q=encodeURIComponent(address);
@@ -95,12 +123,12 @@ async function research(){
  if(geoError){publicItems.push(['Geocoding status',geoError],['County parcel record','Data Not Available — an address match is required before a parcel can be selected.']);}
  cards('publicdata',publicItems);
  const gross=rent*12, yieldPct=value?gross/value*100:null, taxRate=value&&tax?tax/value*100:null;
- cards('metrics',[['Annual gross rent',rent?fmt(gross):'Data Not Available'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Data Not Available'],['Monthly property tax equivalent',tax?fmt(tax/12):'Data Not Available'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Data Not Available'],['Annual tax / estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Data Not Available']]);
+ cards('metrics',[['Annual gross rent',rent?fmt(gross):'Data Not Available'],['Gross rent yield',yieldPct!==null?yieldPct.toFixed(2)+'%':'Data Not Available'],['Monthly property tax equivalent',tax?fmt(tax/12):'Data Not Available'],['Monthly insurance equivalent',insurance?fmt(insurance/12):'Data Not Available'],['Annual tax / automated estimated value',taxRate!==null?taxRate.toFixed(2)+'%':'Data Not Available']]);
  const q=encodeURIComponent(address);const stateCode=el('state').value.trim().toUpperCase();const countyName=(geo?.geographies?.['Counties']?.[0]?.NAME||'').replace(/ County$/i,'');const gaCountyLinks={'Fulton':'https://www.fultonassessor.org/','DeKalb':'https://www.dekalbcountyga.gov/tax-assessor','Gwinnett':'https://www.gwinnettcounty.com/government/departments/county-administrator/assessor/property-ownership-database','Cobb':'https://assessor.cobbcounty.gov/','Hall':'https://www.hallcounty.org/235/Geographic-Information-System-GIS','Habersham':'https://www.habershamga.com/gis-department.cfm'};const officialCountyUrl=stateCode==='GA'?(gaCountyLinks[countyName]||'https://dor.georgia.gov/property-records-online'):'https://www.google.com/search?q='+encodeURIComponent(countyName+' County '+stateCode+' official property assessor parcel search');const links=[['Official county property / assessor records',officialCountyUrl],['County tax records','https://www.google.com/search?q='+q+'+property+tax+records'],['FEMA official flood map','https://msc.fema.gov/portal/search?Address='+q],['Google Maps location','https://www.google.com/maps/search/?api=1&query='+q],['HUD Fair Market Rent data','https://www.huduser.gov/portal/datasets/fmr.html'],['Census data profiles','https://data.census.gov/']];
  el('links').innerHTML=links.map(s=>link(s[0],s[1])).join('');
  if(geo?.coordinates){const x=geo.coordinates.x,y=geo.coordinates.y;el('maplink').innerHTML='<a target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q='+y+','+x+'">Open mapped property location ↗</a>'}else el('maplink').textContent='Data Not Available — map coordinates were not returned.';
  el('rnotes').textContent=el('notes').value.trim()||'No additional notes entered.';
- const summary='Preliminary Broker Pal property report for '+address+'\nProperty type: '+el('type').value+'\nEstimated value: '+(value?fmt(value):'Data Not Available')+'\nMonthly rent: '+(rent?fmt(rent):'Data Not Available')+'\nAnnual gross rent: '+(rent?fmt(gross):'Data Not Available')+'\nGross yield: '+(yieldPct!==null?yieldPct.toFixed(2)+'%':'Data Not Available')+'\nFEMA layer: '+flood+'\n\nThis report contains preliminary public data and user-entered estimates. Verify all information independently.';
+ const summary='Preliminary Broker Pal property report for '+address+'\nProperty type: '+el('type').value+'\nRentCast estimated value: '+(value?fmt(value):'Data Not Available')+'\nAsking price: '+(askingPrice?fmt(askingPrice):'Not provided')+'\nMonthly rent: '+(rent?fmt(rent):'Data Not Available')+'\nAnnual gross rent: '+(rent?fmt(gross):'Data Not Available')+'\nGross yield: '+(yieldPct!==null?yieldPct.toFixed(2)+'%':'Data Not Available')+'\nFEMA layer: '+flood+'\n\nThis report contains preliminary public data, an automated third-party estimate where available, and user-entered assumptions. Verify all information independently.';
  el('email').href='mailto:brian@yourbrokerpal.com?subject='+encodeURIComponent('Broker Pal Property Report: '+address)+'&body='+encodeURIComponent(summary);
  el('report').hidden=false;el('status').textContent='Report built. Automated public-data results are shown below; unavailable sources are identified rather than guessed.';el('report').scrollIntoView({behavior:'smooth'});el('make').disabled=false;
 }
