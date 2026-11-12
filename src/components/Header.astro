@@ -1,20 +1,17 @@
 ---
 import HeaderLink from './HeaderLink.astro';
 ---
-<header class="site-header">
-  <a class="brand" href="/" aria-label="Broker Pal — Investment Loans home">
-    <span class="brand-word"><span class="broker">Broker</span> <span class="pal">Pal</span></span>
-    <span class="brand-tagline">Investment Loans</span>
-  </a>
+<header class="site-header approved-header">
+  <a class="brand" href="/" aria-label="broker pal home"><span class="brand-word"><span class="broker">broker</span> <span class="pal">pal</span></span></a>
   <nav aria-label="Main navigation">
-    <HeaderLink href="/">Home</HeaderLink>
-    <HeaderLink href="/how-it-works">How It Works</HeaderLink>
-    <HeaderLink href="/about">About</HeaderLink>
-    <a href="/tools">Tools</a>
-    <a href="/community">Community</a>
-    <HeaderLink href="/contact">Contact</HeaderLink>
+    <a class="active" href="/">Home</a>
+    <a href="/#loan-programs">Loan Programs⌄</a>
+    <a href="/tools">Tools⌄</a>
+    <a href="/how-it-works">Resources⌄</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
     <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>
-    <a class="nav-cta" href="/apply">Apply Now <span>↗</span></a>
+    <a class="nav-cta" href="/apply">Apply Now <span>→</span></a>
   </nav>
 </header>
 <style>
@@ -32,4 +29,7 @@ import HeaderLink from './HeaderLink.astro';
 .nav-cta span{margin-left:7px}
 @media(max-width:900px){.site-header{padding:18px 24px;align-items:flex-start;flex-direction:column}.site-header nav{width:100%;gap:13px;flex-wrap:wrap}.site-header nav a{font-size:12px}.site-header nav .nav-cta{padding:9px 13px}.site-header nav .staff-nav-link{font-size:11px}.brand-word{font-size:34px}}
 @media(max-width:460px){.site-header{padding:16px 18px}.site-header nav{gap:10px 13px}}
+</style>
+<style>
+.approved-header{max-width:none;width:100%;box-sizing:border-box;padding:18px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b;display:flex;align-items:center;justify-content:space-between;gap:28px}.approved-header .brand-word{font-size:clamp(32px,3.4vw,46px);letter-spacing:-2px;font-weight:850}.approved-header .brand{gap:0}.approved-header .brand-tagline{display:none}.approved-header .broker{color:#f8fbff}.approved-header .pal{color:#18d0d0}.approved-header nav{display:flex;align-items:center;gap:clamp(15px,2.1vw,32px)}.approved-header nav a{font-size:15px;font-weight:700;color:#f5f8fb;text-decoration:none}.approved-header nav a:hover,.approved-header nav a.active{color:#18d0d0}.approved-header nav a.active{border-bottom:3px solid #18d0d0;padding:8px 14px}.approved-header nav .staff-nav-link{font-size:11px;color:#8fdedc}.approved-header nav .nav-cta{border-radius:26px;background:#18d0d0;color:#002447;padding:12px 23px;font-size:15px}.approved-header nav .nav-cta:hover{background:#64e5e0;color:#002447}@media(max-width:900px){.approved-header{padding:16px 22px;flex-direction:column;align-items:flex-start}.approved-header nav{flex-wrap:wrap;gap:12px 18px}.approved-header nav a{font-size:13px}}@media(max-width:480px){.approved-header{padding:14px 18px}.approved-header .brand-word{font-size:34px}.approved-header nav{gap:10px 14px}}
 </style>
