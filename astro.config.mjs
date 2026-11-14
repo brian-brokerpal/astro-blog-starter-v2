@@ -11,6 +11,8 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare({
     configPath: isBrokerPalPreview ? 'wrangler.preview.json' : 'wrangler.json',
+    // Use build-time image processing to avoid a Cloudflare Images service binding.
+    imageService: 'compile',
     // No site code uses Astro sessions; keep Preview independent of any KV namespace.
     session: isBrokerPalPreview ? false : true
   })
