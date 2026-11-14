@@ -115,6 +115,11 @@ Actual account-wide usage cannot be determined from the GitHub repository or pub
 
 Do not expose API tokens or secrets. Read-only dashboard totals are enough. If the account does not have spare free capacity, stop and redesign the pilot rather than upgrading automatically.
 
+
+## Companion implementation blueprint
+
+The detailed proposed authentication adapter, normalized data model, API contract, authorization invariants, file-download revocation behavior, negative security tests, and staged rollout gates are documented in [investor-cpa-implementation-blueprint.md](./investor-cpa-implementation-blueprint.md). It is a planning document only; no resources or application code are provisioned by it.
+
 ## Go/no-go
 
 **Current status: NO-GO for real investor data; GO for continued fake-data prototype work.**
