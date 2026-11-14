@@ -58,7 +58,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const state = incoming.searchParams.get("state");
     const county = incoming.searchParams.get("county");
 
-    if (!/^\\d{6}$/.test(tract || "") || !/^\\d{2}$/.test(state || "") || !/^\\d{3}$/.test(county || "")) {
+    if (!/^\d{6}$/.test(tract || "") || !/^\d{2}$/.test(state || "") || !/^\d{3}$/.test(county || "")) {
       return json({ error: "Invalid Census geography parameters.", route: "census-api-active" }, 400);
     }
 
