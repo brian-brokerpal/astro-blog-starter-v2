@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
-import { env } from 'cloudflare:workers';
-const isPreview = env.SITE_ENV === 'preview';
+const isPreview = import.meta.env.SITE_ENV === 'preview';
 const losApplyUrl = isPreview ? '/apply-preview' : 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
 ---
 <Layout title="Start an Investment Loan Inquiry | Broker Pal" description="Begin an investment property loan inquiry with Broker Pal.">
