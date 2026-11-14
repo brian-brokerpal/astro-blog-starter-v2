@@ -63,9 +63,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
     }
 
     const params = new URLSearchParams({ address, propertyType, compCount: "5" });
-    if (bedrooms !== null && /^\\d{1,2}(\\.\\d)?$/.test(bedrooms)) params.set("bedrooms", bedrooms);
-    if (bathrooms !== null && /^\\d{1,2}(\\.\\d)?$/.test(bathrooms)) params.set("bathrooms", bathrooms);
-    if (squareFootage !== null && /^\\d{1,7}$/.test(squareFootage)) params.set("squareFootage", squareFootage);
+    if (bedrooms !== null && /^\d{1,2}(\.\d)?$/.test(bedrooms)) params.set("bedrooms", bedrooms);
+    if (bathrooms !== null && /^\d{1,2}(\.\d)?$/.test(bathrooms)) params.set("bathrooms", bathrooms);
+    if (squareFootage !== null && /^\d{1,7}$/.test(squareFootage)) params.set("squareFootage", squareFootage);
 
     const cacheKey = await sha256(params.toString().toLowerCase());
     const cached = await db.prepare(
