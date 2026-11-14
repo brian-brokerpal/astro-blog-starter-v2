@@ -131,7 +131,7 @@ if (root) {
       image.src = logoUrl;
       $('brand-avatar').replaceChildren(image);
     } else {
-      $('brand-avatar').textContent = (settings.company || 'BP').split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+      $('brand-avatar').textContent = (settings.company || 'BP').split(' ').filter(Boolean).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
     }
   };
   const apply = () => {
