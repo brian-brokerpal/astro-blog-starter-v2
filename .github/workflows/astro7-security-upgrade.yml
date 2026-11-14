@@ -33,6 +33,24 @@ jobs:
           npm install --save-exact astro@7.4.12 @astrojs/cloudflare@14.4.8 @astrojs/mdx@8.1.6 @astrojs/rss@4.0.19 @astrojs/sitemap@3.7.5
           npm install --save-dev --save-exact wrangler@4.162.0
 
+      - name: Audit upgraded dependencies before build
+        id: audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm audit --json > /tmp/npm-audit.json || true
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('/tmp/npm-audit.json', 'utf8'));
+          if (report.error) throw new Error('npm audit could not complete: ' + JSON.stringify(report.error));
+          const meta = report.metadata?.vulnerabilities || {};
+          console.log('Post-upgrade advisory summary:', JSON.stringify(meta));
+          for (const [name, item] of Object.entries(report.vulnerabilities || {})) {
+            console.log(JSON.stringify({ package: name, severity: item.severity, direct: item.isDirect, range: item.range, fixAvailable: item.fixAvailable }));
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `critical=${meta.critical || 0}\nhigh=${meta.high || 0}\nmoderate=${meta.moderate || 0}\nlow=${meta.low || 0}\n`);
+          NODE
+
       - name: Build and verify isolated configuration
         env:
           BROKER_PAL_PREVIEW: '1'
@@ -52,19 +70,14 @@ jobs:
           NODE
           npx wrangler deploy --dry-run --config wrangler.preview.json
 
-      - name: Report remaining dependency advisories
-        shell: bash
+      - name: Enforce security gate after recording build result
+        if: always()
         run: |
-          set -euo pipefail
-          npm audit --json > /tmp/npm-audit.json || true
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const report = JSON.parse(fs.readFileSync('/tmp/npm-audit.json', 'utf8'));
-          console.log('Post-upgrade advisory summary:', JSON.stringify(report.metadata?.vulnerabilities || {}));
-          for (const [name, item] of Object.entries(report.vulnerabilities || {})) {
-            console.log(JSON.stringify({ package: name, severity: item.severity, direct: item.isDirect, range: item.range, fixAvailable: item.fixAvailable }));
-          }
-          NODE
+          if [ "${{ steps.audit.outputs.critical }}" != "0" ] || [ "${{ steps.audit.outputs.high }}" != "0" ]; then
+            echo "Security gate blocked: critical/high advisories remain after the upgrade trial."
+            exit 1
+          fi
+          echo "PASS: no critical or high dependency advisories remain."
 
       - name: Commit regenerated dependency manifests
         run: |
