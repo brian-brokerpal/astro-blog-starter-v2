@@ -1,11 +1,25 @@
-<footer class="site-footer"><div class="footer-inner"><div><a class="footer-brand" href="/"><span class="broker">broker</span> <span class="pal">pal</span></a><div class="footer-tagline">Investment Loans</div><p>Investor-focused financing. Clear guidance. A better way forward.</p></div><div class="footer-links"><a href="/how-it-works">How It Works</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/apply">Apply Now</a><a href="/privacy">Privacy Policy</a></div><div class="footer-contact"><b>Let's talk financing.</b><a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a><a href="tel:4046062943">404-606-2943</a></div></div><div class="footer-bottom">© {new Date().getFullYear()} broker pal. All rights reserved. <span>Financing subject to lender guidelines, underwriting, and approval.</span></div></footer>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand-column">
+      <a class="footer-brand" href="/" aria-label="broker pal home"><img src="/broker-pal-logo-light.svg" alt="broker pal — DSCR and Investment Loans" width="280" height="64" loading="lazy" /></a>
+      <p>Investor-focused financing. Clear guidance. A better way forward.</p>
+    </div>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="/resources">Investor Resources</a><a href="/tools">Investor Tools</a><a href="/how-it-works">How It Works</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/apply">Apply Now</a><a href="/privacy">Privacy Policy</a>
+    </nav>
+    <div class="footer-contact"><b>Let's talk financing.</b><a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a><a href="tel:4046062943">404-606-2943</a></div>
+  </div>
+  <div class="footer-bottom">© {new Date().getFullYear()} broker pal. All rights reserved. <span>Financing subject to lender guidelines, underwriting, and approval.</span></div>
+</footer>
 <style>
-.site-footer{background:#102b49;color:#dce8ef;padding:54px max(28px,calc((100% - 1120px)/2)) 22px;border-top:5px solid #079eaa}
-.footer-inner{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;padding-bottom:38px}
-.footer-brand{font-size:27px;font-weight:850;letter-spacing:-1.4px;color:#fff;text-decoration:none}
-.broker{color:#fff}.pal{color:#25bdc0}.footer-tagline{font-size:12px;color:#62c9bd;font-weight:750;margin-top:3px}
-.footer-inner p{color:#aebdcd;font-size:14px;margin:10px 0}
-.footer-links{display:grid;gap:10px}.footer-links a,.footer-contact a{color:#dce8ef;text-decoration:none;font-size:14px}
-.footer-contact{display:grid;gap:10px}.footer-contact b{color:#62c9bd}
-.footer-bottom{border-top:1px solid #314e68;padding-top:18px;color:#91a9ba;font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.site-footer{background:#00213d;color:#dce8ef;padding:48px max(28px,calc((100% - 1160px)/2)) 22px;border-top:4px solid #18d0d0}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:34px;flex-wrap:wrap;padding-bottom:32px}
+.footer-brand{display:inline-block;text-decoration:none}
+.footer-brand::before,.footer-brand::after{content:none!important;display:none!important}.footer-brand img{display:block;width:250px;max-width:100%;height:auto}
+.footer-brand-column{max-width:340px}.footer-inner p{color:#b7cbd5;font-size:13px;line-height:1.6;margin:10px 0}
+.footer-links{display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));gap:10px 22px}
+.footer-links a,.footer-contact a{color:#dce8ef;text-decoration:none;font-size:13px}.footer-links a:hover,.footer-contact a:hover{color:#18d0d0}
+.footer-contact{display:grid;gap:10px}.footer-contact b{color:#18d0d0;font-size:14px}
+.footer-bottom{border-top:1px solid #31516a;padding-top:16px;color:#a7bac8;font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:560px){.site-footer{padding:38px 20px 18px}.footer-inner{gap:24px}.footer-links{grid-template-columns:repeat(2,minmax(120px,1fr))}.footer-brand img{width:225px}}
 </style>

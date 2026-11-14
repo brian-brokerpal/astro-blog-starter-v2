@@ -1,0 +1,61 @@
+name: Broker Pal dependency security review
+
+on:
+  push:
+    branches:
+      - broker-pal-minimal-refresh-clean
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: broker-pal-dependency-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Report advisories and block critical or high findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm audit --json > /tmp/npm-audit.json || true
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('/tmp/npm-audit.json', 'utf8'));
+          if (report.error) {
+            throw new Error('npm audit could not complete: ' + JSON.stringify(report.error));
+          }
+          const meta = report.metadata?.vulnerabilities || {};
+          console.log('Dependency advisory summary:', JSON.stringify(meta));
+          for (const [name, item] of Object.entries(report.vulnerabilities || {})) {
+            console.log(JSON.stringify({
+              package: name,
+              severity: item.severity,
+              direct: item.isDirect,
+              range: item.range,
+              via: item.via,
+              effects: item.effects,
+              nodes: item.nodes,
+              fixAvailable: item.fixAvailable
+            }));
+          }
+          if ((meta.critical || 0) > 0 || (meta.high || 0) > 0) {
+            throw new Error('Security gate blocked: critical/high dependency advisories remain.');
+          }
+          console.log('PASS: no critical or high dependency advisories remain.');
+          NODE

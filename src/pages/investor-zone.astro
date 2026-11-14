@@ -1,0 +1,277 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+---
+<Layout title="Investor Property Hub | broker pal" description="A customizable workspace concept for organizing investment properties, documents, bills, expenses and local services.">
+<main class="hub" id="investor-hub">
+  <section class="hub-hero">
+    <div><p class="eyebrow">BROKER PAL · INVESTOR PROPERTY HUB</p><h1>Your properties.<br/><em>Your workspace.</em></h1><p>One organized place for the details, documents, bills and decisions behind your investment properties.</p></div>
+    <div class="hero-note"><span class="live-dot"></span> WORKSPACE PREVIEW <small>Customize the look and feel below.</small></div>
+  </section>
+
+  <section class="workspace-shell">
+    <aside class="sidebar">
+      <div class="brand-panel"><div class="brand-avatar" id="brand-avatar">BP</div><div><b id="brand-name">My Investment Co.</b><small>Investor workspace</small></div></div>
+      <nav aria-label="Investor workspace sections">
+        <a class="selected" href="#overview">◫ <span>Overview</span></a>
+        <a href="#properties">⌂ <span>My Properties</span></a>
+        <a href="#documents">▤ <span>Document Drop</span></a>
+        <a href="#cpa-access">♧ <span>CPA Access</span></a>
+        <a href="#bills">◷ <span>Bills & Reminders</span></a>
+        <a href="#expenses">＄ <span>Expenses</span></a>
+        <a href="#services">⌖ <span>Local Services</span></a>
+        <a href="#customize">⚙ <span>Customize Workspace</span></a>
+      </nav>
+      <div class="sidebar-note">Your business identity belongs here. broker pal remains your financing partner.</div>
+    </aside>
+
+    <div class="dashboard">
+      <header class="dash-top"><div><span class="muted">INVESTOR WORKSPACE / OVERVIEW</span><h2 id="welcome-title">Welcome to your property hub</h2></div><a class="small-action" href="#customize">Personalize view ↗</a></header>
+      <div class="demo-banner"><b>Interactive design preview</b><span>Sample property and bill information only. No financial documents or personal records are uploaded or stored by this preview.</span></div>
+
+      <section id="overview" class="metrics">
+        <article><span>PROPERTIES</span><strong>03</strong><small>Sample portfolio</small></article>
+        <article><span>MONTHLY RENT</span><strong>$6,450</strong><small>Illustrative only</small></article>
+        <article><span>UPCOMING BILLS</span><strong>04</strong><small>Example reminders</small></article>
+        <article><span>TRACKED EXPENSES</span><strong>$2,180</strong><small>Sample month</small></article>
+      </section>
+
+      <section class="dash-section" id="properties">
+        <div class="section-head"><div><p class="eyebrow">YOUR PORTFOLIO</p><h3>My properties</h3></div><span class="muted">Example records</span></div>
+        <div class="property-grid">
+          <article class="property-card"><div class="property-art art-one"><span>RENTAL</span></div><div class="property-info"><b>Oakview Rental</b><p>Atlanta, GA · 3 bed / 2 bath</p><div><span>Monthly rent</span><strong>$2,250</strong></div></div></article>
+          <article class="property-card"><div class="property-art art-two"><span>RENTAL</span></div><div class="property-info"><b>Peachtree Duplex</b><p>Decatur, GA · 2 units</p><div><span>Monthly rent</span><strong>$2,700</strong></div></div></article>
+          <article class="property-card"><div class="property-art art-three"><span>VALUE-ADD</span></div><div class="property-info"><b>Willow Creek</b><p>Marietta, GA · 4 bed / 3 bath</p><div><span>Monthly rent</span><strong>$1,500</strong></div></div></article>
+        </div>
+      </section>
+
+      <div class="two-col">
+        <section class="dash-section" id="bills"><div class="section-head"><div><p class="eyebrow">STAY AHEAD</p><h3>Bills & reminders</h3></div><a href="#customize">Manage ↗</a></div>
+          <div class="bill-list">
+            <div class="bill"><span class="bill-icon">TX</span><div><b>County property tax</b><small>Oakview Rental · Example</small></div><strong>Nov 18</strong></div>
+            <div class="bill"><span class="bill-icon">HOA</span><div><b>HOA assessment</b><small>Peachtree Duplex · Example</small></div><strong>Nov 22</strong></div>
+            <div class="bill"><span class="bill-icon">INS</span><div><b>Insurance renewal</b><small>Willow Creek · Example</small></div><strong>Dec 01</strong></div>
+          </div>
+          <p class="section-foot">A future connected version can create recurring reminders and track payment confirmations.</p>
+        </section>
+        <section class="dash-section" id="expenses"><div class="section-head"><div><p class="eyebrow">PROPERTY OPERATIONS</p><h3>Expense snapshot</h3></div><span class="muted">Sample data</span></div>
+          <div class="expense-row"><span>Repairs & maintenance</span><b>$740</b></div><div class="expense-row"><span>Insurance</span><b>$620</b></div><div class="expense-row"><span>Utilities</span><b>$310</b></div><div class="expense-row"><span>Property management</span><b>$510</b></div>
+          <div class="expense-total"><span>Illustrative total</span><strong>$2,180</strong></div>
+        </section>
+      </div>
+
+
+<section class="dash-section cpa-section" id="cpa-access">
+<div class="section-head"><div><p class="eyebrow">TAX TIME, WITHOUT THE EMAIL CHASE</p><h3>CPA Access Center</h3><p>Give your accountant a controlled view of the property records you choose to share.</p></div><span class="future-tag">SECURE SHARING · PLANNED</span></div>
+<div class="cpa-intro"><div class="cpa-icon">CPA</div><div><b>Invite your tax professional</b><small>In the finished product, your CPA will verify their email and receive access only to the records you authorize.</small></div></div>
+<div class="cpa-grid">
+<label class="cpa-field">CPA name<input id="cpa-name" type="text" maxlength="70" placeholder="Accountant or firm contact"/></label>
+<label class="cpa-field">CPA email<input id="cpa-email" type="email" maxlength="120" placeholder="name@accountingfirm.com"/></label>
+<div class="cpa-field wide"><span class="cpa-label">What should they be allowed to view?</span><div class="permission-list"><label><input type="checkbox" id="cpa-properties" checked/> Property summaries</label><label><input type="checkbox" id="cpa-financials" checked/> Income and expense summaries</label><label><input type="checkbox" id="cpa-bills"/> Bills, tax and insurance records</label><label><input type="checkbox" id="cpa-documents"/> Selected supporting documents</label></div><small>Permission controls are illustrative in this preview.</small></div>
+<label class="cpa-field">Access duration<select id="cpa-duration"><option>7 days</option><option selected>14 days</option><option>30 days</option><option>Choose a custom period later</option></select></label>
+<label class="cpa-field">Access type<select id="cpa-type"><option>View and download permitted records</option><option>View only</option></select></label>
+</div>
+<div class="cpa-actions"><button type="button" class="save-design" id="cpa-invite">Preview CPA invitation</button><span id="cpa-status" role="status">No CPA access has been created.</span></div>
+<div id="cpa-invite-preview" class="cpa-invite-preview" hidden aria-live="polite"></div><div class="cpa-grants" id="cpa-grants" aria-live="polite"><b>Temporary access invitations</b><p>No invitations in this preview.</p></div>
+<div class="cpa-security"><b>Security rules for the production version</b><ul><li>Unique invitation for each CPA, verified by email and a one-time sign-in code.</li><li>Limited to selected properties, data categories and documents—not the entire investor account by default.</li><li>Read-only access; no editing, deleting, or onward sharing.</li><li>Automatic expiration, immediate revocation, and an access history showing who viewed or downloaded records.</li><li>Investor can review and revoke access at any time.</li></ul></div>
+<p class="section-foot">Visual workflow prototype only. It does not send email, create login credentials, generate a working access link, or expose real records. Production requires authenticated server-side permissions, short-lived tokens, audit logging, and secure file delivery.</p>
+</section>
+      <section class="dash-section document-section" id="documents">
+        <div class="section-head"><div><p class="eyebrow">LESS TYPING. BETTER ORGANIZATION.</p><h3>Smart Document Drop</h3><p>Imagine dropping a tax bill, HOA statement or invoice here and having the key details prepared for review.</p></div><span class="future-tag">PLANNED FEATURE</span></div>
+        <label class="drop-zone" id="drop-zone" for="document-picker"><span class="upload-icon">↑</span><b>Drop a document here or <u>browse files</u></b><small>PDF, JPG or PNG · Preview only — files stay on this device and are not uploaded</small><input id="document-picker" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple/></label>
+        <div id="file-preview" class="file-preview" aria-live="polite">No files selected.</div>
+        <p class="section-foot">Automatic bill reading, field extraction and approval will require a secure document-processing service and authenticated storage. This preview does not perform OCR or save documents.</p>
+      </section>
+
+      <section class="dash-section services-section" id="services"><div class="section-head"><div><p class="eyebrow">AROUND YOUR PROPERTY</p><h3>Find local services</h3><p>Search by the property's location—not just your home address.</p></div><span class="future-tag">PLANNED FEATURE</span></div>
+        <div class="service-chips"><span>Plumbing</span><span>HVAC</span><span>Roofing</span><span>Property managers</span><span>Electricians</span><span>Landscaping</span></div>
+        <p class="section-foot">Provider search will use available public listings, show source and contact details, and avoid implying endorsement.</p>
+      </section>
+
+      <section class="customizer" id="customize">
+        <div class="section-head"><div><p class="eyebrow">MAKE IT YOURS</p><h3>Design your workspace</h3><p>Set up the identity and presentation that make sense for your investment business.</p></div><span class="custom-tag">YOUR BRAND</span></div>
+        <div class="custom-grid">
+          <div class="custom-field"><label for="company-name">Company or portfolio name</label><input id="company-name" type="text" maxlength="48" value="My Investment Co." placeholder="Your company name"/></div>
+          <div class="custom-field"><label for="display-name">Your name (optional)</label><input id="display-name" type="text" maxlength="40" placeholder="How should we greet you?"/></div>
+          <div class="custom-field"><label for="brand-logo">Company logo or profile image</label><input id="brand-logo" type="file" accept="image/png,image/jpeg,image/webp"/><small>Image preview only; saved locally in this browser session.</small></div>
+          <div class="custom-field"><label>Workspace appearance</label><div class="choice-row"><button type="button" class="choice active" data-theme="dark">Dark</button><button type="button" class="choice" data-theme="light">Light</button><button type="button" class="choice" data-theme="system">System</button></div></div>
+          <div class="custom-field wide"><label>Choose your accent color</label><div class="swatches"><button type="button" class="swatch active" data-accent="#22c7c5" aria-label="Teal"></button><button type="button" class="swatch" data-accent="#5798f2" aria-label="Blue"></button><button type="button" class="swatch" data-accent="#55b98a" aria-label="Green"></button><button type="button" class="swatch" data-accent="#9b83e8" aria-label="Violet"></button><button type="button" class="swatch" data-accent="#e0a45d" aria-label="Amber"></button></div></div>
+          <div class="custom-field"><label for="density">Dashboard spacing</label><select id="density"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></div>
+          <div class="custom-field"><label for="start-view">What should appear first?</label><select id="start-view"><option value="overview">Portfolio overview</option><option value="bills">Upcoming bills</option><option value="properties">My properties</option><option value="documents">Documents</option></select></div>
+        </div>
+        <div class="custom-actions"><button type="button" class="save-design" id="save-design">Save this design on this device</button><button type="button" class="reset-design" id="reset-design">Reset preview</button><span id="save-status" role="status">Design settings are local to this browser.</span></div>
+        <p class="privacy-note">Only display preferences are saved locally. This is not an investor login, shared account, secure property record or document vault. Do not enter real borrower, tenant, banking or financial information here.</p>
+      </section>
+      <footer class="dash-footer">A broker pal investor experience concept · Financing and property data should always be verified with the relevant source.</footer>
+    </div>
+  </section>
+</main>
+</Layout>
+
+<style>
+:global(body){background:#071a2b;color:#edf5f8}.hub{--accent:#22c7c5;--panel:#10263a;--panel2:#152f45;--muted:#9ab0bf;background:#081b2c;color:#eaf3f7;min-height:100vh;font-family:Arial,Helvetica,sans-serif}.hub.light{background:#eef3f6;color:#172d40}.hub.light .workspace-shell,.hub.light .sidebar,.hub.light .dashboard{background:#f7fafb;color:#173047}.hub.light .dash-section,.hub.light .customizer,.hub.light .metrics article,.hub.light .property-card{background:#fff;border-color:#dce6eb}.hub.light .bill,.hub.light .expense-row{border-color:#e1e9ed}.hub.light .dash-top h2,.hub.light h3,.hub.light .property-info b,.hub.light .bill b{color:#173047}.hub.light .muted,.hub.light .property-info p,.hub.light .bill small{color:#607687}.hub-hero{padding:54px max(22px,calc((100% - 1240px)/2));display:flex;justify-content:space-between;align-items:flex-end;gap:28px;background:radial-gradient(ellipse at 78% 0%,#16465a 0,transparent 48%),linear-gradient(120deg,#071a2b,#0b2c43);border-bottom:1px solid #23465a}.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.8px;color:var(--accent);margin:0 0 10px}.hub-hero h1{font-size:clamp(38px,5vw,60px);line-height:1.02;letter-spacing:-2px;margin:0 0 14px;color:#f5fbfd}.hub-hero h1 em{font-style:normal;color:var(--accent)}.hub-hero p:not(.eyebrow){max-width:590px;color:#bfd0d9;line-height:1.65;margin:0}.hero-note{color:#e5f2f5;font-size:10px;letter-spacing:1.3px;font-weight:800;white-space:nowrap}.hero-note small{display:block;color:#a9bdc9;font-weight:400;letter-spacing:0;margin:8px 0 0 16px}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;box-shadow:0 0 12px var(--accent)}.workspace-shell{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:235px minmax(0,1fr);background:#091d30;min-height:1100px}.sidebar{background:#0b2033;border-right:1px solid #1d3a50;padding:25px 17px;display:flex;flex-direction:column}.brand-panel{display:flex;align-items:center;gap:11px;padding:5px 7px 25px;border-bottom:1px solid #203b50}.brand-avatar{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--accent);color:#082235;font-weight:900;font-size:12px;overflow:hidden}.brand-avatar img{width:100%;height:100%;object-fit:cover}.brand-panel b{display:block;font-size:13px}.brand-panel small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.sidebar nav{display:grid;gap:6px;margin-top:22px}.sidebar nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;color:#a9bdc9;text-decoration:none;border-radius:8px;font-size:16px}.sidebar nav a span{font-size:12px;font-weight:650}.sidebar nav a:hover,.sidebar nav a.selected{background:#18384d;color:#f2fbfc}.sidebar nav a.selected{box-shadow:inset 3px 0 var(--accent)}.sidebar-note{margin-top:auto;padding:14px 10px;border-top:1px solid #203b50;color:#8199a9;font-size:10px;line-height:1.6}.dashboard{padding:30px clamp(18px,3vw,42px);min-width:0}.dash-top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:19px}.muted{font-size:10px;color:var(--muted);letter-spacing:1px}.dash-top h2{font-size:24px;letter-spacing:-.5px;margin:6px 0 0;color:#f3f8fa}.small-action,.section-head>a{font-size:11px;color:var(--accent);text-decoration:none;font-weight:800}.demo-banner{display:flex;gap:12px;align-items:center;padding:12px 15px;border:1px solid #3c6974;background:#123448;border-radius:9px;margin-bottom:20px;font-size:11px;color:#c0d6df}.demo-banner b{color:#6de0d8;white-space:nowrap}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metrics article{background:#10283c;border:1px solid #1e3b50;border-radius:10px;padding:17px}.metrics article span{display:block;color:#91aaba;font-size:9px;letter-spacing:1px;font-weight:800}.metrics article strong{display:block;font-size:27px;letter-spacing:-1px;margin:8px 0 3px}.metrics article small{font-size:10px;color:#829aaa}.dash-section{background:#10263a;border:1px solid #1d394e;border-radius:11px;padding:19px;margin-top:18px;min-width:0}.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:17px}.section-head h3{font-size:18px;margin:0;color:#f2f8fa;letter-spacing:-.3px}.section-head p:not(.eyebrow){font-size:11px;color:#9bb0bd;line-height:1.55;margin:7px 0 0;max-width:560px}.section-head .eyebrow{margin-bottom:6px}.property-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.property-card{border:1px solid #25445a;border-radius:9px;overflow:hidden;background:#0d2235}.property-art{height:110px;position:relative;background:linear-gradient(145deg,#416d7a,#18384b 65%,#102b3e)}.property-art:before{content:"";position:absolute;left:18%;right:18%;bottom:0;height:75%;background:linear-gradient(120deg,#c2d0cb,#748f8d);clip-path:polygon(50% 0,100% 35%,100% 100%,0 100%,0 35%)}.property-art:after{content:"";position:absolute;left:40%;bottom:0;width:20%;height:45%;background:#29495a}.art-two{background:linear-gradient(145deg,#788d91,#263f53)}.art-two:before{left:8%;right:8%;height:65%;clip-path:polygon(0 22%,100% 22%,100% 100%,0 100%)}.art-three{background:linear-gradient(145deg,#5b7770,#1d3a4a)}.property-art span{position:absolute;z-index:2;top:10px;left:10px;padding:5px 7px;border-radius:4px;background:#071b2dcc;color:#c8f5f1;font-size:8px;letter-spacing:1px;font-weight:800}.property-info{padding:12px}.property-info b{font-size:12px}.property-info p{font-size:10px;color:#93aab8;margin:5px 0 12px}.property-info div{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #294356;padding-top:9px}.property-info div span{font-size:9px;color:#9bb0bd}.property-info div strong{font-size:12px;color:var(--accent)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.two-col .dash-section{height:fit-content}.bill-list{display:grid}.bill{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #263f52}.bill:last-child{border:0}.bill-icon{width:33px;height:33px;display:grid;place-items:center;border-radius:8px;background:#1c3e51;color:var(--accent);font-size:8px;font-weight:900}.bill div{min-width:0;flex:1}.bill b{display:block;font-size:11px}.bill small{display:block;color:#8fa7b6;font-size:9px;margin-top:4px}.bill>strong{font-size:10px;color:#f1c27d}.section-foot{font-size:10px;line-height:1.6;color:#829aaa;margin:12px 0 0}.expense-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #263f52;font-size:11px;color:#a9bdc9}.expense-row b{color:#eaf3f6}.expense-total{display:flex;justify-content:space-between;padding-top:14px;font-size:11px}.expense-total strong{font-size:17px;color:var(--accent)}.future-tag,.custom-tag{border:1px solid #34716f;color:#7ce0d7;border-radius:30px;padding:6px 9px;font-size:8px;font-weight:900;letter-spacing:1px;white-space:nowrap}.document-section .section-head{align-items:flex-start}.drop-zone{min-height:140px;border:1px dashed #4d8290;background:#0b2032;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;cursor:pointer;padding:20px}.drop-zone.dragging{border-color:var(--accent);background:#12394a}.upload-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#1b4555;color:var(--accent);font-size:20px}.drop-zone b{font-size:12px}.drop-zone u{color:var(--accent)}.drop-zone small{font-size:9px;color:#8fa7b6}.drop-zone input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.file-preview{font-size:10px;color:#a6bbc7;padding:10px 2px}.file-chip{display:inline-block;margin:4px 6px 0 0;padding:6px 9px;border-radius:5px;background:#1a3b50;color:#dcebf0}.services-section .service-chips{display:flex;flex-wrap:wrap;gap:8px}.service-chips span{padding:9px 12px;border:1px solid #2a4b60;border-radius:30px;color:#c3d3db;font-size:10px}.customizer{margin-top:20px;padding:22px;background:#10283b;border:1px solid #315365;border-radius:12px}.custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}.custom-field{display:grid;gap:7px}.custom-field label{font-size:10px;font-weight:800;color:#b8cbd5}.custom-field input,.custom-field select{width:100%;box-sizing:border-box;background:#091d30;border:1px solid #315066;border-radius:7px;padding:11px;color:#eef6f8;font:inherit;font-size:11px}.custom-field input[type=file]{font-size:10px}.custom-field small{font-size:9px;color:#819aaa}.wide{grid-column:1/-1}.choice-row,.swatches{display:flex;gap:8px;flex-wrap:wrap}.choice,.swatch{cursor:pointer;border:1px solid #35566a;background:#0b2033;color:#c3d4dc;border-radius:7px;padding:9px 14px;font-size:10px}.choice.active{border-color:var(--accent);color:var(--accent);background:#14384a}.swatch{width:31px;height:31px;padding:0;border-radius:50%;background:var(--swatch);border:2px solid transparent}.swatch.active{outline:2px solid var(--accent);outline-offset:3px}.custom-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px}.save-design{border:0;background:var(--accent);color:#082235;padding:11px 16px;border-radius:7px;font-weight:900;font-size:10px;cursor:pointer}.reset-design{border:1px solid #446276;background:transparent;color:#c4d4dc;padding:10px 14px;border-radius:7px;font-size:10px;cursor:pointer}.custom-actions span{font-size:9px;color:#91a9b7}.privacy-note{font-size:9px;color:#8ea5b3;line-height:1.6;margin:16px 0 0}.dash-footer{text-align:center;color:#708b9c;font-size:9px;padding:25px 0 8px}.hub.compact .dash-section{padding:13px;margin-top:12px}.hub.compact .metrics article{padding:12px}.hub.compact .property-art{height:85px}
+@media(max-width:980px){.workspace-shell{grid-template-columns:190px minmax(0,1fr)}.sidebar{padding:20px 11px}.metrics{grid-template-columns:repeat(2,1fr)}.property-grid{grid-template-columns:1fr 1fr}.property-card:last-child{display:none}}
+@media(max-width:700px){.hub-hero{padding:38px 20px;display:block}.hero-note{margin-top:23px}.workspace-shell{display:block}.sidebar{padding:12px 14px;border-right:0;border-bottom:1px solid #1d3a50}.brand-panel{padding:3px 3px 12px}.sidebar-note{display:none}.sidebar nav{display:flex;overflow-x:auto;margin-top:10px;padding-bottom:3px}.sidebar nav a{flex:0 0 auto;padding:9px}.sidebar nav a span{font-size:10px}.dashboard{padding:20px 13px}.dash-top h2{font-size:20px}.demo-banner{display:block;line-height:1.5}.demo-banner b{display:block;margin-bottom:3px}.metrics{gap:8px}.metrics article{padding:12px}.metrics article strong{font-size:22px}.property-grid{grid-template-columns:1fr 1fr}.property-card:last-child{display:block}.property-art{height:83px}.two-col{grid-template-columns:1fr}.custom-grid{grid-template-columns:1fr}.wide{grid-column:auto}.section-head{gap:8px}.small-action{white-space:nowrap}}
+@media(max-width:390px){.metrics{grid-template-columns:1fr 1fr}.property-grid{grid-template-columns:1fr}.property-art{height:105px}.hero-note{white-space:normal}}
+
+.cpa-intro{display:flex;align-items:center;gap:12px;padding:14px;background:#0b2032;border:1px solid #29495e;border-radius:9px;margin-bottom:15px}.cpa-icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:#1a4553;color:var(--accent);font-size:10px;font-weight:900;flex:0 0 auto}.cpa-intro b,.cpa-intro small{display:block}.cpa-intro b{font-size:12px}.cpa-intro small{font-size:10px;color:#94adbb;line-height:1.5;margin-top:4px}.cpa-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 16px}.cpa-field{display:grid;gap:7px;color:#b8cbd5;font-size:10px;font-weight:800}.cpa-field input:not([type=checkbox]),.cpa-field select{width:100%;box-sizing:border-box;background:#091d30;border:1px solid #315066;border-radius:7px;padding:11px;color:#eef6f8;font:inherit;font-size:11px}.cpa-field small{font-size:9px;color:#819aaa;font-weight:400}.cpa-label{font-size:10px}.permission-list{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px;background:#0b2032;border:1px solid #29495e;border-radius:8px}.permission-list label{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:500;color:#c5d5dd}.permission-list input{accent-color:var(--accent)}.cpa-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px}.cpa-actions span{font-size:9px;color:#91a9b7}.cpa-invite-preview{margin-top:14px;padding:15px;border:1px solid #34716f;background:#0b2938;border-radius:9px;color:#dcebf0;font-size:11px;line-height:1.6}.cpa-invite-preview b{color:#7ce0d7}.cpa-security{margin-top:15px;padding:14px;background:#132f42;border-radius:8px}.cpa-security b{font-size:11px}.cpa-security ul{margin:9px 0 0;padding-left:17px;color:#9fb5c1;font-size:10px;line-height:1.8}.hub.light .cpa-intro,.hub.light .permission-list,.hub.light .cpa-security,.hub.light .cpa-invite-preview{background:#f0f6f7;color:#254457;border-color:#d5e4e7}.hub.light .cpa-intro small,.hub.light .permission-list label,.hub.light .cpa-security ul{color:#607687}.hub.light .cpa-field{color:#345166}.hub.light .cpa-field input:not([type=checkbox]),.hub.light .cpa-field select{background:#fff;color:#173047;border-color:#d5e1e4}@media(max-width:700px){.cpa-grid{grid-template-columns:1fr}.permission-list{grid-template-columns:1fr}}
+.cpa-grants{margin-top:14px;padding:13px;border:1px solid #29495e;border-radius:8px;background:#0b2032}.cpa-grants> b{font-size:11px}.cpa-grants>p{font-size:10px;color:#91a9b7}.cpa-grant-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #29495e;font-size:10px;color:#c5d5dd}.cpa-grant-row button{flex:0 0 auto;border:1px solid #587284;background:transparent;color:#e0c3a8;border-radius:6px;padding:7px 9px;font-size:9px}.cpa-grant-row button:disabled{color:#8aa49d;border-color:#45665e}.hub.light .cpa-grants{background:#f0f6f7;border-color:#d5e4e7}.hub.light .cpa-grant-row{color:#345166;border-color:#d5e4e7}
+/* Visible keyboard focus for links, buttons, and form controls. */
+:global(a:focus-visible),
+:global(button:focus-visible),
+:global(input:focus-visible),
+:global(select:focus-visible),
+:global(textarea:focus-visible) {
+  outline: 3px solid #18d0d0;
+  outline-offset: 3px;
+}
+</style>
+
+<script>
+const root = document.querySelector('#investor-hub');
+if (root) {
+  const $ = (id) => document.getElementById(id);
+  const defaults = { company: 'My Investment Co.', display: '', theme: 'dark', accent: '#22c7c5', density: 'comfortable', start: 'overview' };
+  let settings = { ...defaults };
+  let logoUrl = '';
+  const renderBrandAvatar = () => {
+    const safePattern = new RegExp('^data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*' + String.fromCharCode(36));
+    if (typeof logoUrl === 'string' && logoUrl.length <= 2800000 && safePattern.test(logoUrl)) {
+      const image = document.createElement('img');
+      image.alt = 'Company logo preview';
+      image.src = logoUrl;
+      $('brand-avatar').replaceChildren(image);
+    } else {
+      $('brand-avatar').textContent = (settings.company || 'BP').split(' ').filter(Boolean).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+    }
+  };
+  const apply = () => {
+    root.classList.toggle('compact', settings.density === 'compact');
+    root.classList.toggle('light', settings.theme === 'light');
+    root.style.setProperty('--accent', settings.accent);
+    $('brand-name').textContent = settings.company || 'My Investment Co.';
+    $('welcome-title').textContent = settings.display ? 'Welcome, ' + settings.display : 'Welcome to your property hub';
+    $('company-name').value = settings.company;
+    $('display-name').value = settings.display;
+    $('density').value = settings.density;
+    $('start-view').value = settings.start;
+    document.querySelectorAll('[data-theme]').forEach(b => b.classList.toggle('active', b.dataset.theme === settings.theme));
+    document.querySelectorAll('[data-accent]').forEach(b => b.classList.toggle('active', b.dataset.accent === settings.accent));
+    renderBrandAvatar();
+  };
+  try {
+    const saved = localStorage.getItem('brokerpal-investor-design');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      settings = {
+        company: typeof parsed.company === 'string' ? parsed.company.slice(0,48) : defaults.company,
+        display: typeof parsed.display === 'string' ? parsed.display.slice(0,40) : defaults.display,
+        theme: ['dark','light'].includes(parsed.theme) ? parsed.theme : defaults.theme,
+        accent: ['#22c7c5','#4a9de0','#48b47b','#9b83e8','#d49b4b'].includes(parsed.accent) ? parsed.accent : defaults.accent,
+        density: ['comfortable','compact'].includes(parsed.density) ? parsed.density : defaults.density,
+        start: ['overview','properties','documents','cpa-access','bills','expenses','services','customize'].includes(parsed.start) ? parsed.start : defaults.start
+      };
+    }
+  } catch {}
+  apply();
+  $('company-name').addEventListener('input', e => { settings.company = e.target.value.slice(0,48); $('brand-name').textContent = settings.company || 'My Investment Co.'; renderBrandAvatar(); });
+  $('display-name').addEventListener('input', e => { settings.display = e.target.value.slice(0,40); $('welcome-title').textContent = settings.display ? 'Welcome, ' + settings.display : 'Welcome to your property hub'; });
+  document.querySelectorAll('[data-theme]').forEach(b => b.addEventListener('click', () => { settings.theme = b.dataset.theme === 'system' ? 'dark' : b.dataset.theme; apply(); }));
+  document.querySelectorAll('[data-accent]').forEach(b => b.addEventListener('click', () => { settings.accent = b.dataset.accent; apply(); }));
+  $('density').addEventListener('change', e => { settings.density = e.target.value; apply(); });
+  $('start-view').addEventListener('change', e => { settings.start = e.target.value; });
+  $('brand-logo').addEventListener('change', e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type) || file.size > 2 * 1024 * 1024) { $('save-status').textContent = 'Choose a PNG, JPG or WebP image under 2 MB.'; return; }
+    const reader = new FileReader();
+    reader.onload = () => { logoUrl = String(reader.result); renderBrandAvatar(); $('save-status').textContent = 'Logo preview loaded for this session; it is not uploaded.'; };
+    reader.readAsDataURL(file);
+  });
+  $('save-design').addEventListener('click', () => {
+    try { localStorage.setItem('brokerpal-investor-design', JSON.stringify(settings)); $('save-status').textContent = 'Design saved on this device only.'; }
+    catch { $('save-status').textContent = 'Could not save in this browser. Your current preview remains active.'; }
+    const target = document.getElementById(settings.start);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('reset-design').addEventListener('click', () => { settings = { ...defaults }; logoUrl = ''; $('brand-logo').value = ''; try { localStorage.removeItem('brokerpal-investor-design'); } catch {} apply(); $('save-status').textContent = 'Preview reset.'; });
+
+  const cpaGrants = [];
+  const renderCpaGrants = () => {
+    const container = $('cpa-grants');
+    container.replaceChildren();
+    const title = document.createElement('b');
+    title.textContent = 'Temporary access invitations';
+    container.append(title);
+    if (!cpaGrants.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'No invitations in this preview.';
+      container.append(empty);
+      return;
+    }
+    cpaGrants.forEach((grant, index) => {
+      const row = document.createElement('div');
+      row.className = 'cpa-grant-row';
+      const details = document.createElement('span');
+      details.textContent = grant.name + ' · ' + grant.email + ' · ' + grant.duration + ' · ' + (grant.revoked ? 'Revoked' : 'Pending secure setup');
+      const revoke = document.createElement('button');
+      revoke.type = 'button';
+      revoke.textContent = grant.revoked ? 'Revoked' : 'Revoke preview';
+      revoke.disabled = grant.revoked;
+      revoke.addEventListener('click', () => {
+        grant.revoked = true;
+        renderCpaGrants();
+      });
+      row.append(details, revoke);
+      container.append(row);
+    });
+  };
+  const cpaButton = $('cpa-invite');
+  if (cpaButton) cpaButton.addEventListener('click', () => {
+    const name = $('cpa-name').value.trim();
+    const email = $('cpa-email').value.trim();
+    const status = $('cpa-status');
+    const preview = $('cpa-invite-preview');
+    const permissions = [
+      ['cpa-properties', 'Property summaries'],
+      ['cpa-financials', 'Income and expense summaries'],
+      ['cpa-bills', 'Bills, tax and insurance records'],
+      ['cpa-documents', 'Selected supporting documents']
+    ].filter(([id]) => $(id).checked).map(([, label]) => label);
+    if (!name || !email || !email.includes('@') || !email.includes('.')) {
+      status.textContent = 'Enter the CPA name and a valid email address to preview the invitation.';
+      preview.hidden = true;
+      return;
+    }
+    if (!permissions.length) {
+      status.textContent = 'Select at least one information category.';
+      preview.hidden = true;
+      return;
+    }
+    const grant = { name, email, duration: $('cpa-duration').value, permissions, revoked: false };
+    cpaGrants.push(grant);
+    preview.hidden = false;
+    preview.replaceChildren();
+    const heading = document.createElement('b');
+    heading.textContent = 'Invitation prepared — demonstration only';
+    const detail = document.createElement('p');
+    detail.textContent = 'Proposed recipient: ' + name + ' (' + email + '). Access: ' + permissions.join(', ') + '. Duration: ' + grant.duration + '. Permission level: ' + $('cpa-type').value + '.';
+    const warning = document.createElement('p');
+    warning.textContent = 'This creates only an in-memory demonstration entry. No email, login, access link, token or data permission is issued.';
+    preview.append(heading, detail, warning);
+    status.textContent = 'Demonstration invitation added below. You can test the revoke control.';
+    renderCpaGrants();
+  });
+  const picker = $('document-picker'), zone = $('drop-zone'), list = $('file-preview');
+  const showFiles = files => {
+    const safe = Array.from(files || []).filter(f => /\.(pdf|jpe?g|png)$/i.test(f.name)).slice(0,8);
+    list.textContent = '';
+    if (!safe.length) { list.textContent = 'No supported files selected.'; return; }
+    safe.forEach(file => { const chip = document.createElement('span'); chip.className = 'file-chip'; chip.textContent = file.name + ' · ' + Math.max(1, Math.round(file.size/1024)) + ' KB'; list.append(chip); });
+    const note = document.createElement('div'); note.className = 'section-foot'; note.textContent = 'Local file selection preview only. No file contents were read, uploaded, processed or saved.'; list.append(note);
+  };
+  picker.addEventListener('change', e => showFiles(e.target.files));
+  ['dragenter','dragover'].forEach(type => zone.addEventListener(type, e => { e.preventDefault(); zone.classList.add('dragging'); }));
+  ['dragleave','drop'].forEach(type => zone.addEventListener(type, e => { e.preventDefault(); zone.classList.remove('dragging'); }));
+  zone.addEventListener('drop', e => showFiles(e.dataTransfer?.files));
+}
+</script>
