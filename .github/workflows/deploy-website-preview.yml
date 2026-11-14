@@ -36,7 +36,7 @@ jobs:
           const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
           const counts = report.metadata?.vulnerabilities ?? {};
           console.log('LOCKFILE NPM AUDIT:', JSON.stringify(counts, null, 2));
-          if (Object.values(counts).some(value => typeof value === 'number' && value > 0 && !['info'].includes(value))) {
+          if ((counts.total ?? 0) > 0) {
             throw new Error('Dependency audit found vulnerabilities; review npm-audit-report.json.');
           }
           NODE
@@ -58,7 +58,7 @@ jobs:
             config.kv_namespaces = config.kv_namespaces.filter(binding => binding.binding !== 'SESSION');
             if (config.kv_namespaces.length === 0) delete config.kv_namespaces;
           }
-          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\\n');
+          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
           if (config.kv_namespaces?.some(binding => binding.binding === 'SESSION')) {
             throw new Error('Unused SESSION KV placeholder was not removed.');
           }
