@@ -66,17 +66,19 @@ jobs:
           echo "Preview URL: $PREVIEW_URL"
           echo "Unique Deployment URL: $UNIQUE_URL"
 
-      - name: Verify preview serves Broker Pal
+      - name: Verify preview routes and page content
         run: |
           set -euo pipefail
           for URL in "$PREVIEW_URL" "$UNIQUE_URL"; do
-            STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-preview.html --write-out '%{http_code}' "$URL/")"
-            BYTES="$(wc -c < /tmp/broker-pal-preview.html)"
-            echo "$URL -> HTTP $STATUS, $BYTES bytes"
-            if [ "$STATUS" != "200" ] || ! grep -Eiq 'Broker Pal|YourBrokerPal' /tmp/broker-pal-preview.html; then
-              echo "Preview did not return the Broker Pal website."
-              head -c 1500 /tmp/broker-pal-preview.html || true
-              exit 1
-            fi
+            for ROUTE in "/" "/resources" "/investor-zone" "/realtor-studio" "/realtor-crm" "/marketing-studio" "/agent-page-preview"; do
+              STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-preview.html --write-out '%{http_code}' "$URL$ROUTE")"
+              BYTES="$(wc -c < /tmp/broker-pal-preview.html)"
+              echo "$URL$ROUTE -> HTTP $STATUS, $BYTES bytes"
+              if [ "$STATUS" != "200" ] || [ "$BYTES" -lt 500 ] || ! grep -Eiq 'broker pal|YourBrokerPal|Investor Property Hub|Realtor Studio|Realtor CRM|Marketing Studio|Agent Page Preview' /tmp/broker-pal-preview.html; then
+                echo "Preview route failed content verification: $URL$ROUTE"
+                head -c 1500 /tmp/broker-pal-preview.html || true
+                exit 1
+              fi
+            done
           done
-          echo "PASS: both isolated preview URLs serve the Broker Pal website."
+          echo "PASS: both isolated preview URLs serve all expected Broker Pal pages."
