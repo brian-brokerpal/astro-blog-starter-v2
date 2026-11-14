@@ -123,6 +123,7 @@ if (root) {
     img.onerror=()=>{ URL.revokeObjectURL(url); resolve(defaults.brandColor); };
     img.src=url;
   });
+  const isSafeLogoData = value => typeof value === 'string' && value.length <= 2800000 && /^data:image\\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(value);
   const apply = () => {
     const p = palettes[state.selected] || palettes.modern;
     const accent = state.selected === 'modern' ? mix(brandColor,'#ffffff',.12) : state.selected === 'luxury' ? mix(brandColor,'#d1b783',.42) : state.selected === 'warm' ? mix(brandColor,'#b77a56',.36) : mix(brandColor,'#ffffff',.04);
@@ -133,7 +134,14 @@ if (root) {
     $('preview-tagline').textContent = state.tagline || 'A thoughtful real estate experience, built around you.';
     const title = p.headline.split('|');
     $('preview-headline').innerHTML = title[0] + '<br/><i>' + title[1] + '</i>';
-    $('preview-logo').innerHTML = logoData ? '<img alt="Uploaded company logo" src="' + logoData + '">' : (state.company.trim().charAt(0).toUpperCase() || 'B');
+    if (isSafeLogoData(logoData)) {
+      const image = document.createElement('img');
+      image.alt = 'Uploaded company logo';
+      image.src = logoData;
+      $('preview-logo').replaceChildren(image);
+    } else {
+      $('preview-logo').textContent = (String(state.company || '').trim().charAt(0).toUpperCase() || 'B');
+    }
     $('concepts').querySelectorAll('.concept').forEach(card => card.classList.toggle('selected',card.dataset.concept===state.selected));
     $('selection-note').textContent = state.selected.charAt(0).toUpperCase()+state.selected.slice(1)+' design selected. Brand accent adapted from your logo where possible.';
   };
@@ -183,7 +191,7 @@ if (root) {
   });
   try{
     const saved=localStorage.getItem('brokerpal-realtor-design-preview');
-    if(saved){const parsed=JSON.parse(saved);state={...defaults,...parsed};brandColor=parsed.brandColor||defaults.brandColor;$('company-name').value=state.company;$('tagline').value=state.tagline;root.querySelectorAll('[data-vibe]').forEach(x=>x.classList.toggle('active',x.dataset.vibe===state.vibe));renderConcepts();}
+    if(saved){const parsed=JSON.parse(saved);state={...defaults,...parsed};state.company=typeof parsed.company==='string'?parsed.company.slice(0,60):defaults.company;state.tagline=typeof parsed.tagline==='string'?parsed.tagline.slice(0,150):defaults.tagline;state.selected=['modern','luxury','warm','bold'].includes(parsed.selected)?parsed.selected:defaults.selected;state.vibe=['modern','luxury','warm','bold'].includes(parsed.vibe)?parsed.vibe:defaults.vibe;brandColor=/^#[0-9a-f]{6}$/i.test(parsed.brandColor||'')?parsed.brandColor:defaults.brandColor;logoData=isSafeLogoData(parsed.logoData)?parsed.logoData:'';$('company-name').value=state.company;$('tagline').value=state.tagline;root.querySelectorAll('[data-vibe]').forEach(x=>x.classList.toggle('active',x.dataset.vibe===state.vibe));renderConcepts();}
   }catch{}
   apply();
 }
