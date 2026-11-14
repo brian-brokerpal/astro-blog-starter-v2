@@ -1,0 +1,75 @@
+name: Trial dependency security remediation
+
+on:
+  push:
+    branches:
+      - website-polish-broker-pal-brand
+    paths:
+      - ".github/workflows/security-remediation-trial.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade-and-verify:
+    if: github.ref == 'refs/heads/website-polish-broker-pal-brand'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: website-polish-broker-pal-brand
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Upgrade Astro and official integrations
+        run: |
+          npm install --save-exact astro@latest @astrojs/cloudflare@latest @astrojs/mdx@latest @astrojs/rss@latest @astrojs/sitemap@latest
+          npm install --save-dev --save-exact wrangler@latest typescript@latest
+
+      - name: Record full dependency audit
+        run: |
+          npm audit --json > npm-audit-report.json || true
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
+          console.log('AUDIT SUMMARY:', JSON.stringify(report.metadata?.vulnerabilities ?? {}, null, 2));
+          for (const [name, item] of Object.entries(report.vulnerabilities ?? {})) {
+            console.log(JSON.stringify({name, severity:item.severity, direct:item.isDirect, range:item.range, fixAvailable:item.fixAvailable, via:item.via.map(v => typeof v === 'string' ? v : {title:v.title,url:v.url,range:v.range})}));
+          }
+          NODE
+
+      - name: Build, type-check, and Wrangler dry run
+        run: npm run check
+
+      - name: Commit verified dependency updates
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "Upgrade Astro stack and remediate dependency advisories"
+          git push origin HEAD:website-polish-broker-pal-brand
+
+      - name: Publish audit summary
+        if: always()
+        run: |
+          if [ -f npm-audit-report.json ]; then
+            node --input-type=module <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+            import fs from 'node:fs';
+            const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
+            const v = report.metadata?.vulnerabilities ?? {};
+            console.log('## Dependency audit after attempted updates');
+            console.log('| Severity | Count |');
+            console.log('|---|---:|');
+            for (const k of ['critical','high','moderate','low','info']) console.log(`| ${k} | ${v[k] ?? 0} |`);
+            NODE
+          fi
