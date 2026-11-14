@@ -66,12 +66,12 @@ import Layout from '../layouts/BlogPost.astro';
 <div class="cpa-grid">
 <label class="cpa-field">CPA name<input id="cpa-name" type="text" maxlength="70" placeholder="Accountant or firm contact"/></label>
 <label class="cpa-field">CPA email<input id="cpa-email" type="email" maxlength="120" placeholder="name@accountingfirm.com"/></label>
-<div class="cpa-field wide"><span class="cpa-label">What should they be allowed to view?</span><div class="permission-list"><label><input type="checkbox" checked disabled/> Property summaries</label><label><input type="checkbox" checked disabled/> Income and expense summaries</label><label><input type="checkbox" disabled/> Bills, tax and insurance records</label><label><input type="checkbox" disabled/> Selected supporting documents</label></div><small>Permission controls are illustrative in this preview.</small></div>
+<div class="cpa-field wide"><span class="cpa-label">What should they be allowed to view?</span><div class="permission-list"><label><input type="checkbox" id="cpa-properties" checked/> Property summaries</label><label><input type="checkbox" id="cpa-financials" checked/> Income and expense summaries</label><label><input type="checkbox" id="cpa-bills"/> Bills, tax and insurance records</label><label><input type="checkbox" id="cpa-documents"/> Selected supporting documents</label></div><small>Permission controls are illustrative in this preview.</small></div>
 <label class="cpa-field">Access duration<select id="cpa-duration"><option>7 days</option><option selected>14 days</option><option>30 days</option><option>Choose a custom period later</option></select></label>
 <label class="cpa-field">Access type<select id="cpa-type"><option>View and download permitted records</option><option>View only</option></select></label>
 </div>
 <div class="cpa-actions"><button type="button" class="save-design" id="cpa-invite">Preview CPA invitation</button><span id="cpa-status" role="status">No CPA access has been created.</span></div>
-<div id="cpa-invite-preview" class="cpa-invite-preview" hidden aria-live="polite"></div>
+<div id="cpa-invite-preview" class="cpa-invite-preview" hidden aria-live="polite"></div><div class="cpa-grants" id="cpa-grants" aria-live="polite"><b>Temporary access invitations</b><p>No invitations in this preview.</p></div>
 <div class="cpa-security"><b>Security rules for the production version</b><ul><li>Unique invitation for each CPA, verified by email and a one-time sign-in code.</li><li>Limited to selected properties, data categories and documents—not the entire investor account by default.</li><li>Read-only access; no editing, deleting, or onward sharing.</li><li>Automatic expiration, immediate revocation, and an access history showing who viewed or downloaded records.</li><li>Investor can review and revoke access at any time.</li></ul></div>
 <p class="section-foot">Visual workflow prototype only. It does not send email, create login credentials, generate a working access link, or expose real records. Production requires authenticated server-side permissions, short-lived tokens, audit logging, and secure file delivery.</p>
 </section>
@@ -114,7 +114,7 @@ import Layout from '../layouts/BlogPost.astro';
 @media(max-width:390px){.metrics{grid-template-columns:1fr 1fr}.property-grid{grid-template-columns:1fr}.property-art{height:105px}.hero-note{white-space:normal}}
 
 .cpa-intro{display:flex;align-items:center;gap:12px;padding:14px;background:#0b2032;border:1px solid #29495e;border-radius:9px;margin-bottom:15px}.cpa-icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:#1a4553;color:var(--accent);font-size:10px;font-weight:900;flex:0 0 auto}.cpa-intro b,.cpa-intro small{display:block}.cpa-intro b{font-size:12px}.cpa-intro small{font-size:10px;color:#94adbb;line-height:1.5;margin-top:4px}.cpa-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 16px}.cpa-field{display:grid;gap:7px;color:#b8cbd5;font-size:10px;font-weight:800}.cpa-field input:not([type=checkbox]),.cpa-field select{width:100%;box-sizing:border-box;background:#091d30;border:1px solid #315066;border-radius:7px;padding:11px;color:#eef6f8;font:inherit;font-size:11px}.cpa-field small{font-size:9px;color:#819aaa;font-weight:400}.cpa-label{font-size:10px}.permission-list{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px;background:#0b2032;border:1px solid #29495e;border-radius:8px}.permission-list label{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:500;color:#c5d5dd}.permission-list input{accent-color:var(--accent)}.cpa-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px}.cpa-actions span{font-size:9px;color:#91a9b7}.cpa-invite-preview{margin-top:14px;padding:15px;border:1px solid #34716f;background:#0b2938;border-radius:9px;color:#dcebf0;font-size:11px;line-height:1.6}.cpa-invite-preview b{color:#7ce0d7}.cpa-security{margin-top:15px;padding:14px;background:#132f42;border-radius:8px}.cpa-security b{font-size:11px}.cpa-security ul{margin:9px 0 0;padding-left:17px;color:#9fb5c1;font-size:10px;line-height:1.8}.hub.light .cpa-intro,.hub.light .permission-list,.hub.light .cpa-security,.hub.light .cpa-invite-preview{background:#f0f6f7;color:#254457;border-color:#d5e4e7}.hub.light .cpa-intro small,.hub.light .permission-list label,.hub.light .cpa-security ul{color:#607687}.hub.light .cpa-field{color:#345166}.hub.light .cpa-field input:not([type=checkbox]),.hub.light .cpa-field select{background:#fff;color:#173047;border-color:#d5e1e4}@media(max-width:700px){.cpa-grid{grid-template-columns:1fr}.permission-list{grid-template-columns:1fr}}
-</style>
+.cpa-grants{margin-top:14px;padding:13px;border:1px solid #29495e;border-radius:8px;background:#0b2032}.cpa-grants> b{font-size:11px}.cpa-grants>p{font-size:10px;color:#91a9b7}.cpa-grant-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #29495e;font-size:10px;color:#c5d5dd}.cpa-grant-row button{flex:0 0 auto;border:1px solid #587284;background:transparent;color:#e0c3a8;border-radius:6px;padding:7px 9px;font-size:9px}.cpa-grant-row button:disabled{color:#8aa49d;border-color:#45665e}.hub.light .cpa-grants{background:#f0f6f7;border-color:#d5e4e7}.hub.light .cpa-grant-row{color:#345166;border-color:#d5e4e7}</style>
 
 <script>
 const root = document.querySelector('#investor-hub');
@@ -164,27 +164,71 @@ if (root) {
   });
   $('reset-design').addEventListener('click', () => { settings = { ...defaults }; logoUrl = ''; $('brand-logo').value = ''; try { localStorage.removeItem('brokerpal-investor-design'); } catch {} apply(); $('save-status').textContent = 'Preview reset.'; });
 
+  const cpaGrants = [];
+  const renderCpaGrants = () => {
+    const container = $('cpa-grants');
+    container.replaceChildren();
+    const title = document.createElement('b');
+    title.textContent = 'Temporary access invitations';
+    container.append(title);
+    if (!cpaGrants.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'No invitations in this preview.';
+      container.append(empty);
+      return;
+    }
+    cpaGrants.forEach((grant, index) => {
+      const row = document.createElement('div');
+      row.className = 'cpa-grant-row';
+      const details = document.createElement('span');
+      details.textContent = grant.name + ' · ' + grant.email + ' · ' + grant.duration + ' · ' + (grant.revoked ? 'Revoked' : 'Pending secure setup');
+      const revoke = document.createElement('button');
+      revoke.type = 'button';
+      revoke.textContent = grant.revoked ? 'Revoked' : 'Revoke preview';
+      revoke.disabled = grant.revoked;
+      revoke.addEventListener('click', () => {
+        grant.revoked = true;
+        renderCpaGrants();
+      });
+      row.append(details, revoke);
+      container.append(row);
+    });
+  };
   const cpaButton = $('cpa-invite');
   if (cpaButton) cpaButton.addEventListener('click', () => {
     const name = $('cpa-name').value.trim();
     const email = $('cpa-email').value.trim();
     const status = $('cpa-status');
     const preview = $('cpa-invite-preview');
+    const permissions = [
+      ['cpa-properties', 'Property summaries'],
+      ['cpa-financials', 'Income and expense summaries'],
+      ['cpa-bills', 'Bills, tax and insurance records'],
+      ['cpa-documents', 'Selected supporting documents']
+    ].filter(([id]) => $(id).checked).map(([, label]) => label);
     if (!name || !email || !email.includes('@') || !email.includes('.')) {
       status.textContent = 'Enter the CPA name and a valid email address to preview the invitation.';
       preview.hidden = true;
       return;
     }
+    if (!permissions.length) {
+      status.textContent = 'Select at least one information category.';
+      preview.hidden = true;
+      return;
+    }
+    const grant = { name, email, duration: $('cpa-duration').value, permissions, revoked: false };
+    cpaGrants.push(grant);
     preview.hidden = false;
     preview.replaceChildren();
     const heading = document.createElement('b');
-    heading.textContent = 'Invitation preview — not sent';
+    heading.textContent = 'Invitation prepared — demonstration only';
     const detail = document.createElement('p');
-    detail.textContent = 'To: ' + name + ' (' + email + '). Proposed access: property and income/expense summaries, ' + $('cpa-type').value.toLowerCase() + ', for ' + $('cpa-duration').value + '.';
+    detail.textContent = 'Proposed recipient: ' + name + ' (' + email + '). Access: ' + permissions.join(', ') + '. Duration: ' + grant.duration + '. Permission level: ' + $('cpa-type').value + '.';
     const warning = document.createElement('p');
-    warning.textContent = 'A real invitation will only be sent after secure account access, verified email, permission enforcement and audit logging are implemented.';
+    warning.textContent = 'This creates only an in-memory demonstration entry. No email, login, access link, token or data permission is issued.';
     preview.append(heading, detail, warning);
-    status.textContent = 'Preview prepared locally. No account or access link was created.';
+    status.textContent = 'Demonstration invitation added below. You can test the revoke control.';
+    renderCpaGrants();
   });
   const picker = $('document-picker'), zone = $('drop-zone'), list = $('file-preview');
   const showFiles = files => {
