@@ -44,3 +44,9 @@ A safe remediation needs its own isolated branch and staged changes:
 **Security work required; no dependency upgrades applied yet.** The current lockfile has a critical Astro advisory and multiple high-severity advisories. Do not treat the existing application as security-cleared for production or real customer data until the dependency remediation and broader security review are complete.
 
 No paid service, subscription, billing change, production deployment, or resource provisioning was performed by this review.
+
+## Isolated Astro 7 upgrade trial
+
+An isolated branch, `broker-pal-astro7-security-upgrade`, was created from the website feature branch. It tests Astro 7.4.12 with `@astrojs/cloudflare@14.4.8`, MDX 8, RSS 4, sitemap 3.7.5, and Wrangler 4.162.0. The Astro build completed successfully, and the preview configuration check confirmed no D1, KV, or R2 bindings were present. The Wrangler dry-run then failed while resolving the adapter's unified server entrypoint. A diagnostic step has been added to identify whether the installed adapter package exposes that entrypoint and to inspect its package files. This is a preview-only compatibility issue; no production files or deployments were changed.
+
+The feature branch's own isolated website preview completed successfully on both its stable preview URL and unique deployment URL, with HTTP 200 responses on all seven expected routes.
