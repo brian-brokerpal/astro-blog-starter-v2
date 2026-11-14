@@ -39,15 +39,18 @@ jobs:
         run: |
           set -euo pipefail
           npm run build
-          test -f dist/_worker.js/index.js
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const config = JSON.parse(fs.readFileSync('wrangler.preview.json', 'utf8'));
-          if (config.d1_databases?.length || config.kv_namespaces?.length) {
-            throw new Error('Upgrade preview must not bind production D1 or KV.');
+          if (config.main !== '@astrojs/cloudflare/entrypoints/server') {
+            throw new Error('Preview must use the Astro 6/7 Cloudflare server entrypoint.');
+          }
+          if (config.d1_databases?.length || config.kv_namespaces?.length || config.r2_buckets?.length) {
+            throw new Error('Upgrade preview must not bind production D1, KV, or R2.');
           }
           console.log('PASS: Astro 7 build succeeded and preview config remains isolated.');
           NODE
+          npx wrangler deploy --dry-run --config wrangler.preview.json
 
       - name: Report remaining dependency advisories
         shell: bash
