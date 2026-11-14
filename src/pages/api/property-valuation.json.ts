@@ -1,3 +1,5 @@
+import type { APIRoute } from "astro";
+
 export const prerender = false;
 
 const ALLOWED_TYPES = new Set([
@@ -10,7 +12,7 @@ const ALLOWED_TYPES = new Set([
   "Land"
 ]);
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -20,13 +22,21 @@ function json(data, status = 200) {
   });
 }
 
-async function sha256(value) {
+async function sha256(value: string): Promise<string> {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function GET({ request, locals }) {
+type RentCastValuation = {
+  price?: unknown;
+  priceRangeLow?: unknown;
+  priceRangeHigh?: unknown;
+  subjectProperty?: unknown;
+  comparables?: unknown;
+};
+
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const env = locals?.runtime?.env ?? {};
     const db = env.PROPERTY_USAGE_DB;
@@ -53,9 +63,9 @@ export async function GET({ request, locals }) {
     }
 
     const params = new URLSearchParams({ address, propertyType, compCount: "5" });
-    if (bedrooms !== null && /^\d{1,2}(\.\d)?$/.test(bedrooms)) params.set("bedrooms", bedrooms);
-    if (bathrooms !== null && /^\d{1,2}(\.\d)?$/.test(bathrooms)) params.set("bathrooms", bathrooms);
-    if (squareFootage !== null && /^\d{1,7}$/.test(squareFootage)) params.set("squareFootage", squareFootage);
+    if (bedrooms !== null && /^\\d{1,2}(\\.\\d)?$/.test(bedrooms)) params.set("bedrooms", bedrooms);
+    if (bathrooms !== null && /^\\d{1,2}(\\.\\d)?$/.test(bathrooms)) params.set("bathrooms", bathrooms);
+    if (squareFootage !== null && /^\\d{1,7}$/.test(squareFootage)) params.set("squareFootage", squareFootage);
 
     const cacheKey = await sha256(params.toString().toLowerCase());
     const cached = await db.prepare(
@@ -97,8 +107,8 @@ export async function GET({ request, locals }) {
       }, upstream.status === 404 ? 404 : 502);
     }
 
-    let valuation;
-    try { valuation = JSON.parse(body); }
+    let valuation: RentCastValuation;
+    try { valuation = JSON.parse(body) as RentCastValuation; }
     catch { return json({ error: "The valuation provider returned an unreadable response.", usageCounted: true }, 502); }
 
     if (typeof valuation.price !== "number" ||
@@ -130,4 +140,4 @@ export async function GET({ request, locals }) {
       detail: error instanceof Error ? error.message : "Unknown error"
     }, 500);
   }
-}
+};
