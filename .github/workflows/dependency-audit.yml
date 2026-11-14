@@ -29,7 +29,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Report dependency advisories without changing packages
+      - name: Report advisories and block critical or high findings
         shell: bash
         run: |
           set -euo pipefail
@@ -37,6 +37,9 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const report = JSON.parse(fs.readFileSync('/tmp/npm-audit.json', 'utf8'));
+          if (report.error) {
+            throw new Error('npm audit could not complete: ' + JSON.stringify(report.error));
+          }
           const meta = report.metadata?.vulnerabilities || {};
           console.log('Dependency advisory summary:', JSON.stringify(meta));
           for (const [name, item] of Object.entries(report.vulnerabilities || {})) {
@@ -45,7 +48,14 @@ jobs:
               severity: item.severity,
               direct: item.isDirect,
               range: item.range,
+              via: item.via,
+              effects: item.effects,
+              nodes: item.nodes,
               fixAvailable: item.fixAvailable
             }));
           }
+          if ((meta.critical || 0) > 0 || (meta.high || 0) > 0) {
+            throw new Error('Security gate blocked: critical/high dependency advisories remain.');
+          }
+          console.log('PASS: no critical or high dependency advisories remain.');
           NODE
