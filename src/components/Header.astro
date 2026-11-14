@@ -1,6 +1,7 @@
 ---
 const isPreview = import.meta.env.SITE_ENV === 'preview';
 ---
+<a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="site-header approved-header">
   <a class="brand" href="/" aria-label="broker pal home">
     <img src="/broker-pal-logo.svg" alt="broker pal — DSCR and Investment Loans" width="280" height="64" fetchpriority="high" />
@@ -20,6 +21,7 @@ const isPreview = import.meta.env.SITE_ENV === 'preview';
   </nav>
 </header>
 <style>
+.skip-link{position:absolute;left:16px;top:-60px;z-index:1000;padding:12px 16px;background:#18d0d0;color:#002447;font-weight:800;border-radius:0 0 8px 8px}.skip-link:focus{top:0}
 .site-header{width:100%;box-sizing:border-box;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
 .approved-header{max-width:none;padding:15px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b}
 .approved-header .brand{display:flex;align-items:center;flex:0 0 auto;text-decoration:none}
