@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+---
+<Layout title="Agent Page Preview | broker pal" description="A sample public-facing real estate profile preview built with Realtor Studio.">
+<main class="agent-page" id="agent-page-preview">
+  <div class="preview-banner"><b>PUBLIC PAGE PREVIEW</b><span>Example only · Not published · No inquiries are transmitted</span><a href="/realtor-studio">← Back to Realtor Studio</a></div>
+  <header class="agent-nav">
+    <a class="agent-brand" href="#top"><span class="agent-logo" id="agent-logo">O</span><span id="agent-company">OAK & STONE REALTY</span></a>
+    <nav><a href="#properties">Properties</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+    <a class="nav-contact" href="#contact">Let's talk</a>
+  </header>
+  <section class="hero" id="top">
+    <div class="hero-copy"><p class="eyebrow">REAL ESTATE, WITH A PERSONAL TOUCH</p><h1 id="agent-headline">A place to belong.</h1><p id="agent-tagline">Local guidance. Thoughtful service. Real estate with a personal touch.</p><a class="primary" href="#properties">Explore properties <span>↗</span></a></div>
+    <div class="hero-art"><div class="art-label">YOUR NEXT CHAPTER</div></div>
+  </section>
+  <section class="property-section" id="properties">
+    <div class="section-heading"><div><p class="eyebrow">A FEW PLACES TO START</p><h2>Featured properties</h2></div><span>Sample listing cards</span></div>
+    <div class="listing-grid">
+      <article class="listing"><div class="listing-photo photo-a"><span>FEATURED</span></div><div class="listing-copy"><small>ATLANTA · SAMPLE</small><h3>Bright, welcoming home</h3><p>3 beds · 2 baths · Example details</p><b>Contact for details</b></div></article>
+      <article class="listing"><div class="listing-photo photo-b"><span>NEW TO MARKET</span></div><div class="listing-copy"><small>ROSWELL · SAMPLE</small><h3>Space to make your own</h3><p>4 beds · 3 baths · Example details</p><b>Contact for details</b></div></article>
+      <article class="listing"><div class="listing-photo photo-c"><span>EXPLORE</span></div><div class="listing-copy"><small>WOODSTOCK · SAMPLE</small><h3>Comfort and convenience</h3><p>2 beds · 2 baths · Example details</p><b>Contact for details</b></div></article>
+    </div>
+    <p class="sample-note">All property cards and details above are illustrative examples, not active listings or MLS data.</p>
+  </section>
+  <section class="about" id="about"><div><p class="eyebrow">GET TO KNOW YOUR AGENT</p><h2>A little about us.</h2></div><p id="about-copy">Thoughtful guidance, local perspective, and a personal approach to every move. Add your story, experience, service areas, and the way you help clients here.</p></section>
+  <section class="contact-section" id="contact"><div><p class="eyebrow">START A CONVERSATION</p><h2>What can we help you find?</h2><p>In a connected release, inquiries can be routed into the agent's CRM with appropriate consent and privacy notices.</p></div><form id="demo-inquiry"><label>Your name<input name="name" required maxlength="80" placeholder="Name"/></label><label>Email address<input name="email" type="email" required maxlength="120" placeholder="you@example.com"/></label><label>What are you looking for?<select name="interest"><option>Buying a property</option><option>Selling a property</option><option>Real estate investment</option><option>General question</option></select></label><button type="submit">Preview inquiry</button><p class="form-note" id="form-note" role="status">Demo only. This form does not send or store your information.</p></form></section>
+  <footer><b id="footer-company">OAK & STONE REALTY</b><span>Agent profile preview powered by broker pal</span></footer>
+  <p class="disclaimer">This page is a local visual prototype. It is not published to a unique agent URL. Sample listings are fictional. The inquiry form is simulated and does not transmit, save, or add contacts to the Realtor CRM. No login or secure account storage is connected.</p>
+</main>
+<script>
+const root=document.querySelector('#agent-page-preview');
+if(root){
+  const get=id=>document.getElementById(id);
+  const safeColor=value=>/^#[0-9a-f]{6}$/i.test(value||'')?value:'#178d86';
+  const themes={
+    modern:{bg:'#f0f5f2',ink:'#1c3b45',headline:'A place to belong.'},
+    luxury:{bg:'#192c2b',ink:'#f5eee2',headline:'Find your forever.'},
+    warm:{bg:'#f1e9dd',ink:'#493e34',headline:'Your next chapter starts here.'},
+    bold:{bg:'#102b40',ink:'#f3f7f7',headline:'Make your next move.'}
+  };
+  try{
+    const saved=JSON.parse(localStorage.getItem('brokerpal-realtor-design-preview')||'null');
+    if(saved){
+      const vibe=themes[saved.selected]||themes.modern;
+      const accent=safeColor(saved.brandColor);
+      root.style.setProperty('--page-bg',vibe.bg);
+      root.style.setProperty('--page-ink',vibe.ink);
+      root.style.setProperty('--page-accent',accent);
+      root.style.setProperty('--page-button',accent);
+      get('agent-company').textContent=(saved.company||'Your Real Estate Company').toUpperCase();
+      get('footer-company').textContent=(saved.company||'Your Real Estate Company').toUpperCase();
+      get('agent-tagline').textContent=saved.tagline||'Local guidance and thoughtful service.';
+      get('agent-headline').textContent=themes[saved.selected]?.headline||themes.modern.headline;
+      get('about-copy').textContent=(saved.company||'Your team')+' brings local perspective, thoughtful guidance, and a personal approach to every move. Add your story, experience, and service areas when your account is connected.';
+      const safeLogo=typeof saved.logoData==='string'&&saved.logoData.length<=2800000&&/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(saved.logoData);
+      if(safeLogo){
+        const img=document.createElement('img');img.src=saved.logoData;img.alt='Company logo';get('agent-logo').replaceChildren(img);
+      }else get('agent-logo').textContent=(typeof saved.company==='string'?saved.company:'B').trim().charAt(0).toUpperCase()||'B';
+    }
+  }catch{}
+  get('demo-inquiry').addEventListener('submit',event=>{event.preventDefault();get('form-note').textContent='Preview received locally for demonstration only. Nothing was sent or saved.';});
+}
+</script>
+<style>
+.agent-page{--page-bg:#f0f5f2;--page-ink:#1c3b45;--page-accent:#178d86;--page-button:#178d86;background:#fff;color:#18384b;font-family:Arial,Helvetica,sans-serif;padding-bottom:20px}
+.agent-page *{box-sizing:border-box}.preview-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#fff5df;color:#684c17;padding:10px max(5vw,20px);font-size:10px}.preview-banner b{letter-spacing:1px}.preview-banner a{color:#684c17;font-weight:800;text-decoration:none}
+.agent-nav{max-width:1200px;margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}.agent-brand{display:flex;align-items:center;gap:10px;color:#17394a;text-decoration:none;font-size:13px;font-weight:900;letter-spacing:.6px}.agent-logo{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--page-accent);color:white;overflow:hidden}.agent-logo img{width:100%;height:100%;object-fit:contain}.agent-nav nav{display:flex;gap:24px}.agent-nav nav a{color:#456071;text-decoration:none;font-size:12px;font-weight:700}.nav-contact,.primary{background:var(--page-button);color:white!important;text-decoration:none;padding:11px 17px;border-radius:5px;font-size:12px;font-weight:800}
+.hero{background:var(--page-bg);color:var(--page-ink);min-height:390px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;padding:50px max(7vw,24px);gap:36px}.hero-copy{max-width:560px}.eyebrow{font-size:10px;letter-spacing:1.8px;font-weight:900;color:var(--page-accent);margin:0 0 14px}.hero h1{font-family:Georgia,serif;font-size:clamp(42px,6vw,68px);line-height:1.02;letter-spacing:-2px;margin:0 0 18px;color:var(--page-ink)}.hero-copy>p:not(.eyebrow){max-width:440px;color:var(--page-ink);opacity:.78;font-size:14px;line-height:1.8;margin:0 0 25px}.primary{display:inline-block}.primary span{margin-left:8px}.hero-art{height:290px;max-width:510px;width:100%;justify-self:end;position:relative;background:linear-gradient(145deg,#a6c2b4,#d7c6a6 48%,#637e79);border-radius:3px;overflow:hidden}.hero-art:before{content:"";position:absolute;inset:14% 12% 0;background:linear-gradient(135deg,#e6e0d2,#a6b7a6 48%,#5b7976);clip-path:polygon(0 24%,50% 0,100% 24%,100% 100%,0 100%)}.hero-art:after{content:"";position:absolute;left:45%;bottom:0;width:22%;height:48%;background:#e8e2d4;box-shadow:90px 0 0 -12px #d8d0c0}.art-label{position:absolute;z-index:2;bottom:15px;left:18px;color:#fff;font-size:9px;letter-spacing:2px;font-weight:900}
+.property-section{max-width:1200px;margin:auto;padding:55px 24px}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:22px}.section-heading h2,.about h2,.contact-section h2{font-family:Georgia,serif;font-size:34px;color:#18384b;margin:0}.section-heading>span{font-size:10px;color:#82939c}.listing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.listing{border:1px solid #e0e8e9;background:#fff}.listing-photo{height:155px;position:relative;background:linear-gradient(135deg,#c5d4cd,#849b8c)}.listing-photo:after{content:"";position:absolute;inset:28% 12% 0;background:#f0eee7;clip-path:polygon(0 25%,50% 0,100% 25%,100% 100%,0 100%)}.photo-b{background:linear-gradient(135deg,#d4c8b7,#82918a)}.photo-c{background:linear-gradient(135deg,#c8d1d7,#839a9b)}.listing-photo span{position:absolute;z-index:2;top:12px;left:12px;background:#fff;padding:6px 8px;font-size:8px;letter-spacing:1px;font-weight:900;color:#345166}.listing-copy{padding:17px}.listing-copy small{font-size:9px;letter-spacing:1px;color:var(--page-accent);font-weight:900}.listing-copy h3{font-size:17px;margin:8px 0;color:#18384b}.listing-copy p{font-size:11px;color:#70818c}.listing-copy b{font-size:11px;color:var(--page-accent)}.sample-note{font-size:10px;color:#82939c;margin-top:15px}
+.about{background:#f5f8f7;padding:45px max(7vw,24px);display:grid;grid-template-columns:.7fr 1.3fr;gap:35px;align-items:center}.about>p{font-size:14px;line-height:1.9;color:#536b79;margin:0}
+.contact-section{max-width:1100px;margin:auto;padding:55px 24px;display:grid;grid-template-columns:1fr 1fr;gap:45px;align-items:start}.contact-section>div>p:not(.eyebrow){font-size:13px;line-height:1.8;color:#657c88;max-width:440px}.contact-section form{display:grid;gap:12px;background:#f7f9f8;padding:22px;border:1px solid #e0e8e9}.contact-section label{font-size:10px;font-weight:800;color:#365264;display:grid;gap:6px}.contact-section input,.contact-section select{width:100%;padding:11px;border:1px solid #d6e1e4;background:#fff;border-radius:4px;font:inherit;font-size:12px}.contact-section form button{border:0;border-radius:4px;background:var(--page-button);color:#fff;padding:12px;font-weight:800;cursor:pointer}.form-note{font-size:10px;color:#718590;line-height:1.5;margin:0}
+.agent-page footer{border-top:1px solid #e2e9e9;padding:22px max(5vw,24px);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;color:#718590}.agent-page footer b{color:#23475b}.disclaimer{max-width:1100px;margin:10px auto;padding:0 24px;color:#84939b;font-size:10px;line-height:1.7}
+@media(max-width:700px){.agent-nav{padding:15px 18px;flex-wrap:wrap}.agent-nav nav{order:3;width:100%;justify-content:space-between;gap:10px}.agent-nav nav a{font-size:11px}.hero{grid-template-columns:1fr;padding:38px 22px;gap:24px}.hero-art{height:200px;justify-self:stretch}.listing-grid{grid-template-columns:1fr}.listing-photo{height:190px}.about,.contact-section{grid-template-columns:1fr;gap:18px}.section-heading{align-items:start;flex-direction:column}.preview-banner{align-items:flex-start;flex-direction:column}}
+</style>
+</Layout>

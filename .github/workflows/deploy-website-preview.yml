@@ -1,0 +1,96 @@
+name: Broker Pal isolated website preview
+
+on:
+  push:
+    branches:
+      - broker-pal-minimal-refresh-clean
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: broker-pal-minimal-refresh-clean-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check inline Astro script syntax
+        run: node scripts/check-inline-scripts.mjs
+
+      - name: Build for isolated preview
+        env:
+          BROKER_PAL_PREVIEW: '1'
+        run: |
+          set -euo pipefail
+          npm run build
+          test -f dist/_worker.js/index.js
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const c = JSON.parse(fs.readFileSync('wrangler.preview.json', 'utf8'));
+          if (c.d1_databases?.length || c.kv_namespaces?.length) throw new Error('Preview must not bind production D1 or KV.');
+          if (c.name !== 'astro-blog-starter-v2') throw new Error('Unexpected preview worker name.');
+          console.log('PASS: isolated preview config has no production D1/KV bindings.');
+          NODE
+
+      - name: Publish isolated Cloudflare preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx wrangler preview --config wrangler.preview.json 2>&1 | tee /tmp/wrangler-preview.log
+          PREVIEW_URL="$(sed -n 's/^Preview URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
+          UNIQUE_URL="$(sed -n 's/^Unique Deployment URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
+          if [ -z "$PREVIEW_URL" ] || [ -z "$UNIQUE_URL" ]; then
+            echo "Wrangler did not return both preview URLs."
+            exit 1
+          fi
+          echo "PREVIEW_URL=$PREVIEW_URL" >> "$GITHUB_ENV"
+          echo "UNIQUE_URL=$UNIQUE_URL" >> "$GITHUB_ENV"
+          echo "Preview URL: $PREVIEW_URL"
+          echo "Unique Deployment URL: $UNIQUE_URL"
+
+      - name: Verify preview routes and page content
+        run: |
+          set -euo pipefail
+          for URL in "$PREVIEW_URL" "$UNIQUE_URL"; do
+            for ROUTE in "/" "/resources" "/investor-zone" "/realtor-studio" "/realtor-crm" "/marketing-studio" "/agent-page-preview"; do
+              case "$ROUTE" in
+                "/") EXPECTED="broker pal" ;;
+                "/resources") EXPECTED="Investor Resources" ;;
+                "/investor-zone") EXPECTED="Investor Property Hub" ;;
+                "/realtor-studio") EXPECTED="Realtor Studio" ;;
+                "/realtor-crm") EXPECTED="Realtor CRM" ;;
+                "/marketing-studio") EXPECTED="Marketing Studio" ;;
+                "/agent-page-preview") EXPECTED="Agent Page Preview" ;;
+              esac
+              STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-preview.html --write-out '%{http_code}' "$URL$ROUTE")"
+              BYTES="$(wc -c < /tmp/broker-pal-preview.html)"
+              echo "$URL$ROUTE -> HTTP $STATUS, $BYTES bytes"
+              if [ "$STATUS" != "200" ] || [ "$BYTES" -lt 500 ] || ! grep -Fqi "$EXPECTED" /tmp/broker-pal-preview.html; then
+                echo "Preview route failed content verification: $URL$ROUTE"
+                head -c 1500 /tmp/broker-pal-preview.html || true
+                exit 1
+              fi
+            done
+          done
+          echo "PASS: both isolated preview URLs serve all expected Broker Pal pages."

@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+---
+<Layout title="Realtor CRM | broker pal" description="A simple lead and relationship workspace concept for real estate professionals.">
+<main class="crm" id="realtor-crm">
+<section class="hero"><div><p class="eyebrow">BROKER PAL · REALTOR STUDIO</p><h1>Every relationship.<br/><em>One clear view.</em></h1><p>Keep new inquiries, follow-ups and active opportunities moving without a complicated CRM.</p></div><aside><small>YOUR BUSINESS WORKSPACE</small><b>Simple by design.</b><span>Contacts · Pipeline · Next steps</span></aside></section>
+<div class="wrap"><div class="notice"><b>Interactive CRM concept</b><span>Fictional sample contacts only. Changes stay in this browser. Do not enter real client or confidential information.</span></div>
+<div class="toolbar"><div><p class="eyebrow dark">YOUR CONTACTS</p><h2>Lead center</h2><p>Know who needs a response and what happens next.</p></div><button id="new-lead" class="primary">＋ Add a contact</button></div>
+<div class="stats"><article><small>ALL CONTACTS</small><b id="count-all">6</b><span>In your sample CRM</span></article><article><small>NEW INQUIRIES</small><b id="count-new">2</b><span>Ready for first contact</span></article><article><small>ACTIVE CLIENTS</small><b id="count-active">2</b><span>In conversation</span></article><article><small>UNDER CONTRACT</small><b id="count-contract">1</b><span>Moving toward closing</span></article></div>
+<section class="pipeline-section"><div class="section-title"><div><h2>Lead pipeline</h2><p>Move a contact forward as the relationship develops.</p></div><label class="search">Search contacts<input id="search" placeholder="Name, email or interest"/></label></div>
+<div class="pipeline" id="pipeline">
+<div class="stage"><div class="stage-head"><b>New inquiry</b><span id="stage-new">2</span></div><div id="cards-new" class="cards"></div></div>
+<div class="stage"><div class="stage-head"><b>Contacted</b><span id="stage-contacted">1</span></div><div id="cards-contacted" class="cards"></div></div>
+<div class="stage"><div class="stage-head"><b>Active client</b><span id="stage-active">2</span></div><div id="cards-active" class="cards"></div></div>
+<div class="stage"><div class="stage-head"><b>Under contract</b><span id="stage-contract">1</span></div><div id="cards-contract" class="cards"></div></div>
+</div></section>
+<section class="followup"><div><p class="eyebrow dark">DON'T LET THE NEXT STEP SLIP</p><h2>Follow-up desk</h2><p>A lightweight view of the next action attached to each contact.</p></div><div id="followup-list"></div></section>
+</div>
+<dialog id="lead-dialog"><form id="lead-form"><div class="dialog-head"><div><p class="eyebrow dark">NEW RELATIONSHIP</p><h2>Add a contact</h2></div><button type="button" id="close-dialog" class="close">×</button></div>
+<label>Full name<input id="lead-name" required maxlength="80" placeholder="Jordan Taylor"/></label><label>Email address<input id="lead-email" type="email" maxlength="120" placeholder="jordan@example.com"/></label><label>What are they looking for?<input id="lead-interest" maxlength="120" placeholder="Buying, selling, investment property…"/></label><label>Lead source<select id="lead-source"><option>Public agent page</option><option>Property listing</option><option>Referral</option><option>Social media</option><option>Open house</option><option>Manual entry</option></select></label><label>Next step<input id="lead-next" maxlength="120" placeholder="Call to introduce myself"/></label><button class="primary" type="submit">Add to my sample CRM</button><p class="dialog-note">Demo only. This form does not transmit or securely store information.</p></form></dialog>
+<p class="disclaimer">Prototype only. No login, shared database, email/text automation, public lead submission, or secure client record storage is connected. Production CRM requires authenticated accounts, server-side access controls, tenant isolation, audit history, retention rules and secure infrastructure.</p>
+</main></Layout>
+<style>
+.crm{--ink:#17394e;--muted:#708591;--line:#dce6e9;background:#f5f8f8;color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding-bottom:55px}.crm *{box-sizing:border-box}.hero{background:#062943;color:#fff;padding:48px max(5vw,22px);display:flex;justify-content:space-between;align-items:center;gap:25px}.eyebrow{font-size:9px;letter-spacing:1.8px;font-weight:900;color:#5bd1c7;margin:0 0 12px}.eyebrow.dark{color:#168c86}.hero h1{font-size:clamp(39px,5vw,61px);line-height:1;letter-spacing:-2px;margin:0 0 14px}.hero h1 em{font-style:normal;color:#60d2c9}.hero p:not(.eyebrow){max-width:580px;color:#c3d5df;font-size:13px;line-height:1.7;margin:0}.hero aside{border:1px solid #3c6377;border-radius:11px;padding:20px 23px;background:#0d3852;min-width:205px}.hero aside small,.hero aside b,.hero aside span{display:block}.hero aside small{font-size:8px;letter-spacing:1.4px;color:#75d7ce}.hero aside b{font-size:18px;margin:9px 0}.hero aside span{font-size:10px;color:#b7cbd5}.wrap{max-width:1250px;margin:25px auto;padding:0 20px}.notice{display:flex;gap:12px;align-items:center;padding:12px 15px;background:#fff8e9;border:1px solid #eedcb6;border-radius:8px;color:#745b2d;font-size:10px;line-height:1.5}.notice b{white-space:nowrap}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin:28px 0 17px}.toolbar h2,.section-title h2,.followup h2{font-size:23px;letter-spacing:-.6px;margin:0 0 5px}.toolbar p:not(.eyebrow),.section-title p,.followup p{font-size:11px;color:var(--muted);margin:0}.primary{border:0;border-radius:7px;background:#07344d;color:#fff;padding:12px 16px;font-size:11px;font-weight:850;cursor:pointer}.primary:hover{background:#10506a}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.stats article{background:#fff;border:1px solid var(--line);border-radius:9px;padding:15px}.stats small,.stats b,.stats span{display:block}.stats small{font-size:8px;letter-spacing:1px;font-weight:850;color:#7c909a}.stats b{font-size:29px;letter-spacing:-1px;margin:8px 0 3px;color:#15394d}.stats span{font-size:9px;color:#81939c}.pipeline-section{margin-top:28px}.section-title{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;margin-bottom:13px}.search{display:block;font-size:8px;color:#708591}.search input{display:block;margin-top:5px;border:1px solid #d5e1e4;border-radius:6px;padding:9px 11px;font-size:10px;width:220px;background:#fff}.pipeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start}.stage{background:#eaf0f1;border:1px solid #dce5e7;border-radius:9px;padding:10px;min-height:260px}.stage-head{display:flex;justify-content:space-between;align-items:center;padding:3px 2px 11px;font-size:10px}.stage-head span{background:#d7e4e5;border-radius:20px;min-width:22px;text-align:center;padding:4px 6px;color:#476574;font-size:9px}.cards{display:grid;gap:8px}.lead-card{background:#fff;border:1px solid #e0e8ea;border-radius:8px;padding:11px;box-shadow:0 3px 10px #17394e08}.lead-top{display:flex;align-items:center;gap:8px}.avatar{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#e0f3ef;color:#167e78;font-weight:900;font-size:10px;flex:0 0 29px}.lead-top b,.lead-top small{display:block}.lead-top b{font-size:10px}.lead-top small{font-size:8px;color:#82939b;margin-top:3px}.lead-interest{font-size:9px;color:#4f6876;line-height:1.5;margin:10px 0 8px}.lead-meta{font-size:8px;color:#8999a1;display:flex;justify-content:space-between;gap:5px}.lead-card select{width:100%;margin-top:9px;border:1px solid #dce6e9;border-radius:5px;background:#fbfdfd;padding:7px;font-size:9px;color:#355365}.next-action{font-size:8px;color:#168780;margin-top:8px}.empty{font-size:9px;color:#81939c;padding:15px 5px;text-align:center}.followup{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:28px}.follow-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #edf1f2;padding:7px 0;font-size:9px}.follow-row b{font-size:10px}.follow-row span{color:#718691}.disclaimer{max-width:1210px;padding:0 20px;margin:18px auto 0;color:#82939c;font-size:9px;line-height:1.6}dialog{border:0;border-radius:12px;padding:0;width:min(440px,calc(100% - 28px));box-shadow:0 22px 70px #082d4540}dialog::backdrop{background:#092c3db0}dialog form{padding:23px;display:grid;gap:12px}.dialog-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}.dialog-head h2{margin:0;font-size:23px}.close{border:0;background:#eef3f4;border-radius:50%;width:30px;height:30px;font-size:20px;cursor:pointer;color:#345366}dialog label{display:grid;gap:6px;font-size:10px;font-weight:800;color:#345166}dialog input,dialog select{border:1px solid #d5e1e4;border-radius:6px;padding:10px;font:inherit;font-size:11px;color:#17394e}.dialog-note{font-size:9px;color:#84949d;margin:0;line-height:1.5}
+@media(max-width:900px){.pipeline{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.hero{display:block;padding:37px 19px}.hero aside{display:inline-block;margin-top:20px}.wrap{padding:0 12px}.toolbar{align-items:flex-start}.toolbar .primary{white-space:nowrap;padding:11px}.section-title{display:block}.search{margin-top:12px}.search input{width:100%}.pipeline{grid-template-columns:1fr}.stage{min-height:120px}.followup{grid-template-columns:1fr;padding:16px}.stats article{padding:12px}.stats b{font-size:25px}}
+
+/* Visible keyboard focus for links, buttons, and form controls. */
+:global(a:focus-visible),
+:global(button:focus-visible),
+:global(input:focus-visible),
+:global(select:focus-visible),
+:global(textarea:focus-visible) {
+  outline: 3px solid #18d0d0;
+  outline-offset: 3px;
+}
+</style>
+<script>
+const root=document.getElementById('realtor-crm');
+if(root){
+const $=id=>document.getElementById(id);
+let contacts=[
+{id:1,name:'Jordan Taylor',email:'jordan@example.test',interest:'Looking for a first home · North side',source:'Public agent page',stage:'New',next:'Respond to new inquiry'},
+{id:2,name:'Morgan Ellis',email:'morgan@example.test',interest:'Considering a move this spring',source:'Referral',stage:'New',next:'Send an introduction'},
+{id:3,name:'Casey Brooks',email:'casey@example.test',interest:'Selling a two-bedroom home',source:'Social media',stage:'Contacted',next:'Confirm preferred appointment time'},
+{id:4,name:'Avery Parker',email:'avery@example.test',interest:'Searching for a rental investment',source:'Property listing',stage:'Active',next:'Share suitable listings'},
+{id:5,name:'Riley Morgan',email:'riley@example.test',interest:'Relocating · wants neighborhood guidance',source:'Open house',stage:'Active',next:'Schedule a follow-up call'},
+{id:6,name:'Taylor Reed',email:'taylor@example.test',interest:'Offer accepted · purchase transaction',source:'Referral',stage:'Under Contract',next:'Check upcoming contract milestone'}];
+const stages=['New','Contacted','Active','Under Contract'];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=n=>n.split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+function render(){
+const q=$('search').value.toLowerCase().trim();
+const visible=contacts.filter(c=>(c.name+' '+c.email+' '+c.interest+' '+c.source).toLowerCase().includes(q));
+stages.forEach((stage,i)=>{
+const key=['new','contacted','active','contract'][i],list=visible.filter(c=>c.stage===stage);
+$('stage-'+key).textContent=list.length;
+$('cards-'+key).innerHTML=list.length?list.map(c=>'<article class="lead-card"><div class="lead-top"><span class="avatar">'+esc(initials(c.name))+'</span><div><b>'+esc(c.name)+'</b><small>'+esc(c.email||'No email added')+'</small></div></div><div class="lead-interest">'+esc(c.interest||'No interest added')+'</div><div class="lead-meta"><span>'+esc(c.source)+'</span><span>Sample</span></div><select aria-label="Update stage for '+esc(c.name)+'" data-stage-id="'+c.id+'">'+stages.map(s=>'<option '+(s===c.stage?'selected':'')+'>'+s+'</option>').join('')+'</select><div class="next-action">NEXT · '+esc(c.next||'Add a follow-up')+'</div></article>').join(''):'<div class="empty">No contacts in this stage.</div>';
+});
+$('count-all').textContent=contacts.length;$('count-new').textContent=contacts.filter(c=>c.stage==='New').length;$('count-active').textContent=contacts.filter(c=>c.stage==='Active').length;$('count-contract').textContent=contacts.filter(c=>c.stage==='Under Contract').length;
+$('followup-list').innerHTML=contacts.filter(c=>c.next).slice(0,5).map(c=>'<div class="follow-row"><b>'+esc(c.name)+'</b><span>'+esc(c.next)+'</span></div>').join('')||'<div class="empty">No follow-ups yet.</div>';
+}
+$('search').addEventListener('input',render);
+$('pipeline').addEventListener('change',e=>{const id=Number(e.target.dataset.stageId);if(!id)return;const c=contacts.find(x=>x.id===id);if(c){c.stage=e.target.value;render();}});
+$('new-lead').addEventListener('click',()=>$('lead-dialog').showModal());
+$('close-dialog').addEventListener('click',()=>$('lead-dialog').close());
+$('lead-form').addEventListener('submit',e=>{e.preventDefault();const name=$('lead-name').value.trim();if(!name)return;contacts.unshift({id:Math.max(0,...contacts.map(c=>c.id))+1,name,email:$('lead-email').value.trim(),interest:$('lead-interest').value.trim(),source:$('lead-source').value,stage:'New',next:$('lead-next').value.trim()||'Choose a follow-up'});$('lead-form').reset();$('lead-dialog').close();$('search').value='';render();});
+render();
+}
+</script>

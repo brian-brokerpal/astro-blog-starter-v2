@@ -1,35 +1,39 @@
 ---
-import HeaderLink from './HeaderLink.astro';
+const isPreview = import.meta.env.SITE_ENV === 'preview';
 ---
+<a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="site-header approved-header">
-  <a class="brand" href="/" aria-label="broker pal home"><span class="brand-word"><span class="broker">broker</span> <span class="pal">pal</span></span></a>
+  <a class="brand" href="/" aria-label="broker pal home">
+    <img src="/broker-pal-logo.svg" alt="broker pal — DSCR and Investment Loans" width="280" height="64" fetchpriority="high" />
+  </a>
   <nav aria-label="Main navigation">
-    <a class="active" href="/">Home</a>
-    <a href="/#loan-programs">Loan Programs⌄</a>
-    <a href="/tools">Tools⌄</a>
-    <a href="/how-it-works">Resources⌄</a>
+    <a href="/" aria-label="Home">Home</a>
+    <a href="/#loan-programs">Loan Programs</a>
+    <a href="/tools">Tools</a>
+    <a href="/resources">Resources</a>
+    <a href="/investor-zone">Investor Zone</a>
+    <a href="/realtor-studio">Realtor Studio</a>
+    <a href="/marketing-studio">Marketing Studio</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
-    <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>
-    <a class="nav-cta" href="/apply">Apply Now <span>→</span></a>
+    {!isPreview && <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>}
+    <a class="nav-cta" href="/apply">Apply Now <span aria-hidden="true">→</span></a>
   </nav>
 </header>
 <style>
-.site-header{max-width:1240px;margin:auto;padding:20px 34px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:#071827}
-.brand{display:flex;flex-direction:column;align-items:flex-start;gap:0;text-decoration:none;line-height:1}
-.brand-word{font-size:clamp(29px,3vw,39px);font-weight:850;letter-spacing:-2px;white-space:nowrap}
-.broker{color:#f4f8fa}.pal{color:#62d2c6}
-.brand-tagline{font-size:12px;font-weight:750;letter-spacing:.5px;color:#83dcd3;margin:6px 0 0 3px}
-.site-header nav{display:flex;align-items:center;gap:clamp(12px,1.8vw,24px)}
-.site-header nav a{color:#d3e0e6;text-decoration:none;font-size:13px;font-weight:700;white-space:nowrap}
-.site-header nav a:hover,.site-header nav a.active{color:#65d4c8}
-.site-header nav .staff-nav-link{color:#65d4c8;font-size:12px;font-weight:800;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
-.site-header nav .nav-cta{background:#55cbbf;color:#071d2c;padding:12px 18px;border-radius:4px}
-.site-header nav .nav-cta:hover{background:#79e0d5;color:#071d2c}
-.nav-cta span{margin-left:7px}
-@media(max-width:900px){.site-header{padding:18px 24px;align-items:flex-start;flex-direction:column}.site-header nav{width:100%;gap:13px;flex-wrap:wrap}.site-header nav a{font-size:12px}.site-header nav .nav-cta{padding:9px 13px}.site-header nav .staff-nav-link{font-size:11px}.brand-word{font-size:34px}}
-@media(max-width:460px){.site-header{padding:16px 18px}.site-header nav{gap:10px 13px}}
-</style>
-<style>
-.approved-header{max-width:none;width:100%;box-sizing:border-box;padding:18px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b;display:flex;align-items:center;justify-content:space-between;gap:28px}.approved-header .brand-word{font-size:clamp(32px,3.4vw,46px);letter-spacing:-2px;font-weight:850}.approved-header .brand{gap:0}.approved-header .brand-tagline{display:none}.approved-header .broker{color:#f8fbff}.approved-header .pal{color:#18d0d0}.approved-header nav{display:flex;align-items:center;gap:clamp(15px,2.1vw,32px)}.approved-header nav a{font-size:15px;font-weight:700;color:#f5f8fb;text-decoration:none}.approved-header nav a:hover,.approved-header nav a.active{color:#18d0d0}.approved-header nav a.active{border-bottom:3px solid #18d0d0;padding:8px 14px}.approved-header nav .staff-nav-link{font-size:11px;color:#8fdedc}.approved-header nav .nav-cta{border-radius:26px;background:#18d0d0;color:#002447;padding:12px 23px;font-size:15px}.approved-header nav .nav-cta:hover{background:#64e5e0;color:#002447}@media(max-width:900px){.approved-header{padding:16px 22px;flex-direction:column;align-items:flex-start}.approved-header nav{flex-wrap:wrap;gap:12px 18px}.approved-header nav a{font-size:13px}}@media(max-width:480px){.approved-header{padding:14px 18px}.approved-header .brand-word{font-size:34px}.approved-header nav{gap:10px 14px}}
+.skip-link{position:absolute;left:16px;top:-60px;z-index:1000;padding:12px 16px;background:#18d0d0;color:#002447;font-weight:800;border-radius:0 0 8px 8px}.skip-link:focus{top:0}
+.site-header{width:100%;box-sizing:border-box;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.approved-header{max-width:none;padding:15px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b}
+.approved-header .brand{display:flex;align-items:center;flex:0 0 auto;text-decoration:none}
+.approved-header .brand::before,.approved-header .brand::after{content:none!important;display:none!important}
+.approved-header .brand img{object-fit:contain}
+.approved-header .brand img{display:block;width:clamp(220px,23vw,280px);height:auto;max-width:100%}
+.approved-header nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(12px,1.55vw,23px);flex-wrap:wrap}
+.approved-header nav a{font-size:14px;font-weight:700;color:#f5f8fb;text-decoration:none;white-space:nowrap}
+.approved-header nav a:hover,.approved-header nav a:focus-visible{color:#18d0d0}
+.approved-header nav .staff-nav-link{font-size:11px;color:#a9dfe0;text-decoration:underline;text-underline-offset:4px}
+.approved-header nav .nav-cta{border-radius:26px;background:#18d0d0;color:#002447;padding:11px 21px;font-size:14px}
+.approved-header nav .nav-cta:hover,.approved-header nav .nav-cta:focus-visible{background:#64e5e0;color:#002447}
+@media(max-width:1050px){.approved-header{align-items:flex-start;flex-direction:column;gap:12px}.approved-header nav{justify-content:flex-start;gap:10px 18px}}
+@media(max-width:560px){.approved-header{padding:13px 17px}.approved-header .brand img{width:230px}.approved-header nav{gap:9px 14px}.approved-header nav a{font-size:12px}.approved-header nav .staff-nav-link{font-size:10px}.approved-header nav .nav-cta{padding:9px 15px;font-size:12px}}
 </style>
