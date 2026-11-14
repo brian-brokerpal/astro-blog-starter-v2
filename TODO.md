@@ -21,11 +21,13 @@ When collecting Cloudflare figures, copy dashboard totals only. Do not send scre
 - [x] Add detailed investor/CPA implementation blueprint and link it from the capacity assessment.
 - [x] Keep draft PR #11 isolated; no merge or production deployment.
 - [ ] Review all preview pages on mobile for layout, accessibility, navigation, and wording.
+- [x] Harden demo contact rendering against HTML injection in the CRM sample cards.
+- [x] Replace user-logo HTML string insertion with DOM image elements and validate saved Realtor Studio logo data before preview.
 - [ ] Replace illustrative/sample content with approved broker pal materials only when supplied.
 - [ ] Review the lowercase text-only broker pal wordmark and confirm the latest approved logo assets appear consistently.
 - [ ] Test Realtor Studio brand choices and verify the agent page preview reflects saved branding.
 - [ ] Test Marketing Studio flyer/social layouts, print-to-PDF, copy-text, and local logo/color handling.
-- [ ] Confirm all CRM and inquiry examples clearly state that they are local-only demonstrations and do not transmit/store leads.
+- [x] Confirm CRM and inquiry examples clearly state that they are local-only demonstrations and do not transmit/store leads.
 - [ ] Keep custom-domain/white-label routing as a future design item; do not provision hostnames or alter DNS until pricing, ownership verification, and the pilot model are approved.
 
 ## Investor / CPA — implementation gates
