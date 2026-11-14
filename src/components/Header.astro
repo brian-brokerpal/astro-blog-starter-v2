@@ -1,5 +1,6 @@
 ---
-const isPreview = Astro.locals.runtime?.env?.SITE_ENV === 'preview';
+import { env } from 'cloudflare:workers';
+const isPreview = env.SITE_ENV === 'preview';
 ---
 <header class="site-header approved-header">
   <a class="brand" href="/" aria-label="Broker Pal home">
