@@ -153,7 +153,7 @@ if (root) {
     if (saved) settings = { ...defaults, ...JSON.parse(saved) };
   } catch {}
   apply();
-  $('company-name').addEventListener('input', e => { settings.company = e.target.value.slice(0,48); $('brand-name').textContent = settings.company || 'My Investment Co.'; $('brand-avatar').textContent = (settings.company || 'BP').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase(); });
+  $('company-name').addEventListener('input', e => { settings.company = e.target.value.slice(0,48); $('brand-name').textContent = settings.company || 'My Investment Co.'; renderBrandAvatar(); });
   $('display-name').addEventListener('input', e => { settings.display = e.target.value.slice(0,40); $('welcome-title').textContent = settings.display ? 'Welcome, ' + settings.display : 'Welcome to your property hub'; });
   document.querySelectorAll('[data-theme]').forEach(b => b.addEventListener('click', () => { settings.theme = b.dataset.theme === 'system' ? 'dark' : b.dataset.theme; apply(); }));
   document.querySelectorAll('[data-accent]').forEach(b => b.addEventListener('click', () => { settings.accent = b.dataset.accent; apply(); }));
