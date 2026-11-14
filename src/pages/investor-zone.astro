@@ -150,7 +150,17 @@ if (root) {
   };
   try {
     const saved = localStorage.getItem('brokerpal-investor-design');
-    if (saved) settings = { ...defaults, ...JSON.parse(saved) };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      settings = {
+        company: typeof parsed.company === 'string' ? parsed.company.slice(0,48) : defaults.company,
+        display: typeof parsed.display === 'string' ? parsed.display.slice(0,40) : defaults.display,
+        theme: ['dark','light'].includes(parsed.theme) ? parsed.theme : defaults.theme,
+        accent: ['#22c7c5','#4a9de0','#48b47b','#9b83e8','#d49b4b'].includes(parsed.accent) ? parsed.accent : defaults.accent,
+        density: ['comfortable','compact'].includes(parsed.density) ? parsed.density : defaults.density,
+        start: ['overview','properties','documents','cpa-access','bills','expenses','services','customize'].includes(parsed.start) ? parsed.start : defaults.start
+      };
+    }
   } catch {}
   apply();
   $('company-name').addEventListener('input', e => { settings.company = e.target.value.slice(0,48); $('brand-name').textContent = settings.company || 'My Investment Co.'; renderBrandAvatar(); });
