@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - broker-pal-minimal-refresh-clean
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
