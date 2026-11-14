@@ -33,6 +33,9 @@ jobs:
           npm install --save-exact astro@latest @astrojs/cloudflare@latest @astrojs/mdx@latest @astrojs/rss@latest @astrojs/sitemap@latest
           npm install --save-dev --save-exact wrangler@latest typescript@latest
 
+      - name: Apply non-breaking security patches
+        run: npm audit fix
+
       - name: Audit dependency tree
         run: |
           npm audit --json > npm-audit-report.json || true
@@ -71,13 +74,5 @@ jobs:
         if: always()
         run: |
           if [ -f npm-audit-report.json ]; then
-            node --input-type=module <<'NODE' >> "$GITHUB_STEP_SUMMARY"
-            import fs from 'node:fs';
-            const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
-            const v = report.metadata?.vulnerabilities ?? {};
-            console.log('## Dependency audit after remediation attempt');
-            console.log('| Severity | Count |');
-            console.log('|---|---:|');
-            for (const k of ['critical','high','moderate','low','info']) console.log(`| ${k} | ${v[k] ?? 0} |`);
-            NODE
+            node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("npm-audit-report.json","utf8")).metadata?.vulnerabilities ?? {}; let s="## Dependency audit after remediation\\n\\n| Severity | Count |\\n|---|---:|\\n"; for (const k of ["critical","high","moderate","low","info"]) s += "| "+k+" | "+(v[k] ?? 0)+" |\\n"; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,s);'
           fi
