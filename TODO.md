@@ -20,6 +20,7 @@ When collecting Cloudflare figures, copy dashboard totals only. Do not send scre
 - [x] Add investor capacity assessment and CPA access security design.
 - [x] Add detailed investor/CPA implementation blueprint and link it from the capacity assessment.
 - [x] Keep draft PR #11 isolated; no merge or production deployment.
+- [x] Verify all seven website preview routes on both isolated preview URLs (HTTP 200).
 - [ ] Review all preview pages on mobile for layout, accessibility, navigation, and wording.
 - [x] Add an automated syntax check for inline Astro scripts and confirm it passes.
 - [x] Harden demo contact rendering against HTML injection in the CRM sample cards.
