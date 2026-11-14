@@ -1,9 +1,7 @@
 name: Deploy Broker Pal website preview
 
 on:
-  push:
-    branches:
-      - website-polish-broker-pal-brand
+  workflow_dispatch:
 
 permissions:
   contents: read
