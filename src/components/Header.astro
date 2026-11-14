@@ -2,14 +2,14 @@
 const isPreview = import.meta.env.SITE_ENV === 'preview';
 ---
 <header class="site-header approved-header">
-  <a class="brand" href="/" aria-label="Broker Pal home">
-    <img src="/broker-pal-logo.svg" alt="Broker Pal — DSCR and Investment Loans" width="280" height="64" fetchpriority="high" />
+  <a class="brand" href="/" aria-label="broker pal home">
+    <img src="/broker-pal-logo.svg" alt="broker pal — DSCR and Investment Loans" width="280" height="64" fetchpriority="high" />
   </a>
   <nav aria-label="Main navigation">
     <a href="/" aria-label="Home">Home</a>
     <a href="/#loan-programs">Loan Programs</a>
     <a href="/tools">Tools</a>
-    <a href="/how-it-works">Resources</a>
+    <a href="/resources">Resources</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
     {!isPreview && <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>}
