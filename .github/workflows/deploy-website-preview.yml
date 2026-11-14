@@ -74,11 +74,11 @@ jobs:
           NODE
 
       - name: Publish isolated Cloudflare Worker Preview
-        # Restore the previously successful deployment path: the standalone Preview
-        # config, rather than Astro's generated dist/server/wrangler.json.
+        # Use Astro's current generated Worker entrypoint; the standalone legacy config
+        # points at a package entrypoint that no longer exists in the current adapter.
         run: |
           set -euo pipefail
-          npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-wordmark-security-final 2>&1 | tee /tmp/wrangler-preview.log
+          npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final 2>&1 | tee /tmp/wrangler-preview.log
           PREVIEW_URL="$(sed -n 's/^Preview URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
           if [ -z "$PREVIEW_URL" ]; then
             echo "Wrangler did not return a Preview URL."
