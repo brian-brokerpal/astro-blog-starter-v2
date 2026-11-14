@@ -1,8 +1,10 @@
+import type { APIRoute } from "astro";
+
 export const prerender = false;
 
 const ALLOWED_VARIABLES = "NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E";
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -13,7 +15,7 @@ function json(data, status = 200) {
   });
 }
 
-export async function GET({ request, locals }) {
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const runtime = locals?.runtime;
     const env = runtime?.env ?? {};
@@ -56,7 +58,7 @@ export async function GET({ request, locals }) {
     const state = incoming.searchParams.get("state");
     const county = incoming.searchParams.get("county");
 
-    if (!/^\d{6}$/.test(tract || "") || !/^\d{2}$/.test(state || "") || !/^\d{3}$/.test(county || "")) {
+    if (!/^\\d{6}$/.test(tract || "") || !/^\\d{2}$/.test(state || "") || !/^\\d{3}$/.test(county || "")) {
       return json({ error: "Invalid Census geography parameters.", route: "census-api-active" }, 400);
     }
 
@@ -87,4 +89,4 @@ export async function GET({ request, locals }) {
       detail: error instanceof Error ? error.message : "Unknown runtime error"
     }, 500);
   }
-}
+};
