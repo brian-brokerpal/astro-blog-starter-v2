@@ -1,4 +1,5 @@
 ---
+const isPreview = Astro.locals.runtime?.env?.SITE_ENV === 'preview';
 ---
 <header class="site-header approved-header">
   <a class="brand" href="/" aria-label="Broker Pal home">
@@ -11,7 +12,7 @@
     <a href="/how-it-works">Resources</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
-    <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>
+    {!isPreview && <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>}
     <a class="nav-cta" href="/apply">Apply Now <span aria-hidden="true">→</span></a>
   </nav>
 </header>
