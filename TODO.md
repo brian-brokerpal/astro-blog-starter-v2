@@ -23,6 +23,7 @@ When collecting Cloudflare figures, copy dashboard totals only. Do not send scre
 - [x] Verify all seven website preview routes on both isolated preview URLs (HTTP 200).
 - [ ] Review all preview pages on mobile for layout, accessibility, navigation, and wording.
 - [x] Add an automated syntax check for inline Astro scripts and confirm it passes.
+- [x] Mark content-collection blog slug pages for prerendering so Astro does not ignore their static paths.
 - [x] Harden demo contact rendering against HTML injection in the CRM sample cards.
 - [x] Replace user-logo HTML string insertion with DOM image elements and validate saved Realtor Studio logo data before preview.
 - [x] Validate saved Investor workspace preferences and agent-page logo data before applying them.
