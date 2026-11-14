@@ -78,6 +78,31 @@ jobs:
           console.log('PASS: preview deployment config has no production D1 or KV bindings and is marked SITE_ENV=preview.');
           NODE
 
+      - name: Smoke-test generated Worker locally before publishing
+        run: |
+          set -euo pipefail
+          npx wrangler dev --config dist/server/wrangler.json --ip 127.0.0.1 --port 8787 --show-interactive-dev-session=false > /tmp/wrangler-dev.log 2>&1 &
+          DEV_PID=$!
+          trap 'kill "$DEV_PID" 2>/dev/null || true' EXIT
+          READY=0
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8787/ --output /tmp/broker-pal-local.html; then READY=1; break; fi
+            sleep 2
+          done
+          if [ "$READY" != "1" ]; then
+            echo "Local Worker did not start. Wrangler output:"
+            cat /tmp/wrangler-dev.log
+            exit 1
+          fi
+          echo "Local Worker response bytes: $(wc -c < /tmp/broker-pal-local.html)"
+          if ! grep -Eiq 'Broker Pal|YourBrokerPal' /tmp/broker-pal-local.html; then
+            echo "Local Worker returned no recognizable Broker Pal homepage."
+            cat /tmp/wrangler-dev.log
+            head -c 2000 /tmp/broker-pal-local.html || true
+            exit 1
+          fi
+          echo "PASS: generated Worker renders the Broker Pal homepage locally."
+
       - name: Publish isolated Cloudflare Worker Preview
         # Use Astro's current generated Worker entrypoint; the standalone legacy config
         # points at a package entrypoint that no longer exists in the current adapter.
