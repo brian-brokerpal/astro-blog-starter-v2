@@ -28,24 +28,16 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Upgrade Astro and official integrations to patched releases
+      - name: Audit locked dependency tree
         run: |
-          npm install --save-exact astro@latest @astrojs/cloudflare@latest @astrojs/mdx@latest @astrojs/rss@latest @astrojs/sitemap@latest
-          npm install --save-dev --save-exact wrangler@latest typescript@latest
-
-      - name: Apply non-breaking security patches
-        run: npm audit fix
-
-      - name: Audit dependency tree
-        run: |
-          npm audit --json > npm-audit-report.json || true
+          npm audit --audit-level=low --json > npm-audit-report.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
           const counts = report.metadata?.vulnerabilities ?? {};
-          console.log('POST-UPGRADE NPM AUDIT:', JSON.stringify(counts, null, 2));
-          for (const [name, item] of Object.entries(report.vulnerabilities ?? {})) {
-            console.log(JSON.stringify({name, severity:item.severity, direct:item.isDirect, range:item.range, fixAvailable:item.fixAvailable, via:item.via.map(v => typeof v === 'string' ? v : {title:v.title,url:v.url,range:v.range})}));
+          console.log('LOCKFILE NPM AUDIT:', JSON.stringify(counts, null, 2));
+          if (Object.values(counts).some(value => typeof value === 'number' && value > 0 && !['info'].includes(value))) {
+            throw new Error('Dependency audit found vulnerabilities; review npm-audit-report.json.');
           }
           NODE
 
@@ -55,26 +47,26 @@ jobs:
           npx tsc
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const config = JSON.parse(fs.readFileSync('dist/server/wrangler.json', 'utf8'));
+          const path = 'dist/server/wrangler.json';
+          const config = JSON.parse(fs.readFileSync(path, 'utf8'));
           if (config.d1_databases?.length) throw new Error('Preview build unexpectedly contains a D1 binding.');
           if (config.previews?.vars?.SITE_ENV !== 'preview') throw new Error('Preview environment marker is missing.');
-          console.log('PASS: generated Preview config has no D1 binding and SITE_ENV=preview.');
+          // Astro's adapter emits an empty SESSION KV placeholder even though
+          // Astro sessions are explicitly disabled for Preview. Remove only that
+          // unused placeholder; never attach a real KV or production namespace.
+          if (config.kv_namespaces) {
+            config.kv_namespaces = config.kv_namespaces.filter(binding => binding.binding !== 'SESSION');
+            if (config.kv_namespaces.length === 0) delete config.kv_namespaces;
+          }
+          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\\n');
+          if (config.kv_namespaces?.some(binding => binding.binding === 'SESSION')) {
+            throw new Error('Unused SESSION KV placeholder was not removed.');
+          }
+          console.log('PASS: Preview config has no D1 binding, no SESSION KV binding, and SITE_ENV=preview.');
           NODE
           npx wrangler deploy --dry-run --config dist/server/wrangler.json
         env:
           BROKER_PAL_PREVIEW: '1'
-
-      - name: Save verified dependency updates to feature branch
-        run: |
-          if git diff --quiet -- package.json package-lock.json; then
-            echo "Dependency manifests already current."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package.json package-lock.json
-            git commit -m "Upgrade Astro stack and remediate dependency advisories"
-            git push origin HEAD:website-polish-broker-pal-brand
-          fi
 
       - name: Create isolated Cloudflare Worker Preview
         run: npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final
@@ -86,5 +78,5 @@ jobs:
         if: always()
         run: |
           if [ -f npm-audit-report.json ]; then
-            node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("npm-audit-report.json","utf8")).metadata?.vulnerabilities ?? {}; let s="## Dependency audit after remediation\\n\\n| Severity | Count |\\n|---|---:|\\n"; for (const k of ["critical","high","moderate","low","info"]) s += "| "+k+" | "+(v[k] ?? 0)+" |\\n"; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,s);'
+            node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("npm-audit-report.json","utf8")).metadata?.vulnerabilities ?? {}; let s="## Dependency audit\\n\\n| Severity | Count |\\n|---|---:|\\n"; for (const k of ["critical","high","moderate","low","info"]) s += "| "+k+" | "+(v[k] ?? 0)+" |\\n"; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,s);'
           fi
