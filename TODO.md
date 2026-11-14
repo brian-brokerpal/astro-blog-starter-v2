@@ -22,6 +22,7 @@ When collecting Cloudflare figures, copy dashboard totals only. Do not send scre
 - [x] Keep draft PR #11 isolated; no merge or production deployment.
 - [x] Verify all seven website preview routes on both isolated preview URLs (HTTP 200).
 - [ ] Review all preview pages on mobile for layout, accessibility, navigation, and wording.
+- [x] Add visible keyboard-focus outlines to the homepage, Investor Zone, Marketing Studio, and Realtor CRM controls; confirm the updated build and route checks pass.
 - [x] Add an automated syntax check for inline Astro scripts and confirm it passes.
 - [x] Mark content-collection blog slug pages for prerendering so Astro does not ignore their static paths.
 - [x] Harden demo contact rendering against HTML injection in the CRM sample cards.
@@ -37,7 +38,8 @@ When collecting Cloudflare figures, copy dashboard totals only. Do not send scre
 ## Dependency security — new blocker
 
 - [x] Run a read-only npm audit and document its findings in [the dependency security review](./docs/dependency-security-review.md).
-- [ ] Create an isolated Astro/Cloudflare major-upgrade branch; resolve the critical Astro and high-severity adapter/tooling advisories, regenerate the lockfile, and pass all route/build checks before considering merge.
+- [x] Create an isolated Astro 7 upgrade trial branch and test the patched dependency set without touching the feature branch or production.
+- [ ] Resolve the Astro 7 / Cloudflare adapter compatibility blocker: Astro 7.4.12 with adapter 14.4.8 builds, but its expected legacy worker output is absent; official guidance now points to adapter 15 beta and the new `cf` CLI/config migration. Keep this trial isolated until a supported, non-beta path is available or a beta trial passes all security and route checks.
 - [ ] Re-run npm audit after the upgrade and review any remaining runtime/development advisories.
 
 ## Investor / CPA — implementation gates
