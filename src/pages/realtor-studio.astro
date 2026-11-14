@@ -123,7 +123,7 @@ if (root) {
     img.onerror=()=>{ URL.revokeObjectURL(url); resolve(defaults.brandColor); };
     img.src=url;
   });
-  const isSafeLogoData = value => typeof value === 'string' && value.length <= 2800000 && /^data:image\\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(value);
+  const isSafeLogoData = value => typeof value === 'string' && value.length <= 2800000 && new RegExp('^data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$').test(value);
   const apply = () => {
     const p = palettes[state.selected] || palettes.modern;
     const accent = state.selected === 'modern' ? mix(brandColor,'#ffffff',.12) : state.selected === 'luxury' ? mix(brandColor,'#d1b783',.42) : state.selected === 'warm' ? mix(brandColor,'#b77a56',.36) : mix(brandColor,'#ffffff',.04);
