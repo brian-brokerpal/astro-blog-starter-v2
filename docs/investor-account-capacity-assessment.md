@@ -6,7 +6,7 @@ Assessment date: 2026-11-14
 
 **Do not build real investor or CPA accounts against the current website preview or the existing property-valuation database.** The website's Investor Property Hub and CPA Access Center are browser-only demonstrations. The valuation database is for RentCast request accounting and response caching. The separate mortgage LOS has its own D1 database, private R2 document binding, Cloudflare Access staff authentication, and ZeptoMail transactional-email integration. Keep those systems isolated.
 
-A small investor pilot may fit Cloudflare's published free allowances, but actual remaining capacity is not verified. The Cloudflare account's current D1, R2, Workers and billing usage must be inspected before creating resources or accepting real data.
+A small investor pilot may fit Cloudflare's published free allowances, but actual remaining capacity is not verified. The Cloudflare account's current D1, R2, Workers and billing usage must be inspected before creating resources or accepting real data. Cloudflare's R2 onboarding documentation says enabling R2 involves an account subscription/checkout flow even though a free monthly allowance exists; do not complete that flow or enable billing without first checking the account's billing setup and getting explicit approval.
 
 ## Verified project findings
 
@@ -45,6 +45,7 @@ Official references:
 - D1 limits: https://developers.cloudflare.com/d1/platform/limits/
 - D1 pricing: https://developers.cloudflare.com/d1/platform/pricing/
 - R2 pricing: https://developers.cloudflare.com/r2/pricing/
+- R2 onboarding and activation: https://developers.cloudflare.com/r2/get-started/
 - R2 limits: https://developers.cloudflare.com/r2/platform/limits/
 
 ## Email delivery and cost
