@@ -65,7 +65,7 @@ if(root){
   $('art-brand').textContent=name.toUpperCase();$('art-tag').textContent=t.tag;$('art-kicker').textContent=t.kicker;
   $('art-headline').textContent=$('headline').value||t.headline;$('art-message').textContent=$('message').value||t.message;
   $('art-contact').textContent=$('brand-contact').value||defaults.contact;$('art-cta').textContent=t.cta;
-  $('logo-box').innerHTML=logo?'<img alt="Brand logo" src="'+logo+'">':name.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+  if(logo){const image=document.createElement('img');image.alt='Brand logo';image.src=logo;$('logo-box').replaceChildren(image);}else{$('logo-box').textContent=name.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
   $('color-label').textContent=$('brand-color').value.toUpperCase();
   document.querySelectorAll('[data-template]').forEach(b=>{if(b.classList.contains('template'))b.classList.toggle('active',b.dataset.template===selected)});
  };
