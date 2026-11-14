@@ -55,6 +55,8 @@ jobs:
           import fs from 'node:fs';
           const path = 'dist/server/wrangler.json';
           const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+          console.log('GENERATED WORKER CONFIG:', JSON.stringify(config, null, 2));
+          console.log('GENERATED SERVER FILES:', fs.readdirSync('dist/server'));
           // Astro may carry production bindings into its generated config.
           // Strip them from this preview-only artifact; never deploy this file.
           if (config.d1_databases?.length) {
@@ -83,12 +85,15 @@ jobs:
           set -euo pipefail
           npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final 2>&1 | tee /tmp/wrangler-preview.log
           PREVIEW_URL="$(sed -n 's/^Preview URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
-          if [ -z "$PREVIEW_URL" ]; then
-            echo "Wrangler did not return a Preview URL."
+          UNIQUE_URL="$(sed -n 's/^Unique Deployment URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
+          if [ -z "$PREVIEW_URL" ] || [ -z "$UNIQUE_URL" ]; then
+            echo "Wrangler did not return both Preview and Unique Deployment URLs."
             exit 1
           fi
           echo "PREVIEW_URL=$PREVIEW_URL" >> "$GITHUB_ENV"
+          echo "UNIQUE_URL=$UNIQUE_URL" >> "$GITHUB_ENV"
           echo "Preview URL returned: $PREVIEW_URL"
+          echo "Unique deployment URL returned: $UNIQUE_URL"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -97,7 +102,12 @@ jobs:
         run: |
           set -euo pipefail
           HTTP_STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-preview.html --write-out '%{http_code}' "$PREVIEW_URL/")"
-          echo "Preview HTTP status: $HTTP_STATUS"
+          BODY_BYTES="$(wc -c < /tmp/broker-pal-preview.html)"
+          UNIQUE_STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-unique.html --write-out '%{http_code}' "$UNIQUE_URL/")"
+          UNIQUE_BYTES="$(wc -c < /tmp/broker-pal-unique.html)"
+          echo "Preview HTTP status/body bytes: $HTTP_STATUS/$BODY_BYTES"
+          echo "Unique deployment HTTP status/body bytes: $UNIQUE_STATUS/$UNIQUE_BYTES"
+          if [ "$UNIQUE_BYTES" -gt "$BODY_BYTES" ]; then cp /tmp/broker-pal-unique.html /tmp/broker-pal-preview.html; HTTP_STATUS="$UNIQUE_STATUS"; BODY_BYTES="$UNIQUE_BYTES"; fi
           if [ "$HTTP_STATUS" != "200" ]; then
             echo "Preview did not return HTTP 200."
             head -c 1200 /tmp/broker-pal-preview.html || true
