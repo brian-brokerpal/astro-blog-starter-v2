@@ -124,8 +124,19 @@ if (root) {
   let settings = { ...defaults };
   let logoUrl = '';
   const renderBrandAvatar = () => {
-    if (typeof logoUrl === 'string' && logoUrl.length <= 2800000 && new RegExp('^data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*
+    const safePattern = new RegExp('^data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*' + String.fromCharCode(36));
+    if (typeof logoUrl === 'string' && logoUrl.length <= 2800000 && safePattern.test(logoUrl)) {
+      const image = document.createElement('img');
+      image.alt = 'Company logo preview';
+      image.src = logoUrl;
+      $('brand-avatar').replaceChildren(image);
+    } else {
+      $('brand-avatar').textContent = (settings.company || 'BP').split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+    }
+  };
+  const apply = () => {
     root.classList.toggle('compact', settings.density === 'compact');
+    root.classList.toggle('light', settings.theme === 'light');
     root.style.setProperty('--accent', settings.accent);
     $('brand-name').textContent = settings.company || 'My Investment Co.';
     $('welcome-title').textContent = settings.display ? 'Welcome, ' + settings.display : 'Welcome to your property hub';
