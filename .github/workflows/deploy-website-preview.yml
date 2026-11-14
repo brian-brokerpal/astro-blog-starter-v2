@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: broker-pal-website-preview
+  group: broker-pal-website-preview-brand-refresh
   cancel-in-progress: true
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
         run: npm run build
 
       - name: Create isolated Cloudflare Worker Preview
-        run: npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-brand
+        run: npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-brand-refresh
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
