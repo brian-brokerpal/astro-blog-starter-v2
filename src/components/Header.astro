@@ -20,6 +20,8 @@ const isPreview = Astro.locals.runtime?.env?.SITE_ENV === 'preview';
 .site-header{width:100%;box-sizing:border-box;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
 .approved-header{max-width:none;padding:15px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b}
 .approved-header .brand{display:flex;align-items:center;flex:0 0 auto;text-decoration:none}
+.approved-header .brand::before,.approved-header .brand::after{content:none!important;display:none!important}
+.approved-header .brand img{object-fit:contain}
 .approved-header .brand img{display:block;width:clamp(220px,23vw,280px);height:auto;max-width:100%}
 .approved-header nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(12px,1.55vw,23px);flex-wrap:wrap}
 .approved-header nav a{font-size:14px;font-weight:700;color:#f5f8fb;text-decoration:none;white-space:nowrap}
