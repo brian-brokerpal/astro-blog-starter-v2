@@ -6,9 +6,10 @@ on:
       - website-polish-broker-pal-brand
 
 permissions:
-  contents: write
+  contents: read
 
-# Preview validates the committed lockfile and never modifies production resources.
+# This workflow only updates the isolated Wrangler Preview deployment.
+# It never deploys the production Worker or binds production D1/KV resources.
 
 concurrency:
   group: broker-pal-website-wordmark-security-final
@@ -53,30 +54,54 @@ jobs:
           const config = JSON.parse(fs.readFileSync(path, 'utf8'));
           if (config.d1_databases?.length) throw new Error('Preview build unexpectedly contains a D1 binding.');
           if (config.previews?.vars?.SITE_ENV !== 'preview') throw new Error('Preview environment marker is missing.');
-          // Astro's adapter emits an empty SESSION KV placeholder even though
-          // Astro sessions are explicitly disabled for Preview. Remove only that
-          // unused placeholder; never attach a real KV or production namespace.
-          if (config.kv_namespaces) {
-            config.kv_namespaces = config.kv_namespaces.filter(binding => binding.binding !== 'SESSION');
-            if (config.kv_namespaces.length === 0) delete config.kv_namespaces;
-          }
-          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
           if (config.kv_namespaces?.some(binding => binding.binding === 'SESSION')) {
-            throw new Error('Unused SESSION KV placeholder was not removed.');
+            throw new Error('Preview build unexpectedly contains a SESSION KV binding.');
           }
-          console.log('PASS: Preview config has no D1 binding, no SESSION KV binding, and SITE_ENV=preview.');
+          const preview = JSON.parse(fs.readFileSync('wrangler.preview.json', 'utf8'));
+          if (preview.d1_databases?.length || preview.kv_namespaces?.length) {
+            throw new Error('Standalone Preview config must not contain D1 or KV bindings.');
+          }
+          if (preview.previews?.vars?.SITE_ENV !== 'preview') {
+            throw new Error('Standalone Preview config is missing SITE_ENV=preview.');
+          }
+          console.log('PASS: generated and standalone Preview configs are isolated from production data bindings.');
           NODE
-          npx wrangler deploy --dry-run --config dist/server/wrangler.json
-        env:
-          BROKER_PAL_PREVIEW: '1'
 
       - name: Publish isolated Cloudflare Worker Preview
-        # Wrangler preview updates the dedicated preview worker and returns its reachable preview URL.
-        # The preview build has no D1 or production KV bindings and is marked SITE_ENV=preview.
-        run: npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final
+        # Restore the previously successful deployment path: the standalone Preview
+        # config, rather than Astro's generated dist/server/wrangler.json.
+        run: |
+          set -euo pipefail
+          npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-wordmark-security-final 2>&1 | tee /tmp/wrangler-preview.log
+          PREVIEW_URL="$(sed -n 's/^Preview URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "Wrangler did not return a Preview URL."
+            exit 1
+          fi
+          echo "PREVIEW_URL=$PREVIEW_URL" >> "$GITHUB_ENV"
+          echo "Preview URL returned: $PREVIEW_URL"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify preview serves the Broker Pal website
+        run: |
+          set -euo pipefail
+          HTTP_STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-preview.html --write-out '%{http_code}' "$PREVIEW_URL/")"
+          echo "Preview HTTP status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Preview did not return HTTP 200."
+            head -c 1200 /tmp/broker-pal-preview.html || true
+            exit 1
+          fi
+          if ! grep -Eiq 'Broker Pal|YourBrokerPal' /tmp/broker-pal-preview.html; then
+            echo "Preview returned HTTP 200 but did not contain the expected Broker Pal page content."
+            head -c 2000 /tmp/broker-pal-preview.html
+            exit 1
+          fi
+          echo "PASS: Preview returns the Broker Pal website HTML."
+        env:
+          PREVIEW_URL: ${{ env.PREVIEW_URL }}
 
       - name: Publish dependency audit summary
         if: always()
