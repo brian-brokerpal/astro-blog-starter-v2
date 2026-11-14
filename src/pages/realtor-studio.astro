@@ -29,7 +29,7 @@ import Layout from '../layouts/BlogPost.astro';
         <button type="button" class="vibe" data-vibe="bold"><b>Bold</b><small>Distinct and energetic</small></button>
       </div>
       <button type="button" class="generate" id="generate"><span>✦</span> Create my three designs</button>
-      <p class="privacy">Your logo is analyzed locally in this browser for this preview. It is not uploaded to a design service or saved to an account.</p>
+      <p class="privacy">Your logo is analyzed locally in this browser. Save your design on this device before opening the public page preview.</p>
     </div>
 
     <div class="design-panel">
@@ -62,7 +62,7 @@ import Layout from '../layouts/BlogPost.astro';
       </div>
       <div class="preview-bottom"><div><small>FEATURED PROPERTIES</small><b>A thoughtful approach to finding your place.</b></div><div class="sample-listings"><span>FEATURED HOME</span><span>NEW LISTING</span><span>EXPLORE THE AREA</span></div></div>
     </div>
-    <div class="preview-actions"><button type="button" class="save" id="save-design">Save design on this device</button><button type="button" class="reset" id="reset-design">Start over</button><span id="save-status" role="status">Preview only · Not published</span></div>
+    <div class="preview-actions"><button type="button" class="save" id="save-design">Save design on this device</button><a class="public-page-link" href="/agent-page-preview">Open public page preview ↗</a><button type="button" class="reset" id="reset-design">Start over</button><span id="save-status" role="status">Preview only · Not published</span></div>
   </section>
   <section class="next-steps"><div><span class="step">NEXT</span><h2>From a design to your own page</h2><p>Explore the Realtor CRM concept to see how public inquiries can flow into a simple lead pipeline. The connected release will let authenticated agents save their brand, publish a page, and manage real inquiries.</p><p><a class="crm-link" href="/realtor-crm">Explore the Realtor CRM →</a></p></div><div class="next-list"><span>✓ Brand and layout concepts</span><span>◷ Save to an agent account</span><span>◷ Publish a shareable agent page</span><span>◷ Connect listing inquiries to CRM</span></div></section>
   <p class="disclaimer">Design Assistant preview: logo analysis and design recommendations run locally in your browser using built-in styles. No external AI service is connected in this prototype. No account, public page, listing, lead capture, or secure storage is activated here.</p>
@@ -172,7 +172,7 @@ if (root) {
     $('selection-note').textContent='Selected '+state.selected+' design. The public-page preview has updated.';
   }));
   $('save-design').addEventListener('click',()=>{
-    try{localStorage.setItem('brokerpal-realtor-design-preview',JSON.stringify({...state,brandColor}));$('save-status').textContent='Design settings saved on this device only.';}
+    try{localStorage.setItem('brokerpal-realtor-design-preview',JSON.stringify({...state,brandColor,logoData}));$('save-status').textContent='Design settings saved on this device only.';}
     catch{$('save-status').textContent='Browser storage is unavailable. Your current preview remains active.';}
   });
   $('reset-design').addEventListener('click',()=>{
