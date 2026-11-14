@@ -50,6 +50,20 @@ jobs:
           }
           console.log('PASS: Astro 7 build succeeded and preview config remains isolated.');
           NODE
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { createRequire } from 'node:module';
+          const require = createRequire(import.meta.url);
+          console.log('Adapter package:', require.resolve('@astrojs/cloudflare'));
+          try {
+            console.log('Unified entrypoint:', import.meta.resolve('@astrojs/cloudflare/entrypoints/server'));
+          } catch (error) {
+            console.error('Unified entrypoint resolution failed:', error.message);
+            const root = 'node_modules/@astrojs/cloudflare';
+            console.log('Adapter files:', fs.readdirSync(root, { recursive: true }).filter(x => String(x).includes('entrypoint')).slice(0, 30));
+            throw error;
+          }
+          NODE
           npx wrangler deploy --dry-run --config wrangler.preview.json
 
       - name: Report remaining dependency advisories
