@@ -6,7 +6,7 @@ on:
       - website-polish-broker-pal-brand
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: broker-pal-website-preview-brand-refresh
@@ -25,14 +25,59 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: npm ci
 
-      - name: Build preview website
-        run: npm run build
+      - name: Upgrade Astro and official integrations to patched releases
+        run: |
+          npm install --save-exact astro@latest @astrojs/cloudflare@latest @astrojs/mdx@latest @astrojs/rss@latest @astrojs/sitemap@latest
+          npm install --save-dev --save-exact wrangler@latest typescript@latest
+
+      - name: Audit dependency tree
+        run: |
+          npm audit --json > npm-audit-report.json || true
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
+          const counts = report.metadata?.vulnerabilities ?? {};
+          console.log('POST-UPGRADE NPM AUDIT:', JSON.stringify(counts, null, 2));
+          for (const [name, item] of Object.entries(report.vulnerabilities ?? {})) {
+            console.log(JSON.stringify({name, severity:item.severity, direct:item.isDirect, range:item.range, fixAvailable:item.fixAvailable, via:item.via.map(v => typeof v === 'string' ? v : {title:v.title,url:v.url,range:v.range})}));
+          }
+          NODE
+
+      - name: Build, type-check, and validate Wrangler configuration
+        run: npm run check
+
+      - name: Save verified dependency updates to feature branch
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "Dependency manifests already current."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json
+            git commit -m "Upgrade Astro stack and remediate dependency advisories"
+            git push origin HEAD:website-polish-broker-pal-brand
+          fi
 
       - name: Create isolated Cloudflare Worker Preview
         run: npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-brand-refresh
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Publish dependency audit summary
+        if: always()
+        run: |
+          if [ -f npm-audit-report.json ]; then
+            node --input-type=module <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+            import fs from 'node:fs';
+            const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
+            const v = report.metadata?.vulnerabilities ?? {};
+            console.log('## Dependency audit after remediation attempt');
+            console.log('| Severity | Count |');
+            console.log('|---|---:|');
+            for (const k of ['critical','high','moderate','low','info']) console.log(`| ${k} | ${v[k] ?? 0} |`);
+            NODE
+          fi
