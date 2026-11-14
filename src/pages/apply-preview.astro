@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+---
+<Layout title="Application Preview | Broker Pal" description="Live loan applications are disabled in this Broker Pal website preview.">
+<div class="page">
+  <div class="kicker">PREVIEW ENVIRONMENT</div>
+  <h1>Live applications are turned off here.</h1>
+  <p class="lead">You're viewing a preview of the Broker Pal website. To prevent test visitors from submitting a real borrower application, the live Broker Pal LOS handoff is disabled in this environment.</p>
+  <div class="notice">
+    <strong>No application was submitted.</strong>
+    <p>When the website is approved and published, the Apply Now button will connect to the live Broker Pal loan inquiry form.</p>
+  </div>
+  <a class="back" href="/">Return to the website preview →</a>
+</div>
+<style>
+.page{max-width:800px;margin:auto;padding:48px 24px 76px;box-sizing:border-box}
+.kicker{font-size:11px;letter-spacing:2px;color:#078f9d;font-weight:800}
+.page h1{font-size:clamp(38px,5vw,54px);line-height:1.08;letter-spacing:-1.8px;color:#102b49;margin:18px 0}
+.lead{font-size:18px;color:#617387;line-height:1.8}
+.notice{margin:28px 0;background:#edf5f6;border-left:4px solid #079eaa;padding:22px;color:#334c63}
+.notice strong{color:#102b49}.notice p{margin:8px 0 0}
+.back{color:#078f9d;font-weight:800;text-decoration:none}
+</style>
+</Layout>

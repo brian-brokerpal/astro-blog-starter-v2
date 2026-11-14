@@ -1,0 +1,22 @@
+{
+  "name": "astro-blog-starter-v2",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true,
+  "previews": {
+    "vars": {
+      "SITE_ENV": "preview"
+    }
+  }
+}

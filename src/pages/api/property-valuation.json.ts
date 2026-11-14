@@ -1,3 +1,15 @@
+import { env } from "cloudflare:workers";
+import type { APIRoute } from "astro";
+
+type D1PreparedStatementLike = {
+  bind(...values: unknown[]): D1PreparedStatementLike;
+  first<T = Record<string, unknown>>(): Promise<T | null>;
+  run(): Promise<unknown>;
+};
+type D1DatabaseLike = { prepare(query: string): D1PreparedStatementLike };
+type PropertyBindings = { PROPERTY_USAGE_DB?: D1DatabaseLike; RENTCAST_API_KEY?: string };
+const bindings = env as unknown as PropertyBindings;
+
 export const prerender = false;
 
 const ALLOWED_TYPES = new Set([
@@ -10,7 +22,7 @@ const ALLOWED_TYPES = new Set([
   "Land"
 ]);
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -20,17 +32,24 @@ function json(data, status = 200) {
   });
 }
 
-async function sha256(value) {
+async function sha256(value: string): Promise<string> {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function GET({ request, locals }) {
+type RentCastValuation = {
+  price?: unknown;
+  priceRangeLow?: unknown;
+  priceRangeHigh?: unknown;
+  subjectProperty?: unknown;
+  comparables?: unknown;
+};
+
+export const GET: APIRoute = async ({ request }) => {
   try {
-    const env = locals?.runtime?.env ?? {};
-    const db = env.PROPERTY_USAGE_DB;
-    const apiKey = env.RENTCAST_API_KEY;
+    const db = bindings.PROPERTY_USAGE_DB;
+    const apiKey = bindings.RENTCAST_API_KEY;
 
     if (!db) return json({ error: "Property valuation usage database is not configured." }, 503);
     if (!apiKey) return json({ error: "Property valuation provider key is not configured." }, 503);
@@ -60,7 +79,7 @@ export async function GET({ request, locals }) {
     const cacheKey = await sha256(params.toString().toLowerCase());
     const cached = await db.prepare(
       "SELECT response_json FROM rentcast_valuation_cache WHERE cache_key = ? AND created_at >= datetime('now', '-30 days')"
-    ).bind(cacheKey).first();
+    ).bind(cacheKey).first<{ response_json: string }>();
 
     if (cached?.response_json) {
       return json({ ...(JSON.parse(cached.response_json)), cached: true, usageCounted: false });
@@ -71,7 +90,7 @@ export async function GET({ request, locals }) {
     const monthKey = new Date().toISOString().slice(0, 7);
     const reservation = await db.prepare(
       "INSERT INTO rentcast_monthly_usage (month_key, request_count, updated_at) VALUES (?, 1, CURRENT_TIMESTAMP) ON CONFLICT(month_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 50 RETURNING request_count"
-    ).bind(monthKey).first();
+    ).bind(monthKey).first<{ request_count: number }>();
 
     if (!reservation) {
       return json({
@@ -97,8 +116,8 @@ export async function GET({ request, locals }) {
       }, upstream.status === 404 ? 404 : 502);
     }
 
-    let valuation;
-    try { valuation = JSON.parse(body); }
+    let valuation: RentCastValuation;
+    try { valuation = JSON.parse(body) as RentCastValuation; }
     catch { return json({ error: "The valuation provider returned an unreadable response.", usageCounted: true }, 502); }
 
     if (typeof valuation.price !== "number" ||
@@ -130,4 +149,4 @@ export async function GET({ request, locals }) {
       detail: error instanceof Error ? error.message : "Unknown error"
     }, 500);
   }
-}
+};

@@ -1,12 +1,13 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
-const losApplyUrl = 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
+const isPreview = import.meta.env.SITE_ENV === 'preview';
+const losApplyUrl = isPreview ? '/apply-preview' : 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
 ---
-<Layout title="Start an Investment Loan Inquiry | broker pal" description="Begin an investment property loan inquiry with broker pal.">
+<Layout title="Start an Investment Loan Inquiry | Broker Pal" description="Begin an investment property loan inquiry with Broker Pal.">
   <div class="page">
     <div class="kicker">GET STARTED</div>
     <h1>Start with your property. We'll take it from there.</h1>
-    <p class="lead">Tell us a little about the investment property and financing you're considering. Your inquiry will open the broker pal loan intake form.</p>
+    <p class="lead">Tell us a little about the investment property and financing you're considering. Your inquiry will open the Broker Pal loan intake form.</p>
     <div class="apply-card">
       <h2>Start your loan inquiry</h2>
       <p>The initial form asks for basic contact information and property details so we can follow up about potential financing options.</p>
@@ -16,9 +17,9 @@ const losApplyUrl = 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
         <li>Purchase or refinance details</li>
         <li>Estimated property value, loan amount and monthly rent</li>
       </ul>
-      <a class="button" href={losApplyUrl}>Continue to Loan Inquiry <span aria-hidden="true">↗</span></a>
+      <a class="button" href={losApplyUrl}>{isPreview ? "Preview Only — Live Application Disabled" : "Continue to Loan Inquiry"} <span aria-hidden="true">↗</span></a>
     </div>
-    <p class="fine"><strong>Important:</strong> This is an initial inquiry, not a credit application, approval, or commitment to lend. Do not enter Social Security numbers, dates of birth, bank account details, or upload tax returns, bank statements, or other sensitive documents. The intake form is hosted separately by broker pal's loan system.</p>
+    <p class="fine"><strong>Important:</strong> This is an initial inquiry, not a credit application, approval, or commitment to lend. Do not enter Social Security numbers, dates of birth, bank account details, or upload tax returns, bank statements, or other sensitive documents. The intake form is hosted separately by Broker Pal's loan system.</p>
     <p class="contact">Questions? <a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a> · <a href="tel:4046062943">404-606-2943</a></p>
   </div>
 </Layout>

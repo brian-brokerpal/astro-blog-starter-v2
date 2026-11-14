@@ -1,8 +1,14 @@
+import { env } from "cloudflare:workers";
+import type { APIRoute } from "astro";
+
+type CensusBindings = { CENSUS_API_KEY?: string };
+const bindings = env as unknown as CensusBindings;
+
 export const prerender = false;
 
 const ALLOWED_VARIABLES = "NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E";
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -13,19 +19,17 @@ function json(data, status = 200) {
   });
 }
 
-export async function GET({ request, locals }) {
+export const GET: APIRoute = async ({ request }) => {
   try {
-    const runtime = locals?.runtime;
-    const env = runtime?.env ?? {};
-    const apiKey = env.CENSUS_API_KEY;
+    const apiKey = bindings.CENSUS_API_KEY;
     const incoming = new URL(request.url);
 
     // Safe diagnostic: confirms route and secret binding without exposing the key.
     if (incoming.searchParams.get("diagnostic") === "1") {
       return json({
         route: "census-api-active",
-        runtimeAvailable: Boolean(runtime),
-        envAvailable: Boolean(runtime?.env),
+        runtimeAvailable: true,
+        envAvailable: true,
         censusApiKeyAvailable: Boolean(apiKey),
         worker: "astro-blog-starter-v2"
       });
@@ -87,4 +91,4 @@ export async function GET({ request, locals }) {
       detail: error instanceof Error ? error.message : "Unknown runtime error"
     }, 500);
   }
-}
+};

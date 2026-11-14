@@ -1,0 +1,158 @@
+name: Deploy Broker Pal website preview
+
+on:
+  push:
+    branches:
+      - website-polish-broker-pal-brand
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# This workflow only updates the isolated Wrangler Preview deployment.
+# It never deploys the production Worker or binds production D1/KV resources.
+
+concurrency:
+  group: broker-pal-website-wordmark-security-final
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Audit locked dependency tree
+        run: |
+          npm audit --audit-level=low --json > npm-audit-report.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
+          const counts = report.metadata?.vulnerabilities ?? {};
+          console.log('LOCKFILE NPM AUDIT:', JSON.stringify(counts, null, 2));
+          if ((counts.total ?? 0) > 0) {
+            throw new Error('Dependency audit found vulnerabilities; review npm-audit-report.json.');
+          }
+          NODE
+
+      - name: Build and type-check against isolated Preview config
+        env:
+          BROKER_PAL_PREVIEW: '1'
+        run: |
+          npm run build
+          npx tsc
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const path = 'dist/server/wrangler.json';
+          const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+          console.log('GENERATED WORKER CONFIG:', JSON.stringify(config, null, 2));
+          console.log('GENERATED SERVER FILES:', fs.readdirSync('dist/server'));
+          // Astro may carry production bindings into its generated config.
+          // Strip them from this preview-only artifact; never deploy this file.
+          if (config.d1_databases?.length) {
+            console.log('Removing production D1 bindings from generated preview artifact.');
+            delete config.d1_databases;
+          }
+          if (config.kv_namespaces?.length) {
+            console.log('Removing KV bindings from generated preview artifact.');
+            delete config.kv_namespaces;
+          }
+          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
+          const preview = JSON.parse(fs.readFileSync('wrangler.preview.json', 'utf8'));
+          if (preview.d1_databases?.length || preview.kv_namespaces?.length) {
+            throw new Error('Standalone Preview config must not contain D1 or KV bindings.');
+          }
+          if (preview.previews?.vars?.SITE_ENV !== 'preview') {
+            throw new Error('Standalone Preview config is missing SITE_ENV=preview.');
+          }
+          console.log('PASS: preview deployment config has no production D1 or KV bindings and is marked SITE_ENV=preview.');
+          NODE
+
+      - name: Smoke-test generated Worker locally before publishing
+        run: |
+          set -euo pipefail
+          npx wrangler dev --config dist/server/wrangler.json --ip 127.0.0.1 --port 8787 --show-interactive-dev-session=false > /tmp/wrangler-dev.log 2>&1 &
+          DEV_PID=$!
+          trap 'kill "$DEV_PID" 2>/dev/null || true' EXIT
+          READY=0
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8787/ --output /tmp/broker-pal-local.html; then READY=1; break; fi
+            sleep 2
+          done
+          if [ "$READY" != "1" ]; then
+            echo "Local Worker did not start. Wrangler output:"
+            cat /tmp/wrangler-dev.log
+            exit 1
+          fi
+          echo "Local Worker response bytes: $(wc -c < /tmp/broker-pal-local.html)"
+          if ! grep -Eiq 'Broker Pal|YourBrokerPal' /tmp/broker-pal-local.html; then
+            echo "Local Worker returned no recognizable Broker Pal homepage."
+            cat /tmp/wrangler-dev.log
+            head -c 2000 /tmp/broker-pal-local.html || true
+            exit 1
+          fi
+          echo "PASS: generated Worker renders the Broker Pal homepage locally."
+
+      - name: Publish isolated Cloudflare Worker Preview
+        # Use Astro's current generated Worker entrypoint; the standalone legacy config
+        # points at a package entrypoint that no longer exists in the current adapter.
+        run: |
+          set -euo pipefail
+          npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final 2>&1 | tee /tmp/wrangler-preview.log
+          PREVIEW_URL="$(sed -n 's/^Preview URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
+          UNIQUE_URL="$(sed -n 's/^Unique Deployment URL: //p' /tmp/wrangler-preview.log | tail -n 1)"
+          if [ -z "$PREVIEW_URL" ] || [ -z "$UNIQUE_URL" ]; then
+            echo "Wrangler did not return both Preview and Unique Deployment URLs."
+            exit 1
+          fi
+          echo "PREVIEW_URL=$PREVIEW_URL" >> "$GITHUB_ENV"
+          echo "UNIQUE_URL=$UNIQUE_URL" >> "$GITHUB_ENV"
+          echo "Preview URL returned: $PREVIEW_URL"
+          echo "Unique deployment URL returned: $UNIQUE_URL"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify preview serves the Broker Pal website
+        run: |
+          set -euo pipefail
+          HTTP_STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-preview.html --write-out '%{http_code}' "$PREVIEW_URL/")"
+          BODY_BYTES="$(wc -c < /tmp/broker-pal-preview.html)"
+          UNIQUE_STATUS="$(curl --silent --show-error --location --max-time 30 --output /tmp/broker-pal-unique.html --write-out '%{http_code}' "$UNIQUE_URL/")"
+          UNIQUE_BYTES="$(wc -c < /tmp/broker-pal-unique.html)"
+          echo "Preview HTTP status/body bytes: $HTTP_STATUS/$BODY_BYTES"
+          echo "Unique deployment HTTP status/body bytes: $UNIQUE_STATUS/$UNIQUE_BYTES"
+          if [ "$UNIQUE_BYTES" -gt "$BODY_BYTES" ]; then cp /tmp/broker-pal-unique.html /tmp/broker-pal-preview.html; HTTP_STATUS="$UNIQUE_STATUS"; BODY_BYTES="$UNIQUE_BYTES"; fi
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Preview did not return HTTP 200."
+            head -c 1200 /tmp/broker-pal-preview.html || true
+            exit 1
+          fi
+          if ! grep -Eiq 'Broker Pal|YourBrokerPal' /tmp/broker-pal-preview.html; then
+            echo "Preview returned HTTP 200 but did not contain the expected Broker Pal page content."
+            echo "Response bytes: $(wc -c < /tmp/broker-pal-preview.html)"
+            echo "Response headers:"
+            curl --silent --show-error --location --max-time 30 --head "$PREVIEW_URL/" || true
+            echo "Response body (first 2000 bytes):"
+            head -c 2000 /tmp/broker-pal-preview.html || true
+            echo
+            exit 1
+          fi
+          echo "PASS: Preview returns the Broker Pal website HTML."
+
+      - name: Publish dependency audit summary
+        if: always()
+        run: |
+          if [ -f npm-audit-report.json ]; then
+            node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("npm-audit-report.json","utf8")).metadata?.vulnerabilities ?? {}; let s="## Dependency audit\n\n| Severity | Count |\n|---|---:|\n"; for (const k of ["critical","high","moderate","low","info"]) s += "| "+k+" | "+(v[k] ?? 0)+" |\n"; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,s);'
+          fi

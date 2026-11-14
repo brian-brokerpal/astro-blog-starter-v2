@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/BlogPost.astro';
 ---
-<Layout title="Free DSCR Calculator | broker pal" description="Estimate debt service coverage for an investment property.">
+<Layout title="Free DSCR Calculator | Broker Pal" description="Estimate debt service coverage for an investment property.">
 <section class="tool"><p class="kicker">INVESTOR TOOLKIT</p><h1>DSCR Calculator</h1><p class="lead">Estimate whether a property's rental income covers its monthly debt service.</p>
 <div class="panel"><label>Monthly gross rent ($)<input id="rent" type="number" min="0" value="2500"></label><label>Other monthly income ($)<input id="other" type="number" min="0" value="0"></label><label>Monthly PITIA / debt service ($)<input id="debt" type="number" min="0" value="1900"></label><label>Monthly operating expenses, excluding debt ($)<input id="expenses" type="number" min="0" value="250"></label><div class="result"><small>ESTIMATED DSCR</small><strong id="ratio">1.18x</strong><p id="summary">Income divided by debt service.</p></div><div class="metrics"><div><small>Net operating income</small><b id="noi">$2,250</b></div><div><small>Monthly cash flow after debt</small><b id="cash">$350</b></div><div><small>Rent needed at 1.00x</small><b id="breakEven">$2,150</b></div></div><button id="reset" type="button">Reset example</button></div><p class="disclaimer">Estimate only. Lenders calculate DSCR differently and may use gross rent, net operating income, PITIA, or other qualifying methods. This is not a loan approval or offer.</p><a class="cta" href="/apply">Discuss your scenario →</a></section>
 <script>

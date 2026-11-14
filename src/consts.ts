@@ -1,2 +1,2 @@
-export const SITE_TITLE = 'broker pal | Investment Loans';
-export const SITE_DESCRIPTION = 'Investor-focused investment property financing, including DSCR loan options for rental property purchases and refinances. Clear guidance from inquiry to closing.';
+export const SITE_TITLE = 'Broker Pal | DSCR & Investment Loans';
+export const SITE_DESCRIPTION = 'Broker Pal helps real estate investors explore DSCR rental loans, fix-and-flip financing, and commercial and business-purpose real estate loans. Clear guidance from inquiry to closing.';
