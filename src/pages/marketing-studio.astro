@@ -46,6 +46,16 @@ import Layout from '../layouts/BlogPost.astro';
 @media print{body *{visibility:hidden!important}.artwork,.artwork *{visibility:visible!important}.artwork{position:absolute;left:0;top:0;width:100%;max-width:none;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}.marketing{background:#fff!important}}
 @media(max-width:850px){.builder{grid-template-columns:1fr}.library-note{grid-template-columns:1fr}.artwork{max-width:540px}}
 @media(max-width:560px){.hero{display:block;padding:35px 18px}.hero aside{display:inline-block;margin-top:18px}.wrap{padding:0 12px}.controls,.preview-area{padding:15px}.notice{display:block}.notice b{display:block;margin-bottom:4px}.preview-top{align-items:flex-start;flex-direction:column}.art-top{gap:7px}.art-tag{font-size:6px}.art-footer{font-size:7px}}
+
+/* Visible keyboard focus for links, buttons, and form controls. */
+:global(a:focus-visible),
+:global(button:focus-visible),
+:global(input:focus-visible),
+:global(select:focus-visible),
+:global(textarea:focus-visible) {
+  outline: 3px solid #18d0d0;
+  outline-offset: 3px;
+}
 </style>
 <script is:inline>
 const root=document.getElementById('marketing-studio');
