@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Broker Pal">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Broker Pal</title>
+  <desc id="desc">Three connected circles representing partnership.</desc>
   <rect width="64" height="64" rx="14" fill="#002447"/>
   <path d="M17 32 C22 20 29 20 32 32 C35 44 42 44 47 32" fill="none" stroke="#18d0d0" stroke-width="4" stroke-linecap="round"/>
   <path d="M17 32 C22 44 29 44 32 32 C35 20 42 20 47 32" fill="none" stroke="#f8fbff" stroke-width="3" stroke-linecap="round"/>
