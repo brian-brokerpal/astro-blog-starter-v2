@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: broker-pal-website-wordmark-security
+  group: broker-pal-website-wordmark-security-final
   cancel-in-progress: true
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
           fi
 
       - name: Create isolated Cloudflare Worker Preview
-        run: npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-wordmark-security
+        run: npx wrangler preview --config wrangler.preview.json --name website-polish-broker-pal-wordmark-security-final
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
