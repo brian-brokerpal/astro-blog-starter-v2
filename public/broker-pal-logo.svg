@@ -1,12 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="560" height="128" viewBox="0 0 560 128" role="img" aria-labelledby="title desc">
   <title id="title">Broker Pal</title>
-  <desc id="desc">Broker Pal logo with an investment-property house mark.</desc>
+  <desc id="desc">Broker Pal wordmark with an abstract connected-partnership symbol.</desc>
   <g transform="translate(4 4)">
     <rect x="0" y="0" width="120" height="120" rx="23" fill="#073452"/>
-    <path d="M22 58 60 26 98 58" fill="none" stroke="#18d0d0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M34 55v48h52V55" fill="none" stroke="#f8fbff" stroke-width="6" stroke-linejoin="round"/>
-    <path d="M53 103V76h16v27" fill="#18d0d0"/>
-    <circle cx="91" cy="29" r="7" fill="#18d0d0"/>
+    <path d="M35 60 C42 43 53 43 60 60 C67 77 78 77 85 60" fill="none" stroke="#18d0d0" stroke-width="7" stroke-linecap="round"/>
+    <path d="M35 60 C42 77 53 77 60 60 C67 43 78 43 85 60" fill="none" stroke="#f8fbff" stroke-width="5" stroke-linecap="round" opacity=".95"/>
+    <circle cx="29" cy="60" r="10" fill="#18d0d0"/>
+    <circle cx="60" cy="60" r="10" fill="#f8fbff"/>
+    <circle cx="91" cy="60" r="10" fill="#18d0d0"/>
+    <circle cx="29" cy="60" r="3" fill="#073452"/>
+    <circle cx="60" cy="60" r="3" fill="#073452"/>
+    <circle cx="91" cy="60" r="3" fill="#073452"/>
   </g>
   <text x="148" y="76" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="800" letter-spacing="-2.8" fill="#f8fbff">Broker <tspan fill="#18d0d0">Pal</tspan></text>
   <text x="153" y="107" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="4.2" fill="#a9dfe0">DSCR &amp; INVESTMENT LOANS</text>
