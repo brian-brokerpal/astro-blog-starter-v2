@@ -76,6 +76,34 @@ jobs:
             git push origin HEAD:website-polish-broker-pal-brand
           fi
 
+      - name: Configure isolated Preview session storage
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const run = (args) => execFileSync('npx', ['wrangler', ...args], { encoding: 'utf8' });
+          const list = JSON.parse(run(['kv', 'namespace', 'list', '--json']));
+          let namespace = list.find(item => item.title === 'broker-pal-preview-session');
+          if (!namespace) {
+            const created = JSON.parse(run(['kv', 'namespace', 'create', 'broker-pal-preview-session', '--json']));
+            namespace = created;
+          }
+          if (!namespace?.id) throw new Error('Could not obtain the isolated Preview KV namespace ID.');
+
+          const path = 'dist/server/wrangler.json';
+          const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+          if (config.d1_databases?.length) throw new Error('Refusing to deploy Preview with a D1 database binding.');
+          config.name = 'website-polish-broker-pal-wordmark-security-final';
+          config.kv_namespaces = (config.kv_namespaces ?? []).filter(binding => binding.binding !== 'SESSION');
+          config.kv_namespaces.push({ binding: 'SESSION', id: namespace.id });
+          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\\n');
+          console.log('Preview isolated KV configured; production D1 binding is absent.');
+          NODE
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Create isolated Cloudflare Worker Preview
         run: npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final
         env:
