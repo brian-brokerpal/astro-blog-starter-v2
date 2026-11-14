@@ -70,8 +70,10 @@ jobs:
         env:
           BROKER_PAL_PREVIEW: '1'
 
-      - name: Create isolated Cloudflare Worker Preview
-        run: npx wrangler preview --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final
+      - name: Deploy isolated Cloudflare Worker Preview
+        # Publish to a dedicated preview Worker name, not the production Worker.
+        # The preview build has no D1 or production KV bindings; SITE_ENV is explicitly marked preview.
+        run: npx wrangler deploy --config dist/server/wrangler.json --name website-polish-broker-pal-wordmark-security-final --var SITE_ENV:preview
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
