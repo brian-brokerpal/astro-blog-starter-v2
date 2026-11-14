@@ -47,7 +47,7 @@ import Layout from '../layouts/BlogPost.astro';
 @media(max-width:850px){.builder{grid-template-columns:1fr}.library-note{grid-template-columns:1fr}.artwork{max-width:540px}}
 @media(max-width:560px){.hero{display:block;padding:35px 18px}.hero aside{display:inline-block;margin-top:18px}.wrap{padding:0 12px}.controls,.preview-area{padding:15px}.notice{display:block}.notice b{display:block;margin-bottom:4px}.preview-top{align-items:flex-start;flex-direction:column}.art-top{gap:7px}.art-tag{font-size:6px}.art-footer{font-size:7px}}
 </style>
-<script>
+<script is:inline>
 const root=document.getElementById('marketing-studio');
 if(root){
  const $=id=>document.getElementById(id);
