@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+---
+<Layout title="Marketing Studio | broker pal" description="Create branded real estate and property-investment marketing materials from approved broker pal templates.">
+<main class="marketing" id="marketing-studio">
+  <section class="hero"><div><p class="eyebrow">BROKER PAL · MARKETING STUDIO</p><h1>Your message.<br/><em>Your brand.</em></h1><p>Start with a professionally prepared template, add your business details, and create a polished flyer or social post without learning design software.</p></div><aside><b>One simple workflow</b><span>Choose · Brand · Preview · Print</span></aside></section>
+  <div class="wrap">
+    <div class="notice"><b>Starter template library</b><span>These are illustrative layouts until your original broker pal flyers are added. No real listing, rate, loan term, or offer is represented.</span></div>
+    <section class="builder">
+      <div class="controls">
+        <div class="section-title"><span class="step">01</span><div><h2>Choose a starting point</h2><p>Pick the material closest to what you want to create.</p></div></div>
+        <div class="template-list" role="group" aria-label="Marketing template">
+          <button class="template active" type="button" data-template="listing"><span class="template-icon">⌂</span><span><b>Property spotlight</b><small>Listing and open-house promotion</small></span></button>
+          <button class="template" type="button" data-template="financing"><span class="template-icon">↗</span><span><b>Financing overview</b><small>Investor loan program introduction</small></span></button>
+          <button class="template" type="button" data-template="community"><span class="template-icon">◎</span><span><b>Community connection</b><small>Referral and relationship marketing</small></span></button>
+        </div>
+        <div class="section-title second"><span class="step">02</span><div><h2>Make it yours</h2><p>Your brand details update the preview.</p></div></div>
+        <label>Business or agent name<input id="brand-name" maxlength="70" value="Your Company Name"/></label>
+        <label>Contact details<input id="brand-contact" maxlength="100" value="Phone · Email · Website"/></label>
+        <label>Headline<input id="headline" maxlength="90" value="A place to call your own"/></label>
+        <label>Supporting message<textarea id="message" rows="3" maxlength="260">Thoughtful guidance and local expertise to help you take the next step with confidence.</textarea></label>
+        <label>Brand color<div class="color-row"><input id="brand-color" type="color" value="#168f89"/><span id="color-label">#168F89</span></div></label>
+        <label>Upload your logo <small>PNG, JPG or WebP · up to 2 MB · local preview only</small><input id="brand-logo" type="file" accept="image/png,image/jpeg,image/webp"/></label>
+        <div class="actions"><button type="button" class="primary" id="save-brand">Save brand on this device</button><button type="button" class="secondary" id="reset">Reset</button></div>
+        <p class="privacy" id="status" role="status">Your brand settings stay in this browser. No account or cloud storage is connected.</p>
+      </div>
+      <div class="preview-area">
+        <div class="preview-top"><div><span class="step">03</span><div><h2>Preview your material</h2><p>Choose print or social format.</p></div></div><div class="format-switch"><button type="button" class="format active" data-format="flyer">Flyer</button><button type="button" class="format" data-format="social">Social post</button></div></div>
+        <article class="artwork" id="artwork" data-template="listing">
+          <div class="art-top"><div class="logo-box" id="logo-box">YC</div><div class="art-brand" id="art-brand">YOUR COMPANY NAME</div><span class="art-tag" id="art-tag">PROPERTY SPOTLIGHT</span></div>
+          <div class="art-photo" id="art-photo"><span>IMAGE AREA · ADD APPROVED PROPERTY PHOTO</span></div>
+          <div class="art-copy"><p class="art-kicker" id="art-kicker">YOUR NEXT CHAPTER STARTS HERE</p><h3 id="art-headline">A place to call your own</h3><p id="art-message">Thoughtful guidance and local expertise to help you take the next step with confidence.</p><div class="art-cta" id="art-cta">LET'S CONNECT</div></div>
+          <div class="art-footer"><b id="art-contact">Phone · Email · Website</b><span>MARKETING TEMPLATE</span></div>
+        </article>
+        <div class="preview-actions"><button type="button" class="primary" id="print">Print / Save as PDF</button><button type="button" class="secondary" id="copy-text">Copy flyer text</button></div>
+        <p class="fine-print">Before distributing, verify all property details, photos, brokerage/license disclosures, fair-housing language, financing terms, rates, and required advertising disclosures. This prototype does not automatically insert or validate those requirements.</p>
+      </div>
+    </section>
+    <section class="library-note"><div><p class="eyebrow dark">THE BROKER PAL TEMPLATE LIBRARY</p><h2>Your flyers become the starting point.</h2><p>When your original marketing pieces are added, we'll convert each approved design into a reusable master template. Users will be able to personalize permitted fields while protected disclosures and required wording remain intact.</p></div><div class="library-points"><span>✓ Original master designs stay unchanged</span><span>✓ Agent and investor branding profiles</span><span>✓ Print and social formats</span><span>◷ Central template updates</span></div></section>
+    <p class="disclaimer">Prototype only. Branding and preview actions run in this browser. Print uses the browser's print dialog. Nothing is published, sent, uploaded, or stored in a shared account.</p>
+  </div>
+</main>
+</Layout>
+<style>
+.marketing{--ink:#17394e;--muted:#708591;--line:#dce6e9;background:#f5f8f8;color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding-bottom:55px}.marketing *{box-sizing:border-box}.hero{background:#062943;color:#fff;padding:46px max(5vw,22px);display:flex;justify-content:space-between;align-items:center;gap:25px}.eyebrow{font-size:9px;letter-spacing:1.8px;font-weight:900;color:#5bd1c7;margin:0 0 12px}.hero h1{font-size:clamp(40px,5.5vw,64px);line-height:.98;letter-spacing:-2px;margin:0 0 14px}.hero h1 em{font-style:normal;color:#60d2c9}.hero p:not(.eyebrow){max-width:590px;color:#c3d5df;font-size:13px;line-height:1.7;margin:0}.hero aside{border:1px solid #3c6377;border-radius:11px;padding:20px 23px;background:#0d3852;min-width:190px}.hero aside b,.hero aside span{display:block}.hero aside b{font-size:16px;margin-bottom:8px}.hero aside span{font-size:10px;color:#b7cbd5}.wrap{max-width:1260px;margin:25px auto;padding:0 20px}.notice{display:flex;gap:12px;align-items:center;padding:12px 15px;background:#fff8e9;border:1px solid #eedcb6;border-radius:8px;color:#745b2d;font-size:10px;line-height:1.5}.notice b{white-space:nowrap}.builder{display:grid;grid-template-columns:minmax(270px,.78fr) minmax(0,1.3fr);gap:16px;margin-top:18px;align-items:start}.controls,.preview-area{background:#fff;border:1px solid var(--line);border-radius:11px;padding:20px;min-width:0}.section-title{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}.step{width:27px;height:27px;border-radius:8px;background:#e2f5f2;color:#138b85;display:grid;place-items:center;font-size:10px;font-weight:900;flex:0 0 27px}.section-title h2,.preview-top h2{font-size:17px;margin:0 0 4px}.section-title p,.preview-top p{font-size:10px;color:var(--muted);margin:0;line-height:1.5}.template-list{display:grid;gap:7px}.template{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #dce6e9;background:#fff;border-radius:8px;padding:10px;cursor:pointer;color:#17394e}.template.active{border-color:#159c95;background:#eff9f7;box-shadow:inset 0 0 0 1px #159c95}.template-icon{width:34px;height:34px;display:grid;place-items:center;background:#e6f2f1;color:#168d86;border-radius:7px;font-size:20px}.template b,.template small{display:block}.template b{font-size:10px}.template small{font-size:9px;color:#82939c;margin-top:4px}.second{margin-top:22px}.controls label{display:grid;gap:6px;margin:12px 0;font-size:10px;font-weight:800;color:#345166}.controls label small{font-weight:500;color:#8798a0}.controls input:not([type=color]):not([type=file]),.controls textarea{width:100%;border:1px solid #d5e1e4;border-radius:6px;padding:10px;font:inherit;font-size:11px;color:#17394e;background:#fbfdfd}.controls textarea{resize:vertical}.controls input[type=file]{font-size:10px;max-width:100%}.color-row{display:flex;align-items:center;gap:9px}.color-row input{width:42px;height:30px;border:0;background:transparent;padding:0}.color-row span{font-size:10px;color:#718691}.actions,.preview-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.primary,.secondary{border:0;border-radius:7px;padding:11px 14px;font-size:10px;font-weight:850;cursor:pointer}.primary{background:#07344d;color:#fff}.primary:hover{background:#10506a}.secondary{background:#edf3f4;color:#345365;border:1px solid #d9e4e6}.privacy,.fine-print{font-size:9px;line-height:1.6;color:#82939c;margin:12px 0 0}.preview-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}.preview-top>div:first-child{display:flex;gap:10px;align-items:flex-start}.format-switch{display:flex;border:1px solid #dce6e9;border-radius:7px;padding:3px;background:#f6f9f9}.format{border:0;background:transparent;border-radius:5px;padding:7px 10px;font-size:9px;color:#58717f;cursor:pointer}.format.active{background:#07344d;color:#fff}.artwork{--accent:#168f89;max-width:690px;margin:0 auto;background:#f1f4f0;color:#16394a;box-shadow:0 8px 28px #17394e19;aspect-ratio:4/5;display:flex;flex-direction:column;overflow:hidden}.artwork[data-format="social"]{aspect-ratio:1/1;max-width:560px}.art-top{display:flex;align-items:center;gap:10px;padding:5% 6%;position:relative}.logo-box{width:38px;height:38px;border-radius:7px;background:var(--accent);color:white;display:grid;place-items:center;font-weight:900;font-size:12px;overflow:hidden;flex:0 0 auto}.logo-box img{width:100%;height:100%;object-fit:contain;background:#fff}.art-brand{font-size:clamp(9px,1.5vw,14px);font-weight:900;letter-spacing:1px;max-width:52%;overflow-wrap:anywhere}.art-tag{margin-left:auto;font-size:7px;letter-spacing:1px;color:var(--accent);font-weight:900;text-align:right}.art-photo{margin:0 6%;height:37%;min-height:110px;background:linear-gradient(135deg,#9db6ad,#d7cbb5 52%,#5f8079);display:grid;place-items:center;color:#fff;text-shadow:0 1px 4px #17394e;font-size:8px;letter-spacing:1.4px;text-align:center;padding:12px}.artwork[data-template="financing"] .art-photo{background:linear-gradient(135deg,#183e54,#4d8790 52%,#b7c9bc)}.artwork[data-template="community"] .art-photo{background:linear-gradient(135deg,#c5b9a4,#e6d8c5 50%,#7c9a8c)}.art-copy{padding:5% 8%;flex:1}.art-kicker{font-size:8px;letter-spacing:1.5px;font-weight:900;color:var(--accent);margin:0 0 10px}.art-copy h3{font-family:Georgia,serif;font-size:clamp(24px,4.5vw,43px);line-height:1.03;letter-spacing:-1px;margin:0 0 11px;max-width:95%;overflow-wrap:anywhere}.art-copy>p:not(.art-kicker){font-size:clamp(9px,1.4vw,12px);line-height:1.65;max-width:90%;color:#58717b;margin:0}.art-cta{display:inline-block;margin-top:16px;padding:10px 15px;background:var(--accent);color:#fff;font-size:8px;letter-spacing:1px;font-weight:900}.art-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4% 6%;background:#e5ece8;font-size:8px;color:#3f5b65}.art-footer b{overflow-wrap:anywhere}.art-footer span{font-size:6px;letter-spacing:1px;white-space:nowrap}.artwork[data-format="social"] .art-photo{height:27%;min-height:70px}.artwork[data-format="social"] .art-copy{padding:3% 8%}.artwork[data-format="social"] .art-copy h3{font-size:clamp(20px,4vw,32px)}.artwork[data-format="social"] .art-cta{margin-top:8px}.library-note{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;margin-top:27px;padding:23px;background:#fff;border:1px solid var(--line);border-radius:10px}.eyebrow.dark{color:#168c86}.library-note h2{font-size:23px;margin:0 0 8px}.library-note p:not(.eyebrow){font-size:11px;line-height:1.7;color:#6e828d;margin:0;max-width:650px}.library-points{display:grid;gap:10px;align-content:center;font-size:10px;color:#446373}.disclaimer{font-size:9px;line-height:1.6;color:#82939c;margin:17px 0 0}
+@media print{body *{visibility:hidden!important}.artwork,.artwork *{visibility:visible!important}.artwork{position:absolute;left:0;top:0;width:100%;max-width:none;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}.marketing{background:#fff!important}}
+@media(max-width:850px){.builder{grid-template-columns:1fr}.library-note{grid-template-columns:1fr}.artwork{max-width:540px}}
+@media(max-width:560px){.hero{display:block;padding:35px 18px}.hero aside{display:inline-block;margin-top:18px}.wrap{padding:0 12px}.controls,.preview-area{padding:15px}.notice{display:block}.notice b{display:block;margin-bottom:4px}.preview-top{align-items:flex-start;flex-direction:column}.art-top{gap:7px}.art-tag{font-size:6px}.art-footer{font-size:7px}}
+</style>
+<script>
+const root=document.getElementById('marketing-studio');
+if(root){
+ const $=id=>document.getElementById(id);
+ const templates={
+  listing:{tag:'PROPERTY SPOTLIGHT',kicker:'YOUR NEXT CHAPTER STARTS HERE',headline:'A place to call your own',message:'Thoughtful guidance and local expertise to help you take the next step with confidence.',cta:"LET'S CONNECT"},
+  financing:{tag:'INVESTOR FINANCING',kicker:'FINANCING OPTIONS FOR REAL ESTATE INVESTORS',headline:'Make your next investment move',message:'Explore financing options designed for investment properties and business-purpose real estate transactions. Program terms and eligibility apply.',cta:'EXPLORE FINANCING'},
+  community:{tag:'LOCAL CONNECTIONS',kicker:'GOOD BUSINESS STARTS WITH GOOD RELATIONSHIPS',headline:'Better connections. Stronger communities.',message:'Connect with trusted real estate professionals and local resources to help move your next transaction forward.',cta:'LET'S CONNECT'}
+ };
+ let selected='listing',format='flyer',logo='';
+ const defaults={name:'Your Company Name',contact:'Phone · Email · Website',color:'#168f89'};
+ const apply=()=>{
+  const t=templates[selected],name=$('brand-name').value.trim()||defaults.name;
+  $('artwork').dataset.template=selected;$('artwork').dataset.format=format;
+  $('artwork').style.setProperty('--accent',$('brand-color').value);
+  $('art-brand').textContent=name.toUpperCase();$('art-tag').textContent=t.tag;$('art-kicker').textContent=t.kicker;
+  $('art-headline').textContent=$('headline').value||t.headline;$('art-message').textContent=$('message').value||t.message;
+  $('art-contact').textContent=$('brand-contact').value||defaults.contact;$('art-cta').textContent=t.cta;
+  $('logo-box').innerHTML=logo?'<img alt="Brand logo" src="'+logo+'">':name.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+  $('color-label').textContent=$('brand-color').value.toUpperCase();
+  document.querySelectorAll('[data-template]').forEach(b=>{if(b.classList.contains('template'))b.classList.toggle('active',b.dataset.template===selected)});
+ };
+ document.querySelectorAll('.template').forEach(b=>b.addEventListener('click',()=>{
+  selected=b.dataset.template;const t=templates[selected];$('headline').value=t.headline;$('message').value=t.message;apply();
+ }));
+ ['brand-name','brand-contact','headline','message','brand-color'].forEach(id=>$(id).addEventListener('input',apply));
+ document.querySelectorAll('.format').forEach(b=>b.addEventListener('click',()=>{format=b.dataset.format;document.querySelectorAll('.format').forEach(x=>x.classList.toggle('active',x===b));apply()}));
+ $('brand-logo').addEventListener('change',e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(!/^image\/(png|jpeg|webp)$/.test(file.type)||file.size>2*1024*1024){$('status').textContent='Choose a PNG, JPG or WebP image under 2 MB.';return;}
+  const reader=new FileReader();reader.onload=()=>{logo=String(reader.result);apply();$('status').textContent='Logo loaded for this local preview only.'};reader.readAsDataURL(file);
+ });
+ $('save-brand').addEventListener('click',()=>{
+  try{localStorage.setItem('brokerpal-marketing-brand',JSON.stringify({name:$('brand-name').value,contact:$('brand-contact').value,color:$('brand-color').value}));$('status').textContent='Brand details saved on this device only.'}
+  catch{$('status').textContent='Could not save in this browser. Your current preview remains active.'}
+ });
+ $('reset').addEventListener('click',()=>{
+  $('brand-name').value=defaults.name;$('brand-contact').value=defaults.contact;$('brand-color').value=defaults.color;$('brand-logo').value='';logo='';selected='listing';format='flyer';$('headline').value=templates.listing.headline;$('message').value=templates.listing.message;
+  try{localStorage.removeItem('brokerpal-marketing-brand')}catch{};document.querySelectorAll('.format').forEach(b=>b.classList.toggle('active',b.dataset.format==='flyer'));apply();$('status').textContent='Brand preview reset.';
+ });
+ $('print').addEventListener('click',()=>window.print());
+ $('copy-text').addEventListener('click',()=>{
+  const text=$('art-brand').textContent+'\n'+$('art-headline').textContent+'\n'+$('art-message').textContent+'\n'+$('art-contact').textContent;
+  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).then(()=>$('status').textContent='Flyer text copied.').catch(()=>$('status').textContent='Copy was not available in this browser.')}
+  else{$('status').textContent='Copy is not available in this browser.'}
+ });
+ try{const saved=JSON.parse(localStorage.getItem('brokerpal-marketing-brand')||'null');if(saved){$('brand-name').value=saved.name||defaults.name;$('brand-contact').value=saved.contact||defaults.contact;$('brand-color').value=saved.color||defaults.color}}catch{}
+ apply();
+}
+</script>
