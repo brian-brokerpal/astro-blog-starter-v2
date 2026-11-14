@@ -9,11 +9,11 @@ const isBrokerPalPreview = process.env.BROKER_PAL_PREVIEW === '1';
 export default defineConfig({
   site: 'https://yourbrokerpal.com',
   output: 'server',
+  // Sessions are unused by the site; disable the KV binding in Preview.
+  session: isBrokerPalPreview ? false : true,
   adapter: cloudflare({
     configPath: isBrokerPalPreview ? 'wrangler.preview.json' : 'wrangler.json',
     // Use build-time image processing to avoid a Cloudflare Images service binding.
-    imageService: 'compile',
-    // No site code uses Astro sessions; keep Preview independent of any KV namespace.
-    session: isBrokerPalPreview ? false : true
+    imageService: 'compile'
   })
 });
