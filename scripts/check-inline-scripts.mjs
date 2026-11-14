@@ -18,7 +18,7 @@ let checked = 0;
 
 for (const file of astroFiles) {
   const source = fs.readFileSync(file, 'utf8');
-  const inlineScript = /<script\\b[^>]*\\bis:inline\\b[^>]*>([\\s\\S]*?)<\\/script>/gi;
+  const inlineScript = /<script\b[^>]*\bis:inline\b[^>]*>([\s\S]*?)<\/script>/gi;
   let match;
   let index = 0;
 
