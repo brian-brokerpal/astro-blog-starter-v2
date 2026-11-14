@@ -21,14 +21,22 @@ When collecting Cloudflare figures, copy dashboard totals only. Do not send scre
 - [x] Add detailed investor/CPA implementation blueprint and link it from the capacity assessment.
 - [x] Keep draft PR #11 isolated; no merge or production deployment.
 - [ ] Review all preview pages on mobile for layout, accessibility, navigation, and wording.
+- [x] Add an automated syntax check for inline Astro scripts and confirm it passes.
 - [x] Harden demo contact rendering against HTML injection in the CRM sample cards.
 - [x] Replace user-logo HTML string insertion with DOM image elements and validate saved Realtor Studio logo data before preview.
+- [x] Validate saved Investor workspace preferences and agent-page logo data before applying them.
 - [ ] Replace illustrative/sample content with approved broker pal materials only when supplied.
 - [ ] Review the lowercase text-only broker pal wordmark and confirm the latest approved logo assets appear consistently.
 - [ ] Test Realtor Studio brand choices and verify the agent page preview reflects saved branding.
 - [ ] Test Marketing Studio flyer/social layouts, print-to-PDF, copy-text, and local logo/color handling.
 - [x] Confirm CRM and inquiry examples clearly state that they are local-only demonstrations and do not transmit/store leads.
 - [ ] Keep custom-domain/white-label routing as a future design item; do not provision hostnames or alter DNS until pricing, ownership verification, and the pilot model are approved.
+
+## Dependency security — new blocker
+
+- [x] Run a read-only npm audit and document its findings in [the dependency security review](./docs/dependency-security-review.md).
+- [ ] Create an isolated Astro/Cloudflare major-upgrade branch; resolve the critical Astro and high-severity adapter/tooling advisories, regenerate the lockfile, and pass all route/build checks before considering merge.
+- [ ] Re-run npm audit after the upgrade and review any remaining runtime/development advisories.
 
 ## Investor / CPA — implementation gates
 
