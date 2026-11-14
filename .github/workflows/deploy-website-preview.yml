@@ -78,5 +78,5 @@ jobs:
         if: always()
         run: |
           if [ -f npm-audit-report.json ]; then
-            node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("npm-audit-report.json","utf8")).metadata?.vulnerabilities ?? {}; let s="## Dependency audit\\n\\n| Severity | Count |\\n|---|---:|\\n"; for (const k of ["critical","high","moderate","low","info"]) s += "| "+k+" | "+(v[k] ?? 0)+" |\\n"; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,s);'
+            node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("npm-audit-report.json","utf8")).metadata?.vulnerabilities ?? {}; let s="## Dependency audit\n\n| Severity | Count |\n|---|---:|\n"; for (const k of ["critical","high","moderate","low","info"]) s += "| "+k+" | "+(v[k] ?? 0)+" |\n"; fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,s);'
           fi
