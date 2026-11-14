@@ -62,6 +62,24 @@ Official references:
 
 No paid plan, credit purchase, auto top-up, or paid add-on is approved by this assessment.
 
+
+## Authentication option to evaluate: Cloudflare Access
+
+Cloudflare Access may be a lower-cost front-door authentication option for a small, controlled pilot, but it is not a complete investor-account authorization system.
+
+- Cloudflare currently advertises a Zero Trust Free plan for up to 50 users. The published pay-as-you-go tier is $7 per user/month, so the design must stop and be reviewed before approaching the free user cap; never allow an automatic paid transition.
+- Access supports email one-time PINs for approved external email addresses. Current Cloudflare documentation says new Zero Trust organizations default to Cloudflare as the identity provider rather than OTP; OTP can be enabled separately. Access policies must explicitly restrict allowed identities. Never create a public policy that allows any email address.
+- Cloudflare Access authenticates a person at the application boundary. The investor application must still independently authorize each workspace, property, category, action, CPA grant, expiration and revocation on every request. A valid Access JWT alone must never grant access to all investor records.
+- The existing LOS Cloudflare Access configuration is staff-only and belongs to the separate LOS security boundary. Do not alter it or simply reuse its staff allowlist for investors/CPAs.
+- Cloudflare's onboarding documentation says even the Free Zero Trust plan requires completing plan selection and entering payment details, although the Free plan is not charged. Do not create or activate a Zero Trust organization, add payment details, enable OTP, or change Access policies without explicit approval and a billing review.
+- If evaluated later, count every investor and CPA who authenticates against the 50-user limit, verify how individual email allowlisting and revocation will be automated, and test tenant isolation independently of Access.
+
+Official references:
+- Zero Trust pricing and 50-user Free limit: https://www.cloudflare.com/plans/zero-trust-services/
+- Access guest OTP policies: https://developers.cloudflare.com/cloudflare-one/access-controls/policies/common-policies/
+- One-time PIN login: https://developers.cloudflare.com/cloudflare-one/integrations/identity-providers/one-time-pin/
+- Zero Trust onboarding/payment-details step: https://developers.cloudflare.com/learning-paths/clientless-access/initial-setup/create-zero-trust-org/
+
 ## Recommended pilot architecture
 
 1. **Separate application identity:** Investor accounts must be authenticated independently of staff LOS access. Use secure server-managed sessions, verified email, MFA/step-up authentication for sensitive actions, rate limits, and account recovery.
