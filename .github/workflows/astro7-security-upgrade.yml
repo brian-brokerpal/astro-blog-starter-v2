@@ -1,0 +1,77 @@
+name: Isolated Astro 7 security upgrade trial
+
+on:
+  push:
+    branches:
+      - broker-pal-astro7-security-upgrade
+
+permissions:
+  contents: write
+
+concurrency:
+  group: broker-pal-astro7-security-upgrade
+  cancel-in-progress: true
+
+jobs:
+  upgrade-and-verify:
+    if: "!contains(github.event.head_commit.message, '[bot-upgrade]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out isolated upgrade branch
+        uses: actions/checkout@v4
+        with:
+          ref: broker-pal-astro7-security-upgrade
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Upgrade Astro and compatible official integrations
+        run: |
+          npm install --save-exact astro@7.4.12 @astrojs/cloudflare@14.4.8 @astrojs/mdx@8.1.6 @astrojs/rss@4.0.19 @astrojs/sitemap@3.7.5
+          npm install --save-dev --save-exact wrangler@4.162.0
+
+      - name: Build and verify isolated configuration
+        env:
+          BROKER_PAL_PREVIEW: '1'
+        run: |
+          set -euo pipefail
+          npm run build
+          test -f dist/_worker.js/index.js
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const config = JSON.parse(fs.readFileSync('wrangler.preview.json', 'utf8'));
+          if (config.d1_databases?.length || config.kv_namespaces?.length) {
+            throw new Error('Upgrade preview must not bind production D1 or KV.');
+          }
+          console.log('PASS: Astro 7 build succeeded and preview config remains isolated.');
+          NODE
+
+      - name: Report remaining dependency advisories
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm audit --json > /tmp/npm-audit.json || true
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('/tmp/npm-audit.json', 'utf8'));
+          console.log('Post-upgrade advisory summary:', JSON.stringify(report.metadata?.vulnerabilities || {}));
+          for (const [name, item] of Object.entries(report.vulnerabilities || {})) {
+            console.log(JSON.stringify({ package: name, severity: item.severity, direct: item.isDirect, range: item.range, fixAvailable: item.fixAvailable }));
+          }
+          NODE
+
+      - name: Commit regenerated dependency manifests
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency manifest changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore: trial patched Astro 7 dependencies [bot-upgrade] [skip ci]"
+          git push origin "HEAD:broker-pal-astro7-security-upgrade"
