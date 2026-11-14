@@ -46,6 +46,8 @@ jobs:
           NODE
 
       - name: Build and type-check against isolated Preview config
+        env:
+          BROKER_PAL_PREVIEW: '1'
         run: |
           npm run build
           npx tsc
@@ -103,7 +105,12 @@ jobs:
           fi
           if ! grep -Eiq 'Broker Pal|YourBrokerPal' /tmp/broker-pal-preview.html; then
             echo "Preview returned HTTP 200 but did not contain the expected Broker Pal page content."
-            head -c 2000 /tmp/broker-pal-preview.html
+            echo "Response bytes: $(wc -c < /tmp/broker-pal-preview.html)"
+            echo "Response headers:"
+            curl --silent --show-error --location --max-time 30 --head "$PREVIEW_URL/" || true
+            echo "Response body (first 2000 bytes):"
+            head -c 2000 /tmp/broker-pal-preview.html || true
+            echo
             exit 1
           fi
           echo "PASS: Preview returns the Broker Pal website HTML."
