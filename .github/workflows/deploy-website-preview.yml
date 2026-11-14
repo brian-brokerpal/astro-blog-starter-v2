@@ -8,6 +8,8 @@ on:
 permissions:
   contents: write
 
+# Preview validates the committed lockfile and never modifies production resources.
+
 concurrency:
   group: broker-pal-website-wordmark-security-final
   cancel-in-progress: true
