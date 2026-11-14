@@ -1,4 +1,8 @@
+import { env } from "cloudflare:workers";
 import type { APIRoute } from "astro";
+
+type CensusBindings = { CENSUS_API_KEY?: string };
+const bindings = env as unknown as CensusBindings;
 
 export const prerender = false;
 
@@ -15,19 +19,17 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
-    const runtime = locals?.runtime;
-    const env = runtime?.env ?? {};
-    const apiKey = env.CENSUS_API_KEY;
+    const apiKey = bindings.CENSUS_API_KEY;
     const incoming = new URL(request.url);
 
     // Safe diagnostic: confirms route and secret binding without exposing the key.
     if (incoming.searchParams.get("diagnostic") === "1") {
       return json({
         route: "census-api-active",
-        runtimeAvailable: Boolean(runtime),
-        envAvailable: Boolean(runtime?.env),
+        runtimeAvailable: true,
+        envAvailable: true,
         censusApiKeyAvailable: Boolean(apiKey),
         worker: "astro-blog-starter-v2"
       });
