@@ -125,4 +125,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 .report-promo{margin-top:35px}
 @media(max-width:850px){.hero-approved{min-height:420px;background-position:58% center}.hero-approved-copy{max-width:520px}.approved-program-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.itin-feature{flex-wrap:wrap;gap:16px;padding-bottom:18px}.itin-photo{width:34%;min-height:150px}.itin-copy{padding-left:20px}.itin-feature>.approved-cta{margin:0 18px 0 auto}}
 @media(max-width:560px){.hero-approved{min-height:470px;padding:38px 22px;background-image:linear-gradient(90deg,rgba(0,36,71,.96),rgba(0,36,71,.73)),url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1100&q=82');background-position:center}.hero-approved h1{font-size:40px}.hero-approved p{font-size:17px}.approved-programs{padding:15px 15px 20px}.approved-programs>h2{gap:10px;font-size:23px}.approved-program-grid{gap:10px}.approved-program-grid a{min-height:155px;padding:10px 6px}.approved-program-grid strong{font-size:16px}.approved-program-grid small{font-size:12px}.itin-feature{display:grid;grid-template-columns:1fr;gap:0}.itin-photo{width:100%;height:125px;min-height:125px}.itin-copy{margin:16px 18px;padding:0 0 0 14px}.itin-copy h3{font-size:25px}.itin-copy p{font-size:14px}.itin-feature>.approved-cta{margin:0 18px;width:max-content}}
+
+/* Visible keyboard focus for links, buttons, and form controls. */
+:global(a:focus-visible),
+:global(button:focus-visible),
+:global(input:focus-visible),
+:global(select:focus-visible),
+:global(textarea:focus-visible) {
+  outline: 3px solid #18d0d0;
+  outline-offset: 3px;
+}
 </style>
