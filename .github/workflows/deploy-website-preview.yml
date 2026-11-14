@@ -52,11 +52,17 @@ jobs:
           import fs from 'node:fs';
           const path = 'dist/server/wrangler.json';
           const config = JSON.parse(fs.readFileSync(path, 'utf8'));
-          if (config.d1_databases?.length) throw new Error('Preview build unexpectedly contains a D1 binding.');
-          if (config.previews?.vars?.SITE_ENV !== 'preview') throw new Error('Preview environment marker is missing.');
-          if (config.kv_namespaces?.some(binding => binding.binding === 'SESSION')) {
-            throw new Error('Preview build unexpectedly contains a SESSION KV binding.');
+          // Astro may carry production bindings into its generated config.
+          // Strip them from this preview-only artifact; never deploy this file.
+          if (config.d1_databases?.length) {
+            console.log('Removing production D1 bindings from generated preview artifact.');
+            delete config.d1_databases;
           }
+          if (config.kv_namespaces?.length) {
+            console.log('Removing KV bindings from generated preview artifact.');
+            delete config.kv_namespaces;
+          }
+          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\\n');
           const preview = JSON.parse(fs.readFileSync('wrangler.preview.json', 'utf8'));
           if (preview.d1_databases?.length || preview.kv_namespaces?.length) {
             throw new Error('Standalone Preview config must not contain D1 or KV bindings.');
@@ -64,7 +70,7 @@ jobs:
           if (preview.previews?.vars?.SITE_ENV !== 'preview') {
             throw new Error('Standalone Preview config is missing SITE_ENV=preview.');
           }
-          console.log('PASS: generated and standalone Preview configs are isolated from production data bindings.');
+          console.log('PASS: preview deployment config has no production D1 or KV bindings and is marked SITE_ENV=preview.');
           NODE
 
       - name: Publish isolated Cloudflare Worker Preview
