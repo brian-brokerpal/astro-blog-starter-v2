@@ -14,5 +14,9 @@
     "enabled": true
   },
   "upload_source_maps": true,
-  "previews": {}
+  "previews": {
+    "vars": {
+      "SITE_ENV": "preview"
+    }
+  }
 }
