@@ -22,12 +22,14 @@ The audit also reported affected transitive packages including `devalue`, `fast-
 
 ## Why no automatic fix was applied
 
-The highest-severity remediation requires coordinated major upgrades. The official Cloudflare/Astro compatibility guidance maps Astro 5 to Cloudflare adapter 12, Astro 6 to adapter 13, and Astro 7 to adapter 14. Astro 7 also upgrades to Vite 8 and uses a stricter Rust compiler that can expose invalid HTML previously tolerated by the old compiler.
+The highest-severity remediation requires coordinated major upgrades. The official compatibility guidance is evolving. The current stable adapter documentation lists v14.4.8 and identifies adapter v13 as the Astro 6 upgrade path. Separate v15 migration guidance says adapter v15 requires Astro 7.4.0 or later and migrates the project from Wrangler to the new `cf` CLI and `cloudflare.config.ts` configuration. Astro 7 also moves to Vite 8 and a stricter compiler that can expose invalid HTML previously tolerated by older versions.
 
 Official guidance:
 - Astro 7 upgrade guide: https://docs.astro.build/en/guides/upgrade-to/v7/
 - Cloudflare adapter compatibility and upgrade notes: https://docs.astro.build/en/guides/integrations-guide/cloudflare/
 - Cloudflare's Astro migration notes: https://developers.cloudflare.com/workers/static-assets/migration-guides/vercel-to-workers/astro/
+- Cloudflare adapter v15 migration notes: https://cloudflare-next.previews.docs.astro.build/en/guides/integrations-guide/cloudflare/
+- Cloudflare `cf migrate` guide (currently beta): https://developers.cloudflare.com/cf/wrangler/migrate/
 
 A safe remediation needs its own isolated branch and staged changes:
 1. Preserve the current website feature branch and its working preview.
@@ -47,6 +49,11 @@ No paid service, subscription, billing change, production deployment, or resourc
 
 ## Isolated Astro 7 upgrade trial
 
-An isolated branch, `broker-pal-astro7-security-upgrade`, was created from the website feature branch. It tests Astro 7.4.12 with `@astrojs/cloudflare@14.4.8`, MDX 8, RSS 4, sitemap 3.7.5, and Wrangler 4.162.0. The Astro build completed successfully, and the preview configuration check confirmed no D1, KV, or R2 bindings were present. The Wrangler dry-run then failed while resolving the adapter's unified server entrypoint. A diagnostic step has been added to identify whether the installed adapter package exposes that entrypoint and to inspect its package files. This is a preview-only compatibility issue; no production files or deployments were changed.
+An isolated branch, `broker-pal-astro7-security-upgrade`, tests the patched Astro 7.4.12 dependency set. The first trial used `@astrojs/cloudflare@14.4.8`; Astro compiled successfully, but Wrangler could not resolve the adapter's unified entrypoint. A second attempt switched the preview config to the older built-worker path, but the Astro 7.4.12 build did not emit that legacy file, so the dry-run stopped before deployment. During installation, npm reported **2 remaining advisories (1 low, 1 high)**; the post-upgrade audit step did not run because the build verification stopped early.
 
-The feature branch's own isolated website preview completed successfully on both its stable preview URL and unique deployment URL, with HTTP 200 responses on all seven expected routes.
+The evidence points to a version/configuration mismatch rather than an application page error. Official adapter guidance now says v15 requires Astro 7.4.0 or later and replaces Wrangler with the beta `cf` CLI plus `cloudflare.config.ts`. The current v14.4.8 stable documentation still describes the earlier Astro 6 upgrade path. This means the next possible Astro 7 test would require a separate migration trial on the isolated branch; it must not be applied to the working feature branch or production until the beta tooling is proven and the remaining advisory is understood.
+
+**Current outcome:** Astro 7 upgrade is not approved or complete. The feature branch remains on its existing dependency set and its own preview is unaffected. No production changes, merges, or deployments were made.
+
+
+The feature branch's own isolated website preview completed successfully on both its stable preview URL and unique deployment URL, with HTTP 200 responses on all seven expected routes. The most recent preview run also passed the new keyboard-focus CSS changes and inline-script check.
