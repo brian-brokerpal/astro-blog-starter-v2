@@ -100,8 +100,6 @@ jobs:
             exit 1
           fi
           echo "PASS: Preview returns the Broker Pal website HTML."
-        env:
-          PREVIEW_URL: ${{ env.PREVIEW_URL }}
 
       - name: Publish dependency audit summary
         if: always()
