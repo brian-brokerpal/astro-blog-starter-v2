@@ -10,6 +10,8 @@ export default defineConfig({
   site: 'https://yourbrokerpal.com',
   output: 'server',
   adapter: cloudflare({
-    configPath: isBrokerPalPreview ? 'wrangler.preview.json' : 'wrangler.json'
+    configPath: isBrokerPalPreview ? 'wrangler.preview.json' : 'wrangler.json',
+    // No site code uses Astro sessions; keep Preview independent of any KV namespace.
+    session: isBrokerPalPreview ? false : true
   })
 });
