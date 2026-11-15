@@ -100,6 +100,41 @@ import Footer from '../components/Footer.astro';
       </div>
     </section>
 
+    <section class="market-snapshot-section" id="georgia-market-snapshot">
+      <div class="section-label">REAL DATA · GEORGIA & U.S. HOUSING</div>
+      <h2>What are home values doing in our market?</h2>
+      <p class="section-intro">A quick look at the latest quarterly FHFA House Price Index data available as of November 14, 2026. These figures track changes in home values—not current listing prices or the value of a particular property.</p>
+      <div class="market-snapshot-grid">
+        <article class="market-snapshot-card">
+          <span>GEORGIA</span>
+          <strong>+1.90%</strong>
+          <b>One-year change</b>
+          <p>+39.22% over five years · +0.14% quarter over quarter</p>
+          <small>Seasonally adjusted, purchase-only state index</small>
+        </article>
+        <article class="market-snapshot-card featured">
+          <span>ATLANTA METRO</span>
+          <strong>+1.04%</strong>
+          <b>One-year change</b>
+          <p>+42.66% over five years · −0.37% quarter over quarter</p>
+          <small>All-transactions metro index; not seasonally adjusted</small>
+        </article>
+        <article class="market-snapshot-card">
+          <span>UNITED STATES</span>
+          <strong>+2.13%</strong>
+          <b>One-year change</b>
+          <p>+33.41% over five years · +0.35% quarter over quarter</p>
+          <small>Seasonally adjusted, purchase-only national index</small>
+        </article>
+      </div>
+      <p class="market-snapshot-note"><b>How to read this:</b> The Georgia and U.S. figures use FHFA's seasonally adjusted, purchase-only index. The Atlanta metro figure uses FHFA's non-seasonally adjusted, all-transactions index, so it is useful local context but is not a perfectly like-for-like comparison with the other two. Appreciation is not the same as rental cash flow or investment return.</p>
+      <div class="resource-links">
+        <a href="https://www.fhfa.gov/data/hpi/summary-tables" target="_blank" rel="noopener noreferrer">View FHFA's official state and metro comparison tables ↗</a>
+        <a href="https://www.fhfa.gov/reports/house-price-index/2026/Q2" target="_blank" rel="noopener noreferrer">Read the FHFA 2026 Q2 report ↗</a>
+      </div>
+      <p class="fine-print">Source: Federal Housing Finance Agency, House Price Index Summary Tables, 2026 Q2. Released August 25, 2026. Data are periodically revised. The next quarterly release is scheduled for November 24, 2026.</p>
+    </section>
+
     <section class="process-section">
       <div class="section-label">WHAT LENDERS MAY REVIEW</div>
       <h2>Look beyond the ratio.</h2>
@@ -469,6 +504,24 @@ import Footer from '../components/Footer.astro';
 .history-source-links a{color:#69d9ce;font-size:12px;font-weight:750;text-decoration:none}
 .history-source-links a:hover{text-decoration:underline}
 @media(max-width:720px){.history-stat-grid{grid-template-columns:1fr}.history-explainer-grid{grid-template-columns:1fr}.history-chart-card{padding:16px}.history-chart-wrap svg{min-height:180px}}
+
+.market-snapshot-section{background:linear-gradient(180deg,#0b2233,#0a1d2c);border-top:1px solid #17384a;border-bottom:1px solid #17384a}
+.market-snapshot-section h2{font-size:clamp(30px,3.4vw,43px);line-height:1.15;letter-spacing:-1.4px;margin:14px 0 18px;color:#f4f8fa}
+.market-snapshot-section .section-intro{max-width:850px;color:#c1d0d8}
+.market-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:30px 0 20px}
+.market-snapshot-card{padding:25px 24px;border:1px solid #315267;border-radius:8px;background:#102b3e;display:flex;flex-direction:column;min-height:190px}
+.market-snapshot-card.featured{border-color:#58bfb5;background:linear-gradient(145deg,#123d4b,#102b3e)}
+.market-snapshot-card>span{font-size:10px;font-weight:850;letter-spacing:1.7px;color:#83b7c3}
+.market-snapshot-card>strong{font-size:clamp(34px,4vw,46px);line-height:1.15;letter-spacing:-1.8px;color:#69d8cc;margin:13px 0 3px}
+.market-snapshot-card>b{font-size:14px;color:#f1f6f8}
+.market-snapshot-card>p{font-size:13px;color:#c1d0d8;margin:12px 0}
+.market-snapshot-card>small{font-size:11px;color:#91aeba;margin-top:auto}
+.market-snapshot-note{font-size:13px;line-height:1.7;color:#b7c9d2;padding:16px 18px;border-left:3px solid #5bd0c4;background:#102b3e}
+.market-snapshot-section .resource-links{display:flex;gap:12px 24px;flex-wrap:wrap;margin:18px 0}
+.market-snapshot-section .resource-links a{color:#72d6cc;font-size:13px;font-weight:700;text-decoration:none}
+.market-snapshot-section .resource-links a:hover{text-decoration:underline}
+.market-snapshot-section .fine-print{font-size:11px;color:#8fa8b5}
+@media(max-width:760px){.market-snapshot-grid{grid-template-columns:1fr;gap:12px}.market-snapshot-card{min-height:0;padding:21px}.market-snapshot-card>strong{font-size:38px}}
 </style>
 <script>
 const rentInput = document.querySelector('#monthly-rent');
