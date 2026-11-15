@@ -51,7 +51,7 @@ jobs:
 
           apps_status=$(curl -sS -o /tmp/access-apps.json -w "%{http_code}" -H "$AUTH" "$BASE/access/apps?per_page=100")
           echo "Access applications list HTTP: $apps_status"
-          jq -c '{success, errors, result: [.result[]? | select((.domain // "" | contains("yourbrokerpal-los--dscr.pages.dev")) or (.domain // "" | contains("los.yourbrokerpal.com")) or any(.destinations[]?; (.uri // "" | contains("yourbrokerpal-los--dscr.pages.dev")) or (.uri // "" | contains("los.yourbrokerpal.com")))) | {id, name, domain, type, session_duration, aud, policies: [.policies[]? | {id, name, decision, include_types: [.include[]? | keys[]], exclude_types: [.exclude[]? | keys[]], require_types: [.require[]? | keys[]]}]}]}' /tmp/access-apps.json
+          jq -c '{success, errors, count: (.result | length), apps: [.result[]? | {id, name, domain, self_hosted_domains, destinations: [.destinations[]? | {type, uri, overrides}], type, session_duration, aud, policies: [.policies[]? | {id, name, decision, include_types: [.include[]? | keys[]], exclude_types: [.exclude[]? | keys[]], require_types: [.require[]? | keys[]]}]}]}' /tmp/access-apps.json
 
           if [ "$project_status" != "200" ] || [ "$domains_status" != "200" ] || [ "$apps_status" != "200" ]; then
             echo "One or more read-only Cloudflare lookups failed; inspect the HTTP statuses above."
