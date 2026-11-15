@@ -1,0 +1,71 @@
+name: Configure narrowly scoped public LOS intake paths
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/los-public-intake-access.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  configure-access:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Create only the two approved public intake Access applications
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_API_TOKEN"
+          test -n "$CF_ACCOUNT_ID"
+          API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/access/apps"
+          HOST="yourbrokerpal-los--dscr.pages.dev"
+
+          create_if_missing() {
+            local path="$1"
+            local name="$2"
+            local encoded
+            encoded=$(jq -rn --arg v "$HOST$path" '$v|@uri')
+            local list
+            list=$(curl --fail-with-body --silent --show-error \
+              -H "Authorization: Bearer $CF_API_TOKEN" \
+              "$API?per_page=100")
+            echo "$list" | jq -e '.success == true' >/dev/null
+
+            if echo "$list" | jq -e --arg d "$HOST$path" \
+              '.result[]? | select(.domain == $d or any(.destinations[]?; .uri == ("https://" + $d) or .uri == $d))' >/dev/null; then
+              echo "Already configured: $HOST$path"
+              return 0
+            fi
+
+            local payload
+            payload=$(jq -n --arg domain "$HOST$path" --arg name "$name" '{
+              name: $name,
+              domain: $domain,
+              type: "self_hosted",
+              session_duration: "24h",
+              policies: [{
+                name: ("Bypass only " + $name),
+                decision: "bypass",
+                include: [{ everyone: {} }]
+              }]
+            }')
+            local response
+            response=$(curl --fail-with-body --silent --show-error \
+              -X POST "$API" \
+              -H "Authorization: Bearer $CF_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "$payload")
+            echo "$response" | jq -e '.success == true' >/dev/null
+            echo "Created narrowly scoped Bypass application: $HOST$path"
+          }
+
+          create_if_missing "/api/public-leads" "Public LOS lead intake"
+          create_if_missing "/api/email-preferences" "Public LOS email preferences"
