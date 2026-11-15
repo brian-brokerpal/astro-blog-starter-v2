@@ -102,11 +102,23 @@ export async function GET({ request, locals }) {
       "INSERT INTO rentcast_monthly_usage (month_key, request_count, updated_at) VALUES (?, 1, CURRENT_TIMESTAMP) ON CONFLICT(month_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 50 RETURNING request_count"
     ).bind(monthKey).first();
 
+    let approvedGrant = null;
     if (!reservation) {
-      return json({
-        error: "The free monthly property-valuation allowance has been reached. No additional provider request was made. Please try again next month.",
-        quotaReached: true
-      }, 429);
+      approvedGrant = await db.prepare(
+        "UPDATE rentcast_overage_requests SET status = 'consumed', consumed_at = CURRENT_TIMESTAMP WHERE cache_key = ? AND status = 'approved' RETURNING id"
+      ).bind(cacheKey).first();
+
+      if (!approvedGrant) {
+        await db.prepare(
+          "INSERT INTO rentcast_overage_requests (id, cache_key, month_key, property_address, property_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT(cache_key, month_key) DO UPDATE SET updated_at = CURRENT_TIMESTAMP WHERE rentcast_overage_requests.status = 'pending'"
+        ).bind(crypto.randomUUID(), cacheKey, monthKey, address, propertyType).run();
+
+        return json({
+          error: "The 50-request monthly limit has been reached. Your request has been sent for owner review. No additional provider request was made.",
+          quotaReached: true,
+          approvalRequired: true
+        }, 429);
+      }
     }
 
     const upstream = await fetch("https://api.rentcast.io/v1/avm/value?" + params.toString(), {
