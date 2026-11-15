@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Check out release-preflight branch
         uses: actions/checkout@v4
-      - name: Inspect production D1 and save a read-only report
+      - name: Inspect production endpoints and D1 (read only)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -24,11 +24,22 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const report = [];
+          for (const path of ['/api/public-leads', '/api/email-preferences']) {
+            try {
+              const r = await fetch('https://yourbrokerpal-los--dscr.pages.dev' + path, { redirect: 'manual' });
+              let detail = '';
+              const location = r.headers.get('location');
+              if (location) { try { const u = new URL(location); detail = ' → ' + u.origin + u.pathname; } catch {} }
+              report.push(`Public route check GET ${path}: HTTP ${r.status}${detail}`);
+            } catch (e) {
+              report.push(`Public route check GET ${path}: network error ${String(e.message || e)}`);
+            }
+          }
           const token = process.env.CLOUDFLARE_API_TOKEN || '';
           const account = process.env.CLOUDFLARE_ACCOUNT_ID || '';
           const id = process.env.D1_DATABASE_ID;
           if (!token || !account) {
-            report.push('BLOCKED: production Cloudflare secrets were not available to this branch workflow.');
+            report.push('D1 BLOCKED: production Cloudflare secrets were not available to this branch workflow.');
           } else {
             const base = `https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${id}`;
             async function call(url, options = {}) {
@@ -62,7 +73,7 @@ jobs:
               report.push('', '## Release-related tables', ...releaseTables.map(x => x.name));
               report.push('', 'READ ONLY: no database writes were performed.');
             } catch (error) {
-              report.push('PREFLIGHT FAILED: ' + String(error.message || error));
+              report.push('D1 PREFLIGHT FAILED: ' + String(error.message || error));
             }
           }
           fs.writeFileSync('los-d1-preflight-report.md', report.join('\n') + '\n');
@@ -70,8 +81,6 @@ jobs:
           NODE
       - name: Save preflight report to this temporary branch
         if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
