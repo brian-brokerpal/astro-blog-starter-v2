@@ -18,45 +18,17 @@ export async function GET({ request, locals }) {
     const runtime = locals?.runtime;
     const env = runtime?.env ?? {};
     const apiKey = env.CENSUS_API_KEY;
-    const incoming = new URL(request.url);
-
-    // Safe diagnostic: confirms route and secret binding without exposing the key.
-    if (incoming.searchParams.get("diagnostic") === "1") {
-      return json({
-        route: "census-api-active",
-        runtimeAvailable: Boolean(runtime),
-        envAvailable: Boolean(runtime?.env),
-        censusApiKeyAvailable: Boolean(apiKey),
-        worker: "astro-blog-starter-v2"
-      });
-    }
-
-    if (incoming.searchParams.get("diagnostic") === "tract-list") {
-      if (!apiKey) return json({ error: "Census API key is not configured." }, 503);
-      const check = new URL("https://api.census.gov/data/2024/acs/acs5");
-      check.searchParams.set("get", "NAME,B01003_001E");
-      check.searchParams.set("for", "tract:*");
-      check.searchParams.set("in", "state:13");
-      check.searchParams.append("in", "county:121");
-      check.searchParams.set("key", apiKey);
-      const checkResponse = await fetch(check.toString());
-      const checkBody = await checkResponse.text();
-      return json({
-        status: checkResponse.status,
-        contentType: checkResponse.headers.get("content-type"),
-        bodyPreview: checkBody.slice(0, 1200)
-      }, 200);
-    }
 
     if (!apiKey) {
-      return json({ error: "Census API key is not configured on the server.", route: "census-api-active" }, 503);
+      return json({ error: "Census API is not configured. Please try again later.", route: "census-api-active" }, 503);
     }
 
+    const incoming = new URL(request.url);
     const tract = incoming.searchParams.get("for");
     const state = incoming.searchParams.get("state");
     const county = incoming.searchParams.get("county");
 
-    if (!/^\d{6}$/.test(tract || "") || !/^\d{2}$/.test(state || "") || !/^\d{3}$/.test(county || "")) {
+    if (!/^\\d{6}$/.test(tract || "") || !/^\\d{2}$/.test(state || "") || !/^\\d{3}$/.test(county || "")) {
       return json({ error: "Invalid Census geography parameters.", route: "census-api-active" }, 400);
     }
 
@@ -81,10 +53,9 @@ export async function GET({ request, locals }) {
         "X-BrokerPal-Census-Route": "active"
       }
     });
-  } catch (error) {
+  } catch {
     return json({
-      error: "Census API route failed before completing the request.",
-      detail: error instanceof Error ? error.message : "Unknown runtime error"
+      error: "The Census data service is temporarily unavailable."
     }, 500);
   }
 }
