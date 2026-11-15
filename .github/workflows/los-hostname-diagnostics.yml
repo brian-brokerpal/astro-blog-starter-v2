@@ -1,6 +1,11 @@
 name: Diagnose LOS custom hostname prerequisites
 
 on:
+  push:
+    branches:
+      - diagnose-los-hostname-access
+    paths:
+      - ".github/workflows/los-hostname-diagnostics.yml"
   pull_request:
     paths:
       - ".github/workflows/los-hostname-diagnostics.yml"
