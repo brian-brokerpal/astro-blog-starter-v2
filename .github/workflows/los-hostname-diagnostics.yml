@@ -41,6 +41,10 @@ jobs:
             jq -c '{success, errors, messages, policies: [.result.policies[]? | {permission_groups: [.permission_groups[]? | .name], resource_types: (.resources | keys)}]}' /tmp/token-detail.json
           fi
 
+          d1_status=$(curl -sS -o /tmp/d1-databases.json -w "%{http_code}" -H "$AUTH" "$BASE/d1/database?per_page=100")
+          echo "Account D1 database inventory HTTP: $d1_status"
+          jq -c '{success, errors, databases: [.result[]? | {uuid, name, version, num_tables, file_size, created_at, modified_at}]}' /tmp/d1-databases.json
+
           project_status=$(curl -sS -o /tmp/pages-project.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr")
           echo "LOS Pages project lookup HTTP: $project_status"
           jq -c '{success, errors, result: (if .result then {name: .result.name, subdomain: .result.subdomain, domains: .result.domains} else null end)}' /tmp/pages-project.json
