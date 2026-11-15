@@ -124,10 +124,9 @@ export async function GET({ request, locals }) {
     ).bind(cacheKey, JSON.stringify(safeResult)).run();
 
     return json(safeResult);
-  } catch (error) {
+  } catch {
     return json({
-      error: "The property valuation service encountered an unexpected error.",
-      detail: error instanceof Error ? error.message : "Unknown error"
+      error: "The property valuation service is temporarily unavailable. Please try again later."
     }, 500);
   }
 }
