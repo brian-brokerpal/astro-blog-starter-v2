@@ -105,8 +105,8 @@ export async function GET({ request, locals }) {
     let approvedGrant = null;
     if (!reservation) {
       approvedGrant = await db.prepare(
-        "UPDATE rentcast_overage_requests SET status = 'consumed', consumed_at = CURRENT_TIMESTAMP WHERE cache_key = ? AND status = 'approved' RETURNING id"
-      ).bind(cacheKey).first();
+        "UPDATE rentcast_overage_requests SET status = 'consumed', consumed_at = CURRENT_TIMESTAMP WHERE cache_key = ? AND month_key = ? AND status = 'approved' RETURNING id"
+      ).bind(cacheKey, monthKey).first();
 
       if (!approvedGrant) {
         await db.prepare(
