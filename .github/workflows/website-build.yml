@@ -27,3 +27,9 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Deploy isolated Investor Education preview
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feature/investor-education-page' && github.event.pull_request.head.repo.full_name == github.repository
+        run: npx wrangler deploy --config wrangler.preview.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
