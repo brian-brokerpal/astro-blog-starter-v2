@@ -251,6 +251,53 @@ import Footer from '../components/Footer.astro';
       <details><summary>How much should I reserve for maintenance and vacancy?</summary><p>There is no universal percentage. It depends on property age, condition, systems, local vacancy, insurance deductibles, climate, and rental model. Use property-specific estimates and stress-test higher costs and lower occupancy.</p></details>
       <details><summary>What should I do when a tenant reports a serious repair?</summary><p>Respond promptly, follow the lease and applicable law, document the report and work, and use qualified contractors for safety-critical work. Georgia's landlord-tenant handbook explains repair and habitability responsibilities.</p></details>
     </section>
+
+    <section class="housing-history-section" id="housing-history">
+      <div class="section-label">THE LONG VIEW · U.S. HOUSING HISTORY</div>
+      <h2>Mortgages, interest rates & home values through the decades</h2>
+      <p class="section-intro">Put today's market in historical context. Explore how U.S. home values and 30-year mortgage rates have moved through different economic cycles. Long-term national trends are useful context—not a promise about any property's future value.</p>
+      <div class="history-stat-grid">
+        <article><strong>7 of 84</strong><span>Years with national home-price declines in the Shiller series, 1942–2025</span></article>
+        <article><strong>16.64%</strong><span>Highest annual average 30-year fixed mortgage rate, 1981</span></article>
+        <article><strong>2.96%</strong><span>Lowest annual average 30-year fixed mortgage rate, 2021</span></article>
+      </div>
+      <div class="history-chart-card">
+        <div class="history-chart-heading"><div><span class="history-kicker">EXPLORE THE DATA</span><h3 id="history-chart-title">U.S. home-price index</h3><p id="history-chart-subtitle">FHFA All-Transactions HPI · fourth-quarter observations · 1975–2025</p></div>
+          <div class="history-chart-switch" role="group" aria-label="Choose historical chart"><button type="button" class="history-tab active" data-chart="prices" aria-pressed="true">Home values</button><button type="button" class="history-tab" data-chart="rates" aria-pressed="false">Mortgage rates</button></div>
+        </div>
+        <div class="history-chart-wrap"><svg id="housing-history-chart" viewBox="0 0 900 360" role="img" aria-label="Interactive historical chart of U.S. home values"></svg></div>
+        <div class="history-chart-legend"><span><i class="legend-line"></i><span id="history-legend-label">FHFA home-price index (1980 Q1 = 100)</span></span><span id="history-chart-range">1975–2025</span></div>
+        <p class="history-chart-note" id="history-chart-note">An index tracks changes over time; it is not the average dollar price of a home. The FHFA series uses repeat-sales and appraisal data for single-family properties associated with conventional conforming mortgages.</p>
+      </div>
+      <div class="history-explainer-grid">
+        <article><h3>How mortgage financing evolved</h3><ul>
+          <li><b>1932:</b> Federal Home Loan Bank System created to support mortgage lending institutions.</li>
+          <li><b>1934:</b> FHA created to insure qualifying mortgages and support broader access to home financing.</li>
+          <li><b>1938:</b> Fannie Mae established to purchase FHA-insured mortgages and provide liquidity to lenders.</li>
+          <li><b>1970:</b> Freddie Mac established; the secondary mortgage market continued to develop.</li>
+          <li><b>1971:</b> Freddie Mac's long-running Primary Mortgage Market Survey begins, giving us a consistent national rate benchmark.</li>
+          <li><b>1980s:</b> Mortgage rates reached extraordinary highs as the U.S. fought inflation.</li>
+          <li><b>2007–2011:</b> The housing bust brought a major national home-price correction and tighter credit.</li>
+          <li><b>2020–2021:</b> Mortgage rates reached record-low territory, followed by a sharp rate reset beginning in 2022.</li>
+        </ul></article>
+        <article><h3>Why the numbers need context</h3><ul>
+          <li><b>Nominal vs. inflation-adjusted:</b> A home can rise in dollar value while losing purchasing power after inflation.</li>
+          <li><b>National vs. local:</b> National averages can hide significant declines in individual cities, neighborhoods, and property types.</li>
+          <li><b>Index vs. median price:</b> Repeat-sales indexes track price changes over time; median sale prices can shift when the mix of homes sold changes.</li>
+          <li><b>Home value vs. investment return:</b> Appreciation does not include financing, taxes, insurance, repairs, vacancy, selling costs, or rental income.</li>
+          <li><b>Mortgage rate vs. total cost:</b> Borrower rate depends on credit, points, loan type, down payment, property, and market conditions.</li>
+        </ul></article>
+      </div>
+      <div class="history-callout"><b>Did home prices only fall three years in 70?</b><p>Not quite. One widely cited long-run U.S. home-price series based on Robert Shiller's historical data records declines in seven calendar years from 1942 through 2025: 1990, 1991, and 2007 through 2011. That is 7 out of 84 years—not three. This is a national nominal series; local markets and inflation-adjusted values tell different stories.</p></div>
+      <div class="history-source-links">
+        <a href="https://www.fhfa.gov/data/house-price-index" target="_blank" rel="noopener noreferrer">FHFA House Price Index data ↗</a>
+        <a href="https://www.freddiemac.com/pmms/pmms_archives" target="_blank" rel="noopener noreferrer">Freddie Mac mortgage-rate archive ↗</a>
+        <a href="https://fred.stlouisfed.org/series/MORTGAGE30US" target="_blank" rel="noopener noreferrer">FRED 30-year mortgage-rate series ↗</a>
+        <a href="https://www.hud.gov/aboutus/fhahistory" target="_blank" rel="noopener noreferrer">HUD: FHA history ↗</a>
+        <a href="https://www.fanniemae.com/about-us/corporate-governance/fannie-mae-charter" target="_blank" rel="noopener noreferrer">Fannie Mae history ↗</a>
+      </div>
+      <p class="fine-print">Historical data are subject to revisions and differences in index construction. The home-price chart uses FHFA national All-Transactions HPI fourth-quarter values, 1975–2025. The mortgage-rate chart uses selected annual-average milestones from Freddie Mac's PMMS; it is not a complete weekly-rate series. The 1942–2025 decline count is from the Shiller-based series linked in the accompanying methodology note. Educational information only; not a forecast or investment recommendation.</p>
+    </section>
     <section class="closing-cta">
       <div><div class="section-label">YOUR NEXT INVESTMENT STARTS WITH A CONVERSATION</div><h2>Have a property in mind?</h2><p>Share the basics and let's review potential financing paths for your rental investment.</p></div>
       <a class="button primary" href="/apply">Start Your Inquiry <span>→</span></a>
@@ -350,6 +397,39 @@ import Footer from '../components/Footer.astro';
 .management-grid ul{padding-left:20px}
 @media(max-width:850px){.strategy-grid{grid-template-columns:1fr}.llc-grid,.tool-grid,.operations-grid,.management-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.llc-grid article,.llc-steps,.strategy-grid article,.tool-card,.operations-card,.management-grid>div{padding:19px}.tool-fields{grid-template-columns:1fr}.tool-fields label{margin-top:5px}}
+
+.housing-history-section{background:#0a1f30}
+.history-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:28px 0}
+.history-stat-grid article{background:#102d43;border:1px solid #294c61;border-radius:7px;padding:22px;display:grid;gap:8px}
+.history-stat-grid strong{font-size:34px;color:#6bd9ce;line-height:1.1}
+.history-stat-grid span{font-size:13px;color:#c3d2da}
+.history-chart-card{background:#102d43;border:1px solid #294c61;border-radius:8px;padding:24px;margin-top:18px}
+.history-chart-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.history-kicker{color:#69d9ce;font-size:10px;font-weight:850;letter-spacing:1.5px}
+.history-chart-heading h3{font-size:22px;color:#f3f7f8;margin:7px 0}
+.history-chart-heading p{font-size:12px;color:#b7cbd5;margin:0}
+.history-chart-switch{display:flex;gap:6px;flex-wrap:wrap}
+.history-tab{border:1px solid #4c6c7f;background:#09263a;color:#d4e0e5;border-radius:4px;padding:9px 13px;font-size:12px;font-weight:750;cursor:pointer}
+.history-tab.active{background:#1d6669;border-color:#61d5c9;color:white}
+.history-chart-wrap{width:100%;overflow:hidden;margin-top:20px}
+.history-chart-wrap svg{display:block;width:100%;height:auto;min-height:220px}
+.history-chart-legend{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#c0d0d8;font-size:11px;margin-top:8px}
+.history-chart-legend>span:first-child{display:flex;align-items:center;gap:8px}
+.legend-line{width:22px;height:3px;background:#68d9ce;display:inline-block;border-radius:2px}
+.history-chart-note,.fine-print{font-size:11px;color:#9fb6c2;line-height:1.6;margin-top:14px}
+.history-explainer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:22px}
+.history-explainer-grid article{background:#102d43;border:1px solid #294c61;border-radius:7px;padding:24px}
+.history-explainer-grid h3{font-size:19px;color:#f2f7f8;margin:0 0 12px}
+.history-explainer-grid ul{padding-left:19px;margin:0}
+.history-explainer-grid li{font-size:13px;color:#c3d2da;margin:10px 0;line-height:1.55}
+.history-explainer-grid b{color:#f4f8f9}
+.history-callout{margin-top:20px;padding:22px 24px;border-left:3px solid #68d9ce;background:#102d43}
+.history-callout>b{color:#f3f7f8;font-size:17px}
+.history-callout p{color:#c3d2da;font-size:13px;line-height:1.65;margin:9px 0 0}
+.history-source-links{display:flex;flex-wrap:wrap;gap:12px 22px;margin-top:20px}
+.history-source-links a{color:#69d9ce;font-size:12px;font-weight:750;text-decoration:none}
+.history-source-links a:hover{text-decoration:underline}
+@media(max-width:720px){.history-stat-grid{grid-template-columns:1fr}.history-explainer-grid{grid-template-columns:1fr}.history-chart-card{padding:16px}.history-chart-wrap svg{min-height:180px}}
 </style>
 <script>
 const rentInput = document.querySelector('#monthly-rent');
@@ -416,4 +496,46 @@ function updateShortTermEstimate() {
 ['st-rate','st-occupancy','st-pitia','st-costs'].forEach(id => document.getElementById(id)?.addEventListener('input', updateShortTermEstimate));
 updateLongTermEstimate();
 updateShortTermEstimate();
+
+const homePriceHistory = [
+[1975,62.31],[1976,67.28],[1977,77.19],[1978,87.46],[1979,98.26],[1980,104.55],[1981,107.49],[1982,111.56],[1983,117.55],[1984,123.05],[1985,130.08],[1986,139.57],[1987,147.16],[1988,155.43],[1989,164.15],[1990,166.14],[1991,171.32],[1992,175.45],[1993,180.11],[1994,182.89],[1995,191.23],[1996,196.05],[1997,204.65],[1998,215.02],[1999,225.58],[2000,241.54],[2001,258.74],[2002,276.08],[2003,295.33],[2004,325.86],[2005,362.49],[2006,378.91],[2007,374.59],[2008,347.78],[2009,329.73],[2010,323.64],[2011,312.84],[2012,314.69],[2013,328.17],[2014,344.88],[2015,362.20],[2016,381.92],[2017,402.55],[2018,422.16],[2019,443.49],[2020,471.28],[2021,556.16],[2022,616.15],[2023,648.40],[2024,683.47],[2025,707.22]
+];
+const mortgageRateMilestones = [[1971,7.54],[1981,16.64],[1991,9.25],[2001,6.97],[2011,4.45],[2021,2.96],[2025,6.60]];
+function drawHousingHistory(kind) {
+ const svg=document.getElementById('housing-history-chart');
+ if(!svg)return;
+ const prices=kind==='prices';
+ const data=prices?homePriceHistory:mortgageRateMilestones;
+ const title=document.getElementById('history-chart-title');
+ const subtitle=document.getElementById('history-chart-subtitle');
+ const legend=document.getElementById('history-legend-label');
+ const range=document.getElementById('history-chart-range');
+ const note=document.getElementById('history-chart-note');
+ if(title)title.textContent=prices?'U.S. home-price index':'30-year fixed mortgage rates';
+ if(subtitle)subtitle.textContent=prices?'FHFA All-Transactions HPI · fourth-quarter observations · 1975–2025':'Freddie Mac PMMS · selected annual-average milestones · 1971–2025';
+ if(legend)legend.textContent=prices?'FHFA home-price index (1980 Q1 = 100)':'Average 30-year fixed mortgage rate (%)';
+ if(range)range.textContent=prices?'1975–2025':'1971–2025 · selected years';
+ if(note)note.textContent=prices?'An index tracks changes over time; it is not the average dollar price of a home. FHFA uses repeat-sales and appraisal data for single-family properties associated with conventional conforming mortgages.':'These are selected annual-average milestones, not every year or weekly rate. Freddie Mac PMMS began in 1971; actual borrower rates vary by loan type, credit, points, and other factors.';
+ const W=900,H=360,L=76,R=26,T=24,B=48,plotW=W-L-R,plotH=H-T-B;
+ const xs=data.map(d=>d[0]),ys=data.map(d=>d[1]);
+ const minX=xs[0],maxX=xs[xs.length-1],minY=0,maxY=prices?800:20;
+ const x=v=>L+(v-minX)/(maxX-minX)*plotW;
+ const y=v=>T+(maxY-v)/(maxY-minY)*plotH;
+ let out='';
+ const ticks=prices?[0,200,400,600,800]:[0,5,10,15,20];
+ ticks.forEach(v=>{const yy=y(v);out+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#345266" stroke-width="1"/><text x="${L-12}" y="${yy+4}" fill="#a9bfca" font-size="12" text-anchor="end">${prices?v:v+'%'}</text>`;});
+ const yearTicks=prices?[1975,1985,1995,2005,2015,2025]:[1971,1981,1991,2001,2011,2021,2025];
+ yearTicks.forEach(v=>{const xx=x(v);out+=`<text x="${xx}" y="${H-16}" fill="#a9bfca" font-size="12" text-anchor="middle">${v}</text>`;});
+ const points=data.map(d=>x(d[0])+','+y(d[1])).join(' ');
+ out+=`<polyline points="${points}" fill="none" stroke="#68d9ce" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>`;
+ data.forEach((d,i)=>{const xx=x(d[0]),yy=y(d[1]);out+=`<circle cx="${xx}" cy="${yy}" r="4.5" fill="#68d9ce" stroke="#0a1f30" stroke-width="2"><title>${d[0]}: ${prices?d[1].toFixed(2):d[1].toFixed(2)+'%'}</title></circle>`;});
+ const annotations=prices?[[2006,'Pre-crash peak'],[2011,'Housing downturn'],[2025,'Latest']]:[[1981,'Rate peak'],[2021,'Rate low'],[2025,'Latest']];
+ annotations.forEach(a=>{const d=data.find(p=>p[0]===a[0]);if(!d)return;const xx=x(d[0]),yy=y(d[1]);const labelY=Math.max(T+14,yy-18);out+=`<text x="${xx}" y="${labelY}" fill="#e7f1f3" font-size="11" text-anchor="middle">${a[1]}</text>`;});
+ out+=`<text x="${L}" y="14" fill="#a9bfca" font-size="11">${prices?'Index value':'Interest rate'}</text>`;
+ svg.innerHTML=out;
+ svg.setAttribute('aria-label',prices?'FHFA national home-price index from 1975 to 2025, with a decline during the housing crisis':'Selected annual average 30-year fixed mortgage rates from 1971 to 2025');
+ document.querySelectorAll('.history-tab').forEach(btn=>{const active=btn.dataset.chart===kind;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));});
+}
+document.querySelectorAll('.history-tab').forEach(btn=>btn.addEventListener('click',()=>drawHousingHistory(btn.dataset.chart)));
+drawHousingHistory('prices');
 </script>
