@@ -1,0 +1,237 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <BaseHead title="LLC Investor Center | Broker Pal" description="Practical LLC formation, real estate ownership, portfolio financing, and DSCR education for property investors." />
+  <meta name="robots" content="index,follow" />
+</head>
+<body>
+<Header />
+<main class="llc-page">
+  <section class="llc-hero">
+    <div class="eyebrow">BROKER PAL INVESTOR EDUCATION</div>
+    <h1>Build your business.<br/><em>Grow your portfolio.</em></h1>
+    <p>A practical starting point for real estate investors exploring LLCs, property ownership, financing limits, and DSCR loan options.</p>
+    <div class="hero-actions"><a class="btn bright" href="#portfolio-check">Explore your property count <span>→</span></a><a class="btn outline" href="#formation">LLC formation basics</a></div>
+    <div class="hero-note">Education and research tools · Free to explore · No account required</div>
+  </section>
+
+  <section class="quick-nav" aria-label="LLC Investor Center sections">
+    <a href="#formation">Form an LLC</a><a href="#ownership">Own property</a><a href="#financing">Financing limits</a><a href="#portfolio-check">Portfolio checker</a><a href="#checklist">Checklist</a><a href="#facts">Facts & myths</a>
+  </section>
+
+  <section class="intro-block">
+    <div><div class="eyebrow">THE INVESTOR PLAYBOOK</div><h2>An LLC is a tool.<br/><em>Your strategy matters.</em></h2></div>
+    <p>Forming an LLC is only one piece of an investment plan. Investors should also understand title, mortgage liability, insurance, tax treatment, recordkeeping, and the financing rules that apply to each property. Use this center to learn the questions to ask before you buy.</p>
+  </section>
+
+  <section class="feature-grid" id="formation">
+    <article class="feature-card feature-main"><span class="number">01 / FORMATION</span><div class="feature-icon">▦</div><h2>Starting an LLC</h2><p>Learn the usual formation steps and avoid paying a third-party service for tasks you can complete directly with government agencies.</p><ul><li>Choose and check a business name.</li><li>Appoint a registered agent that meets state rules.</li><li>File articles of organization with the state.</li><li>Prepare an operating agreement.</li><li>Apply for an EIN directly through the IRS when appropriate.</li><li>Set up separate business records and banking.</li></ul><a href="https://sos.ga.gov/how-to-guide/how-guide-register-domestic-entity" target="_blank" rel="noopener">Georgia Secretary of State formation guide ↗</a><a href="https://www.irs.gov/businesses/employer-identification-number" target="_blank" rel="noopener">Get an EIN free from the IRS ↗</a></article>
+    <article class="feature-card" id="ownership"><span class="number">02 / OWNERSHIP</span><div class="feature-icon">⌂</div><h2>LLCs & real estate</h2><p>Understand the difference between who holds title and who is legally responsible for a mortgage.</p><ul><li>One LLC per property versus multiple properties in one entity.</li><li>Holding companies and subsidiary structures.</li><li>Operating agreements and ownership percentages.</li><li>Insurance, leases, bank accounts, and bookkeeping.</li><li>Existing loan restrictions before changing title.</li></ul><p class="callout">Important: transferring a mortgaged property into an LLC can have due-on-sale, lender-consent, title, insurance, and tax consequences. Do not transfer title without reviewing the loan documents and getting appropriate professional guidance.</p></article>
+    <article class="feature-card" id="costs"><span class="number">03 / COSTS & MAINTENANCE</span><div class="feature-icon">$</div><h2>Costs, taxes & upkeep</h2><p>Formation is not the only cost. Budget for recurring state filings, registered-agent arrangements if used, tax preparation, bookkeeping, insurance, and local obligations.</p><ul><li>State filing and annual registration fees vary.</li><li>Federal tax classification is not the same as state LLC status.</li><li>Single-member LLCs are generally disregarded entities by default for federal income tax unless an election applies.</li><li>Multi-member LLCs are generally partnerships by default unless an election applies.</li></ul><a href="https://www.irs.gov/businesses/small-businesses-self-employed/limited-liability-company-llc" target="_blank" rel="noopener">IRS LLC tax information ↗</a></article>
+    <article class="feature-card" id="protection"><span class="number">04 / PROTECTION</span><div class="feature-icon">◇</div><h2>Protection & common mistakes</h2><p>An LLC does not replace insurance, careful contracts, or good business practices.</p><ul><li>Keep business and personal funds separate.</li><li>Maintain accurate company records.</li><li>Use written agreements and properly executed leases.</li><li>Review landlord, liability, and property coverage.</li><li>Understand personal guarantees and co-borrower obligations.</li></ul></article>
+  </section>
+
+  <section class="state-panel" id="states">
+    <div class="state-copy"><div class="eyebrow">STATE-BY-STATE STARTING POINT</div><h2>Start with Georgia.<br/><em>Expand with your portfolio.</em></h2><p>State rules and fees change. We are starting with Georgia's official filing resources and will expand this guide state by state, using primary government sources rather than third-party formation advertisements.</p><div class="state-links"><a href="https://ecorp.sos.ga.gov/BusinessSearch" target="_blank" rel="noopener">Search Georgia businesses ↗</a><a href="https://sos.ga.gov/how-to-guide/how-guide-register-domestic-entity" target="_blank" rel="noopener">Register a Georgia LLC ↗</a><a href="https://sos.ga.gov/how-to-guide/how-file-annual-registration" target="_blank" rel="noopener">Georgia annual registration ↗</a></div></div>
+    <div class="state-fact"><small>GEORGIA ANNUAL REGISTRATION</small><strong>$60</strong><b>Current published fee</b><p>Due January 1 through April 1 each year. A newly formed LLC's first annual registration is generally due in the following calendar year.</p><small class="source-date">Source: Georgia Secretary of State · Checked November 2026</small></div>
+  </section>
+
+  <section class="financing-section" id="financing">
+    <div class="eyebrow">WHY INVESTORS LOOK AT DSCR</div>
+    <h2>When your portfolio grows,<br/><em>financing rules matter.</em></h2>
+    <p class="section-lead">Conventional financing can be attractive, but agency rules include limits and reserve requirements for borrowers with multiple financed properties. DSCR programs may provide another financing path, subject to each lender's guidelines.</p>
+    <div class="comparison">
+      <article><span class="tag">CONVENTIONAL / AGENCY</span><h3>Fannie Mae multiple-property rules</h3><div class="big-stat">10</div><b>Maximum financed properties for DU second-home or investment-property transactions</b><p>Fannie Mae's standard rule generally limits a borrower to 10 financed properties for a second home or investment property under Desktop Underwriter (DU). This is a property-count rule, not a blanket limit on how many properties someone may own.</p><a href="https://selling-guide.fanniemae.com/sel/b2-2-03/multiple-financed-properties-same-borrower" target="_blank" rel="noopener">Read Fannie Mae Selling Guide B2-2-03 ↗</a></article>
+      <article class="dscr-card"><span class="tag">INVESTOR / NON-AGENCY OPTIONS</span><h3>Why DSCR can be intriguing</h3><div class="big-stat">DSCR</div><b>Evaluate the property's income against its debt service</b><p>Many DSCR programs focus on the subject property's rental income and debt service rather than relying primarily on the borrower's personal income calculation. Guidelines vary by lender and product.</p><ul><li>Potential alternative when agency property-count rules are a concern.</li><li>May accommodate entity vesting, subject to lender rules.</li><li>Program-specific credit, equity, reserves, property, and guarantee requirements still apply.</li></ul><a href="/apply">Explore a DSCR loan inquiry ↗</a></article>
+    </div>
+    <div class="rule-notes"><h3>What actually counts under Fannie Mae's rule?</h3><ul><li>Generally counts 1–4 unit residential properties when the borrower is personally obligated on the mortgage, including the borrower's financed primary residence.</li><li>A jointly financed property is counted once, not once per borrower.</li><li>Commercial real estate, properties with more than four units, timeshares, and vacant lots are among the property types excluded from this count.</li><li>Fannie Mae's example says LLC-financed properties are not included when the borrower is not personally obligated on those mortgages.</li></ul><p><strong>Critical distinction:</strong> Deeding a property to an LLC does not by itself remove a borrower's personal mortgage obligation. The note and actual liability matter. Review the loan documents and lender rules.</p><small>Rule summary based on Fannie Mae Selling Guide B2-2-03, published November 5, 2025. Agency guidance can change; confirm the current guide and the lender's overlays before relying on it.</small></div>
+  </section>
+
+  <section class="calculator-section" id="portfolio-check">
+    <div class="eyebrow">INTERACTIVE INVESTOR TOOL</div><h2>How many properties count?</h2><p class="section-lead">Estimate a Fannie Mae financed-property count for an investment-property or second-home transaction. This is an educational estimate, not an underwriting decision.</p>
+    <div class="calculator">
+      <div class="calc-inputs">
+        <label>1–4 unit residential properties where you are personally obligated on the mortgage<input id="personalCount" type="number" min="0" max="100" value="3"/></label>
+        <label>Additional LLC-owned properties where you are personally obligated<input id="llcGuarantyCount" type="number" min="0" max="100" value="0"/></label>
+        <label>Is your primary residence financed, and is it included above?<select id="primaryIncluded"><option value="yes">Yes, already included</option><option value="no">No, add one financed primary residence</option><option value="na">No financed primary residence</option></select></label>
+        <label>Are you financing one additional property in this transaction?<select id="subjectProperty"><option value="yes">Yes, add the subject property</option><option value="no">No, existing portfolio only</option></select></label>
+        <button class="btn bright" id="calculateCount" type="button">Calculate my estimate →</button>
+      </div>
+      <div class="calc-result" aria-live="polite"><small>ESTIMATED FINANCED-PROPERTY COUNT</small><strong id="countResult">4</strong><b id="countStatus">Below the standard DU 10-property maximum</b><p id="countExplanation">Your estimated count includes the properties you listed and the new subject property.</p><div class="count-meter"><span id="countMeter"></span></div><small>Illustrative count only · Confirm all REO, mortgage, HELOC, and borrower details with the lender.</small></div>
+    </div>
+    <div class="exclusions"><b>Do not include these in this estimate:</b> properties where you are not personally obligated on the mortgage (including the Fannie Mae LLC example), commercial real estate, properties with more than four units, timeshares, and vacant lots. The complete guide has additional details and exceptions.</div>
+  </section>
+
+  <section class="checklist-section" id="checklist">
+    <div class="eyebrow">YOUR NEXT STEPS</div><h2>New LLC investor checklist</h2><p class="section-lead">Use this as a planning aid. Requirements depend on the state, entity, tax situation, lender, and property.</p>
+    <div class="checklist">
+      <label><input type="checkbox"/> Check business name availability with the state.</label>
+      <label><input type="checkbox"/> Identify a registered agent and eligible registered office.</label>
+      <label><input type="checkbox"/> File articles of organization with the state.</label>
+      <label><input type="checkbox"/> Prepare an operating agreement appropriate for the ownership.</label>
+      <label><input type="checkbox"/> Determine whether the LLC needs an EIN; apply directly through the IRS when appropriate.</label>
+      <label><input type="checkbox"/> Open and use a separate business bank account.</label>
+      <label><input type="checkbox"/> Discuss tax classification and recordkeeping with a tax professional.</label>
+      <label><input type="checkbox"/> Review insurance, leases, and property-management arrangements.</label>
+      <label><input type="checkbox"/> Before transferring mortgaged property, review the note, security instrument, due-on-sale provisions, and obtain legal/lender guidance.</label>
+      <label><input type="checkbox"/> Calendar annual registrations, tax filings, licenses, and local deadlines.</label>
+    </div>
+    <div class="check-actions"><span id="checkProgress">0 of 10 completed</span><button type="button" class="btn outline" id="resetChecklist">Reset checklist</button></div>
+  </section>
+
+  <section class="facts-section" id="facts">
+    <div class="eyebrow">DID YOU KNOW?</div><h2>LLC facts, myths & quick answers</h2>
+    <div class="fact-grid">
+      <article><span>FACT 01</span><h3>An EIN is free from the IRS.</h3><p>The IRS issues EINs directly at no charge. Be cautious of sites charging a fee just to submit the application.</p><a href="https://www.irs.gov/businesses/employer-identification-number" target="_blank" rel="noopener">IRS EIN application information ↗</a></article>
+      <article><span>FACT 02</span><h3>LLC and tax status are different things.</h3><p>An LLC is a state-law entity. Its federal tax treatment depends on the number of owners and any tax elections made.</p><a href="https://www.irs.gov/businesses/small-businesses-self-employed/limited-liability-company-llc" target="_blank" rel="noopener">IRS LLC tax guidance ↗</a></article>
+      <article><span>FACT 03</span><h3>Property count is not the same as ownership count.</h3><p>Fannie Mae's multiple-financed-property calculation focuses on specified financed residential properties and personal mortgage obligations—not simply every property someone owns.</p><a href="https://selling-guide.fanniemae.com/sel/b2-2-03/multiple-financed-properties-same-borrower" target="_blank" rel="noopener">Fannie Mae rule ↗</a></article>
+      <article><span>MYTH CHECK</span><h3>“An LLC automatically protects every asset.”</h3><p>Not automatically. Personal guarantees, individual conduct, inadequate records, insurance gaps, and state law can affect risk. Get legal advice for your situation.</p></article>
+    </div>
+    <div class="quiz"><div><span class="tag">QUICK QUIZ</span><h3>If a rental property is titled in an LLC, does that alone remove the owner's personal obligation on the mortgage?</h3></div><div class="quiz-actions"><button type="button" data-answer="wrong">Yes</button><button type="button" data-answer="right">No</button></div><p id="quizFeedback" aria-live="polite"></p></div>
+  </section>
+
+  <section class="closing-cta"><div><div class="eyebrow">THINKING ABOUT YOUR NEXT RENTAL?</div><h2>Let's look at the financing before you make your next move.</h2><p>Tell us about the property and your investment goals. We'll help you explore whether a DSCR option may fit.</p></div><a class="btn bright" href="/apply">Explore DSCR financing →</a></section>
+  <section class="disclaimer"><b>Educational notice:</b> This page provides general educational information, not legal, tax, accounting, insurance, or lending advice. LLC laws, filing fees, tax rules, and agency/lender guidelines can change. DSCR programs are not standardized and are subject to each lender's underwriting, eligibility, and documentation requirements. A property-count estimate does not establish loan eligibility. Consult qualified professionals and verify current requirements with the relevant government agency, Fannie Mae, and lender.</section>
+</main>
+<Footer />
+<script>
+const num = (id) => Math.max(0, Math.min(100, Number(document.getElementById(id)?.value || 0)));
+function updateCount(){
+  const personal = num('personalCount');
+  const llc = num('llcGuarantyCount');
+  const primary = document.getElementById('primaryIncluded').value;
+  const subject = document.getElementById('subjectProperty').value;
+  const count = personal + llc + (primary === 'no' ? 1 : 0) + (subject === 'yes' ? 1 : 0);
+  document.getElementById('countResult').textContent = count;
+  const status = count <= 10 ? 'At or below the standard DU 10-property maximum' : 'Above the standard DU 10-property maximum';
+  document.getElementById('countStatus').textContent = status;
+  document.getElementById('countExplanation').textContent = count <= 10
+    ? 'This estimate is within the standard property-count ceiling for a DU second-home or investment-property transaction. Other eligibility and reserve rules still apply.'
+    : 'This estimate is above the standard DU property-count ceiling for a second-home or investment-property transaction. Other conventional products and exceptions may have different rules; discuss alternatives with a lender.';
+  document.getElementById('countMeter').style.width = Math.min(100, count / 10 * 100) + '%';
+}
+document.getElementById('calculateCount')?.addEventListener('click', updateCount);
+['personalCount','llcGuarantyCount','primaryIncluded','subjectProperty'].forEach(id => document.getElementById(id)?.addEventListener('change', updateCount));
+const checks = [...document.querySelectorAll('.checklist input')];
+function updateProgress(){const done=checks.filter(x=>x.checked).length;document.getElementById('checkProgress').textContent=done+' of '+checks.length+' completed';}
+checks.forEach(x=>x.addEventListener('change',updateProgress));
+document.getElementById('resetChecklist')?.addEventListener('click',()=>{checks.forEach(x=>x.checked=false);updateProgress();});
+document.querySelectorAll('.quiz-actions button').forEach(button=>button.addEventListener('click',()=>{
+ const feedback=document.getElementById('quizFeedback');
+ feedback.textContent=button.dataset.answer==='right'?'Correct. Title ownership and personal liability on the note are different questions. Review the loan documents and lender requirements.':'Not quite. A deed change by itself does not erase a personal promise to repay a mortgage.';
+ feedback.className='shown';
+}));
+updateCount();updateProgress();
+</script>
+</body>
+</html>
+<style>
+:global(html){scroll-behavior:smooth;scroll-padding-top:22px;background:#002447}
+:global(body){margin:0;background:#002447;color:#eef5fa;font-family:Arial,Helvetica,sans-serif;line-height:1.65}
+.llc-page{background:#002447;color:#eef5fa;max-width:none}
+.llc-page h1,.llc-page h2,.llc-page h3{color:#f8fbff}
+.llc-page a{color:#21d1d0}
+.llc-hero{padding:76px max(6vw,26px) 72px;background:linear-gradient(100deg,#002447 0%,#063455 58%,#0a5664 100%);border-bottom:1px solid #17607b}
+.eyebrow{font-size:11px;letter-spacing:2px;font-weight:850;color:#20d2d0}
+.llc-hero h1{font-size:clamp(42px,6vw,72px);line-height:1.03;letter-spacing:-2.8px;margin:20px 0;color:#fff}
+.llc-hero h1 em,.intro-block h2 em,.state-copy h2 em,.financing-section h2 em{font-style:normal;color:#20d2d0}
+.llc-hero>p{font-size:18px;max-width:650px;color:#d5e4ec;line-height:1.65}
+.hero-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:15px;padding:13px 20px;border-radius:28px;text-decoration:none;font-size:14px;font-weight:800}
+.btn.bright{background:#19d1d0;color:#002447}
+.btn.bright:hover{background:#70e9e4;color:#002447}
+.btn.outline{border:1px solid #4a8499;color:#f4fbff}
+.hero-note{font-size:12px;color:#a9c5d3;margin-top:22px}
+.quick-nav{display:flex;justify-content:center;gap:clamp(14px,3vw,35px);flex-wrap:wrap;padding:17px 22px;background:#032b49;border-bottom:1px solid #164968}
+.quick-nav a{font-size:13px;font-weight:750;text-decoration:none;color:#e5f2f8}
+.quick-nav a:hover{color:#21d1d0}
+.intro-block{max-width:1160px;margin:auto;padding:75px 28px;display:grid;grid-template-columns:.9fr 1.1fr;gap:55px;align-items:center}
+.intro-block h2,.state-copy h2,.financing-section h2,.calculator-section h2,.checklist-section h2,.facts-section h2{font-size:clamp(30px,4vw,46px);line-height:1.13;letter-spacing:-1.5px;margin:13px 0}
+.intro-block>p,.state-copy>p,.section-lead{color:#c0d2dc;font-size:16px;line-height:1.8}
+.feature-grid{max-width:1160px;margin:0 auto 78px;padding:0 28px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.feature-card{background:#082d49;border:1px solid #24526a;border-radius:12px;padding:28px}
+.feature-card.feature-main{border-top:4px solid #19d1d0}
+.number,.feature-card>a{font-size:11px;letter-spacing:1.2px;font-weight:850;color:#21d1d0}
+.feature-icon{font-size:36px;color:#20d2d0;margin-top:12px}
+.feature-card h2{font-size:24px;margin:5px 0 9px}
+.feature-card p,.feature-card li{color:#c5d6df;font-size:14px;line-height:1.7}
+.feature-card ul{padding-left:20px;margin:14px 0}
+.feature-card li{padding:3px 0}
+.feature-card>a{display:block;margin-top:10px;text-decoration:none;letter-spacing:0}
+.callout{padding:13px 15px;border-left:3px solid #e3bd69;background:#0d3a54;border-radius:0 7px 7px 0}
+.state-panel{background:#062b47;border-top:1px solid #194b68;border-bottom:1px solid #194b68;padding:65px max(6vw,28px);display:grid;grid-template-columns:1fr 290px;gap:50px;align-items:center}
+.state-copy{max-width:700px}.state-copy>p{max-width:670px}
+.state-links{display:flex;gap:13px;flex-wrap:wrap;margin-top:20px}
+.state-links a{font-size:13px;font-weight:750;text-decoration:none}
+.state-fact{background:#0d3c57;border:1px solid #2b7180;border-radius:12px;padding:25px}
+.state-fact small{display:block;font-size:10px;letter-spacing:1.2px;color:#9ecbd3;font-weight:800}
+.state-fact strong{display:block;font-size:53px;line-height:1.15;color:#20d2d0;margin:12px 0 3px}
+.state-fact>b{font-size:15px;color:#fff}
+.state-fact p{font-size:13px;color:#d0e0e7;line-height:1.65}
+.state-fact .source-date{font-size:10px;letter-spacing:0}
+.financing-section{max-width:1160px;margin:auto;padding:78px 28px}
+.financing-section h2{margin-bottom:13px}
+.section-lead{max-width:820px;margin:0 0 30px}
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.comparison article{background:#082e4a;border:1px solid #2a526b;border-radius:12px;padding:27px}
+.comparison .dscr-card{border-color:#1bbfbd;background:linear-gradient(145deg,#083d56,#092d49)}
+.tag{display:inline-block;font-size:10px;letter-spacing:1.2px;font-weight:850;color:#20d2d0}
+.comparison h3{font-size:21px;margin:12px 0}
+.big-stat{font-size:58px;font-weight:900;letter-spacing:-2px;color:#20d2d0;line-height:1.1;margin:12px 0}
+.comparison article>b{color:#fff;font-size:14px}
+.comparison p,.comparison li{font-size:14px;color:#c3d5df;line-height:1.7}
+.comparison ul{padding-left:18px}
+.comparison a{font-size:13px;font-weight:800;text-decoration:none}
+.rule-notes{margin-top:18px;padding:24px 27px;background:#0b2b43;border:1px solid #2c5268;border-radius:10px}
+.rule-notes h3{font-size:19px;margin:0 0 10px}
+.rule-notes ul{padding-left:20px}.rule-notes li,.rule-notes p{font-size:14px;line-height:1.7;color:#c8d8e0}
+.rule-notes small{display:block;color:#9db8c6;font-size:11px;line-height:1.6}
+.calculator-section{background:#062b47;border-top:1px solid #194b68;border-bottom:1px solid #194b68;padding:72px max(6vw,28px)}
+.calculator-section>h2,.calculator-section>.section-lead{max-width:850px}
+.calculator{max-width:1160px;margin:28px auto 0;display:grid;grid-template-columns:1.1fr .9fr;gap:17px}
+.calc-inputs,.calc-result{padding:25px;border:1px solid #2b586f;border-radius:12px;background:#082f4c}
+.calc-inputs{display:grid;gap:16px}
+.calc-inputs label{display:grid;gap:7px;font-size:13px;font-weight:750;color:#e6f0f4}
+.calc-inputs input,.calc-inputs select{width:100%;box-sizing:border-box;padding:12px;border-radius:7px;border:1px solid #56758a;background:#05243d;color:#fff;font-size:15px}
+.calc-inputs .btn{border:0;cursor:pointer;font-family:inherit}
+.calc-result{display:flex;flex-direction:column;justify-content:center;min-height:300px;background:linear-gradient(150deg,#0c465d,#092d49)}
+.calc-result>small{font-size:10px;letter-spacing:1.2px;color:#b5d5dd;font-weight:800}
+.calc-result>strong{font-size:78px;line-height:1.1;color:#20d2d0;letter-spacing:-3px;margin:8px 0}
+.calc-result>b{font-size:16px;color:#fff}
+.calc-result p{font-size:13px;color:#d1e0e6;line-height:1.65}
+.calc-result>small:last-child{font-size:10px;line-height:1.5;letter-spacing:0}
+.count-meter{height:8px;background:#254c61;border-radius:9px;overflow:hidden;margin:10px 0 14px}
+.count-meter span{display:block;height:100%;width:40%;background:#20d2d0;transition:width .2s}
+.exclusions{max-width:1160px;margin:15px auto 0;font-size:12px;line-height:1.7;color:#b9cbd4}
+.checklist-section,.facts-section{max-width:1160px;margin:auto;padding:75px 28px}
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px}
+.checklist label{display:flex;align-items:flex-start;gap:11px;background:#092f4b;border:1px solid #244f68;border-radius:8px;padding:14px;font-size:13px;line-height:1.55;color:#d9e5eb;cursor:pointer}
+.checklist input{accent-color:#20d2d0;margin-top:3px;flex:0 0 auto}
+.checklist input:checked+span{text-decoration:line-through}
+.check-actions{display:flex;align-items:center;justify-content:space-between;margin-top:15px;color:#9fc0cd;font-size:12px}
+.check-actions .btn{cursor:pointer;background:transparent}
+.fact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:27px}
+.fact-grid article{background:#092f4b;border:1px solid #28546d;border-radius:10px;padding:23px}
+.fact-grid article>span{font-size:10px;letter-spacing:1.3px;font-weight:850;color:#20d2d0}
+.fact-grid h3{font-size:19px;margin:9px 0}
+.fact-grid p{font-size:13px;color:#c1d3dd;line-height:1.7}
+.fact-grid a{font-size:12px;font-weight:800;text-decoration:none}
+.quiz{margin-top:17px;padding:24px;background:#0d3d56;border:1px solid #257481;border-radius:10px;display:grid;grid-template-columns:1fr auto;gap:15px;align-items:center}
+.quiz h3{font-size:17px;max-width:680px;margin:7px 0 0}
+.quiz-actions{display:flex;gap:9px;flex-wrap:wrap}
+.quiz-actions button{border:1px solid #538197;background:#082d49;color:#fff;border-radius:22px;padding:10px 16px;font-weight:750;cursor:pointer}
+.quiz-actions button:hover{border-color:#20d2d0}
+#quizFeedback{grid-column:1/-1;margin:0;color:#cce4e8;font-size:13px}
+#quizFeedback:empty{display:none}
+.closing-cta{padding:54px max(6vw,28px);background:linear-gradient(105deg,#07506a,#073453);border-top:1px solid #197184;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.closing-cta h2{font-size:clamp(27px,3.5vw,39px);line-height:1.15;max-width:700px;margin:10px 0}
+.closing-cta p{color:#d1e2e8;max-width:650px;font-size:14px}
+.disclaimer{padding:22px max(6vw,28px);font-size:11px;line-height:1.7;color:#a9c0cc;background:#031f36;border-top:1px solid #1d4055}
+@media(max-width:800px){.intro-block{grid-template-columns:1fr;gap:12px;padding:55px 24px}.feature-grid{grid-template-columns:1fr;padding:0 20px}.state-panel{grid-template-columns:1fr;padding:55px 24px}.state-fact{max-width:360px}.comparison,.calculator{grid-template-columns:1fr}.checklist,.fact-grid{grid-template-columns:1fr}.quiz{grid-template-columns:1fr}.closing-cta{align-items:flex-start;flex-direction:column}.llc-hero{padding:58px 23px}.financing-section,.checklist-section,.facts-section{padding:58px 22px}}
+@media(max-width:480px){.llc-hero h1{font-size:43px;letter-spacing:-1.7px}.quick-nav{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap}.quick-nav a{white-space:nowrap}.feature-card{padding:22px}.calc-inputs,.calc-result{padding:19px}.calc-result>strong{font-size:65px}.state-links{display:grid}.check-actions{align-items:flex-start;gap:10px;flex-direction:column}}
+</style>
