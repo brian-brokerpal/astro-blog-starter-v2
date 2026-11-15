@@ -1,0 +1,54 @@
+name: Diagnose LOS custom hostname prerequisites
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/los-hostname-diagnostics.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-cloudflare:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Read current Cloudflare project and Access configuration (no changes)
+        shell: bash
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CF_API_TOKEN"
+          test -n "$CF_ACCOUNT_ID"
+          BASE="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID"
+          AUTH="Authorization: Bearer $CF_API_TOKEN"
+
+          status=$(curl -sS -o /tmp/token.json -w "%{http_code}" -H "$AUTH" "$BASE/tokens/verify")
+          echo "Account token verification HTTP: $status"
+          jq -c '{success, errors, result: (if .result then {id: .result.id, status: .result.status} else null end)}' /tmp/token.json
+
+          token_id=$(jq -r '.result.id // empty' /tmp/token.json)
+          if [ -n "$token_id" ]; then
+            detail_status=$(curl -sS -o /tmp/token-detail.json -w "%{http_code}" -H "$AUTH" "$BASE/tokens/$token_id")
+            echo "Token policy inspection HTTP: $detail_status"
+            jq -c '{success, errors, messages, policies: [.result.policies[]? | {permission_groups: [.permission_groups[]? | .name], resource_types: (.resources | keys)}]}' /tmp/token-detail.json
+          fi
+
+          project_status=$(curl -sS -o /tmp/pages-project.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr")
+          echo "LOS Pages project lookup HTTP: $project_status"
+          jq -c '{success, errors, result: (if .result then {name: .result.name, subdomain: .result.subdomain, domains: .result.domains} else null end)}' /tmp/pages-project.json
+
+          domains_status=$(curl -sS -o /tmp/pages-domains.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr/domains")
+          echo "LOS Pages custom-domain list HTTP: $domains_status"
+          jq -c '{success, errors, result: [.result[]? | {name, status, validation_status: .validation_data.status, verification_status: .verification_data.status}]}' /tmp/pages-domains.json
+
+          apps_status=$(curl -sS -o /tmp/access-apps.json -w "%{http_code}" -H "$AUTH" "$BASE/access/apps?per_page=100")
+          echo "Access applications list HTTP: $apps_status"
+          jq -c '{success, errors, result: [.result[]? | select((.domain // "" | contains("yourbrokerpal-los--dscr.pages.dev")) or (.domain // "" | contains("los.yourbrokerpal.com")) or any(.destinations[]?; (.uri // "" | contains("yourbrokerpal-los--dscr.pages.dev")) or (.uri // "" | contains("los.yourbrokerpal.com")))) | {id, name, domain, type, session_duration, aud, policies: [.policies[]? | {id, name, decision, include_types: [.include[]? | keys[]], exclude_types: [.exclude[]? | keys[]], require_types: [.require[]? | keys[]]}]}]}' /tmp/access-apps.json
+
+          if [ "$project_status" != "200" ] || [ "$domains_status" != "200" ] || [ "$apps_status" != "200" ]; then
+            echo "One or more read-only Cloudflare lookups failed; inspect the HTTP statuses above."
+            exit 1
+          fi
