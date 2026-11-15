@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Create only the two approved public intake Access applications
+      - name: Diagnose Cloudflare Access permission and configure approved paths
         env:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -28,17 +28,22 @@ jobs:
           API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/access/apps"
           HOST="yourbrokerpal-los--dscr.pages.dev"
 
+          # Capture Cloudflare's response body without ever printing the token.
+          status=$(curl --silent --show-error -o /tmp/cf-access-response.json -w "%{http_code}" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            "$API?per_page=100")
+          echo "Cloudflare Access apps-list HTTP status: $status"
+          jq -c '{success, errors, messages}' /tmp/cf-access-response.json
+          if [ "$status" != "200" ]; then
+            echo "Stopped before making any Access changes."
+            exit 1
+          fi
+          list=$(cat /tmp/cf-access-response.json)
+          echo "$list" | jq -e '.success == true' >/dev/null
+
           create_if_missing() {
             local path="$1"
             local name="$2"
-            local encoded
-            encoded=$(jq -rn --arg v "$HOST$path" '$v|@uri')
-            local list
-            list=$(curl --fail-with-body --silent --show-error \
-              -H "Authorization: Bearer $CF_API_TOKEN" \
-              "$API?per_page=100")
-            echo "$list" | jq -e '.success == true' >/dev/null
-
             if echo "$list" | jq -e --arg d "$HOST$path" \
               '.result[]? | select(.domain == $d or any(.destinations[]?; .uri == ("https://" + $d) or .uri == $d))' >/dev/null; then
               echo "Already configured: $HOST$path"
@@ -58,8 +63,7 @@ jobs:
               }]
             }')
             local response
-            response=$(curl --fail-with-body --silent --show-error \
-              -X POST "$API" \
+            response=$(curl --silent --show-error -X POST "$API" \
               -H "Authorization: Bearer $CF_API_TOKEN" \
               -H "Content-Type: application/json" \
               --data "$payload")
