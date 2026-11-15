@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Diagnose Cloudflare Access permission and configure approved paths
+      - name: Diagnose Cloudflare Access API and configure approved paths
         env:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -28,17 +28,12 @@ jobs:
           API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/access/apps"
           HOST="yourbrokerpal-los--dscr.pages.dev"
 
-          # Capture Cloudflare's response body without ever printing the token.
-          status=$(curl --silent --show-error -o /tmp/cf-access-response.json -w "%{http_code}" \
-            -H "Authorization: Bearer $CF_API_TOKEN" \
-            "$API?per_page=100")
-          echo "Cloudflare Access apps-list HTTP status: $status"
-          jq -c '{success, errors, messages}' /tmp/cf-access-response.json
-          if [ "$status" != "200" ]; then
-            echo "Stopped before making any Access changes."
-            exit 1
-          fi
-          list=$(cat /tmp/cf-access-response.json)
+          status=$(curl --silent --show-error -o /tmp/cf-access-list.json -w "%{http_code}" \
+            -H "Authorization: Bearer $CF_API_TOKEN" "$API?per_page=100")
+          echo "Access apps-list HTTP status: $status"
+          jq -c '{success, errors, messages}' /tmp/cf-access-list.json
+          [ "$status" = "200" ]
+          list=$(cat /tmp/cf-access-list.json)
           echo "$list" | jq -e '.success == true' >/dev/null
 
           create_if_missing() {
@@ -49,7 +44,7 @@ jobs:
               echo "Already configured: $HOST$path"
               return 0
             fi
-
+            echo "No existing exact-match application found for $HOST$path; attempting creation."
             local payload
             payload=$(jq -n --arg domain "$HOST$path" --arg name "$name" '{
               name: $name,
@@ -62,12 +57,16 @@ jobs:
                 include: [{ everyone: {} }]
               }]
             }')
-            local response
-            response=$(curl --silent --show-error -X POST "$API" \
+            local status
+            status=$(curl --silent --show-error -o /tmp/cf-access-create.json -w "%{http_code}" \
+              -X POST "$API" \
               -H "Authorization: Bearer $CF_API_TOKEN" \
               -H "Content-Type: application/json" \
               --data "$payload")
-            echo "$response" | jq -e '.success == true' >/dev/null
+            echo "Access app-create HTTP status for $path: $status"
+            jq -c '{success, errors, messages, result: (if .result then {id: .result.id, name: .result.name, domain: .result.domain} else null end)}' /tmp/cf-access-create.json
+            [ "$status" = "200" ] || [ "$status" = "201" ]
+            jq -e '.success == true' /tmp/cf-access-create.json >/dev/null
             echo "Created narrowly scoped Bypass application: $HOST$path"
           }
 
