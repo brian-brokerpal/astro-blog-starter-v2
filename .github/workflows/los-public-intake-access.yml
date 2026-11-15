@@ -31,14 +31,14 @@ jobs:
           # Inspect the exact permissions attached to the token stored in Actions.
           verify_status=$(curl --silent --show-error -o /tmp/cf-token-verify.json -w "%{http_code}" \
             -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/user/tokens/verify")
+            "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/tokens/verify")
           echo "Token verify HTTP status: $verify_status"
           jq -c '{success, errors, result: (if .result then {id: .result.id, status: .result.status} else null end)}' /tmp/cf-token-verify.json
           if [ "$verify_status" = "200" ] && jq -e '.success == true and .result.id != null' /tmp/cf-token-verify.json >/dev/null; then
             token_id=$(jq -r '.result.id' /tmp/cf-token-verify.json)
             detail_status=$(curl --silent --show-error -o /tmp/cf-token-detail.json -w "%{http_code}" \
               -H "Authorization: Bearer $CF_API_TOKEN" \
-              "https://api.cloudflare.com/client/v4/user/tokens/$token_id")
+              "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/tokens/$token_id")
             echo "Token permission-details HTTP status: $detail_status"
             if [ "$detail_status" = "200" ]; then
               jq -c '{success, errors, policies: [.result.policies[]? | {effect, permission_groups: [.permission_groups[]? | {name, scopes}], resource_types: (.resources | keys)}]}' /tmp/cf-token-detail.json
