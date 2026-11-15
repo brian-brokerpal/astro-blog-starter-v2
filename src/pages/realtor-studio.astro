@@ -136,6 +136,7 @@ if (root) {
     $('public-preview').style.setProperty('--page-accent',accent);
     $('public-preview').style.setProperty('--page-button',accent);
     $('preview-company').textContent = (state.company || 'Your Company').toUpperCase();
+    $('concepts').querySelectorAll('.mock-brand').forEach(el => { el.textContent = (state.company || 'Your Company').toUpperCase(); });
     $('preview-tagline').textContent = state.tagline || 'A thoughtful real estate experience, built around you.';
     const title = p.headline.split('|');
     $('preview-headline').innerHTML = title[0] + '<br/><i>' + title[1] + '</i>';
