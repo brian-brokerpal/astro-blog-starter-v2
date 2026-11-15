@@ -92,6 +92,48 @@ import Footer from '../components/Footer.astro';
       <p class="fine-print">A DSCR loan is not a promise of approval and does not remove the need to document ownership, funds, credit, property eligibility, or other lender requirements. Program terms vary by lender and state.</p>
     </section>
 
+    <section class="agency-explainer-section" id="who-are-the-agencies">
+      <div class="section-label">WHO'S WHO IN THE MORTGAGE MARKET</div>
+      <h2>What are Fannie Mae and Freddie Mac—and what do they actually do?</h2>
+      <p class="section-intro">You may hear mortgage professionals refer to “the agencies,” “conventional agency loans,” or “conforming loans.” These names describe a part of the U.S. housing-finance system—not the bank or mortgage broker taking your application.</p>
+      <div class="agency-definition-grid">
+        <article>
+          <div class="agency-acronym">FNMA</div>
+          <h3><a href="https://www.fanniemae.com/" target="_blank" rel="noopener noreferrer">Fannie Mae ↗</a></h3>
+          <p><b>Federal National Mortgage Association.</b> Created by Congress in 1938, Fannie Mae is a government-sponsored enterprise (GSE). It does not generally make home loans directly to consumers. It buys eligible mortgages from approved lenders, pools them into mortgage-backed securities (MBS), and guarantees investors timely payment of principal and interest on those securities, subject to its guarantee terms.</p>
+          <p>That secondary-market activity helps lenders replenish funds so they can make additional mortgages. Fannie Mae also publishes underwriting and servicing requirements for loans it will purchase or otherwise support.</p>
+        </article>
+        <article>
+          <div class="agency-acronym">FHLMC</div>
+          <h3><a href="https://www.freddiemac.com/" target="_blank" rel="noopener noreferrer">Freddie Mac ↗</a></h3>
+          <p><b>Federal Home Loan Mortgage Corporation.</b> Created by Congress in 1970, Freddie Mac is also a government-sponsored enterprise. Like Fannie Mae, it generally works in the secondary mortgage market rather than making ordinary consumer mortgages directly.</p>
+          <p>It purchases eligible mortgages from approved lenders, securitizes them, and provides guarantees on its mortgage-backed securities. Its purchase and underwriting requirements help shape the conventional mortgage products lenders offer.</p>
+        </article>
+      </div>
+      <div class="agency-flow">
+        <div><b>1 · Borrower</b><span>Applies with a bank, credit union, or mortgage company</span></div>
+        <div class="flow-arrow">→</div>
+        <div><b>2 · Lender</b><span>Underwrites, closes, and funds the mortgage</span></div>
+        <div class="flow-arrow">→</div>
+        <div><b>3 · Secondary market</b><span>Eligible loan may be sold to Fannie Mae or Freddie Mac</span></div>
+        <div class="flow-arrow">→</div>
+        <div><b>4 · Mortgage-backed security</b><span>Loans are pooled; agency guarantee supports investor payments</span></div>
+      </div>
+      <div class="agency-note"><b>What this means for a borrower:</b> Your lender or mortgage broker is the company you work with to apply and close. Fannie Mae and Freddie Mac usually do not approve your application across a desk or service your loan themselves. But if your lender plans to sell the loan to one of them, the agency's eligibility, documentation, appraisal, credit, debt, reserve, and property rules influence how that loan is underwritten.</div>
+      <div class="agency-compare-grid">
+        <article><h3>What is a conforming loan?</h3><p>A conventional mortgage that meets the applicable requirements for purchase or securitization by Fannie Mae or Freddie Mac, including loan limits and underwriting standards. “Conventional” means it is not insured or guaranteed by FHA, VA, or USDA; it does not automatically mean the loan conforms to agency requirements.</p></article>
+        <article><h3>Who oversees them?</h3><p>The Federal Housing Finance Agency (FHFA) is the federal regulator and conservator of Fannie Mae and Freddie Mac. FHFA supervises their safety and soundness and their conservatorships. The GSEs are not ordinary federal departments, and their securities are not the same as U.S. Treasury securities.</p></article>
+        <article><h3>Where does Ginnie Mae fit?</h3><p>Ginnie Mae (Government National Mortgage Association) is a wholly government-owned corporation within HUD. It guarantees timely payment on mortgage-backed securities backed by federally insured or guaranteed loans, such as FHA, VA, and USDA loans. It does not operate like Fannie Mae and Freddie Mac by buying conventional mortgages for its own portfolio.</p></article>
+      </div>
+      <p class="fine-print">A GSE guarantee on an MBS is not a guarantee that an individual borrower will repay the mortgage, and it does not mean the federal government guarantees every conventional mortgage. Program rules, guarantee terms, and investor risk differ. This is a simplified educational overview.</p>
+      <div class="resource-links">
+        <a href="https://www.fhfa.gov/about-fhfa" target="_blank" rel="noopener noreferrer">FHFA: About the regulator ↗</a>
+        <a href="https://www.fanniemae.com/about-us" target="_blank" rel="noopener noreferrer">Fannie Mae: About us ↗</a>
+        <a href="https://www.freddiemac.com/about" target="_blank" rel="noopener noreferrer">Freddie Mac: About us ↗</a>
+        <a href="https://www.ginniemae.gov/about_us/Pages/our_mission.aspx" target="_blank" rel="noopener noreferrer">Ginnie Mae: Mission and role ↗</a>
+      </div>
+    </section>
+
     <section class="property-count-section">
       <div class="section-label">CONVENTIONAL AGENCY GUIDELINES</div>
       <h2>Fannie Mae and Freddie Mac: the 10-property rule.</h2>
@@ -640,6 +682,9 @@ import Footer from '../components/Footer.astro';
 
 .agency-note{margin-top:24px;padding:20px 23px;background:#102f43;border-left:4px solid #62d4c8;color:#c5d6dd;font-size:14px;line-height:1.7}.agency-note b{color:#fff}.dscr-why-section{max-width:1100px;margin:0 auto;padding:56px 30px;border-top:1px solid #1d3b50}.dscr-why-section h2{font-size:clamp(28px,3.5vw,42px);line-height:1.15;letter-spacing:-1.2px;margin:0 0 18px}.dscr-why-section>.section-intro{color:#bdcdd5;max-width:930px}.dscr-why-section .benefit-grid{margin-top:28px}
 @media(max-width:760px){.dscr-why-section{padding:42px 22px}}
+
+.agency-explainer-section{max-width:1100px;margin:0 auto;padding:56px 30px;border-top:1px solid #1d3b50}.agency-explainer-section h2{font-size:clamp(28px,3.5vw,42px);line-height:1.15;letter-spacing:-1.2px;margin:0 0 18px}.agency-explainer-section>.section-intro{color:#bdcdd5;max-width:930px}.agency-definition-grid,.agency-compare-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:26px 0}.agency-definition-grid article,.agency-compare-grid article{padding:24px;background:#0d2a40;border:1px solid #294a60;border-radius:5px}.agency-definition-grid article{border-top:3px solid #18bfc0}.agency-acronym{font-size:11px;font-weight:850;letter-spacing:2px;color:#63d5ca}.agency-definition-grid h3,.agency-compare-grid h3{font-size:20px;margin:7px 0 12px}.agency-definition-grid h3 a{color:#f3f8fa;text-decoration:none}.agency-definition-grid p,.agency-compare-grid p{font-size:14px;color:#bdcdd5}.agency-flow{display:flex;align-items:stretch;gap:9px;margin:30px 0;padding:20px;background:#0a2234;border:1px solid #29485d;border-radius:6px}.agency-flow>div:not(.flow-arrow){flex:1;min-width:0}.agency-flow b,.agency-flow span{display:block}.agency-flow b{color:#64d5ca;font-size:13px}.agency-flow span{font-size:12px;color:#bdcdd5;line-height:1.5;margin-top:6px}.flow-arrow{align-self:center;color:#65d4c8;font-size:22px}.agency-compare-grid{grid-template-columns:repeat(3,1fr)}.agency-compare-grid article{background:#102b40}.resource-links{display:flex;flex-wrap:wrap;gap:12px 20px;margin:22px 0}.resource-links a{color:#65d4c8;font-weight:750;font-size:13px;text-decoration:none}.resource-links a:hover{text-decoration:underline}
+@media(max-width:760px){.agency-explainer-section{padding:42px 22px}.agency-definition-grid,.agency-compare-grid{grid-template-columns:1fr}.agency-flow{flex-direction:column}.flow-arrow{transform:rotate(90deg);align-self:center}}
 </style>
 <script>
 const rentInput = document.querySelector('#monthly-rent');
