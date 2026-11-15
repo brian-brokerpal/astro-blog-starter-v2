@@ -1,0 +1,79 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export const prerender = false;
+const slug = String(Astro.params.slug || '').toLowerCase();
+const runtime = (Astro.locals as any).runtime;
+const env = runtime?.env || {};
+const leadsEndpoint = String(env.LOS_PUBLIC_LEADS_URL || '').trim();
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+let profile: any = null;
+let unavailable = false;
+if (leadsEndpoint && /^[a-z0-9](?:[a-z0-9-]{0,58}[a-z0-9])?$/.test(slug)) {
+  try {
+    const base = new URL(leadsEndpoint);
+    const lookup = new URL('/api/public-realtors', base.origin);
+    lookup.searchParams.set('slug', slug);
+    const response = await fetch(lookup, { headers: { accept: 'application/json' } });
+    const data = await response.json();
+    if (response.ok && data?.ok && data.profile) profile = data.profile;
+    else unavailable = true;
+  } catch { unavailable = true; }
+} else { unavailable = true; }
+if (!profile) Astro.response.status = 404;
+const title = profile ? profile.display_name + ' | Broker Pal Realtor' : 'Realtor page unavailable | Broker Pal';
+const description = profile ? (profile.bio || profile.display_name + ' — Realtor profile, featured properties, and client resources.').slice(0, 300) : 'This Realtor page is not currently available.';
+const primary = profile?.primary_color || '#002447';
+const accent = profile?.accent_color || '#18d0d0';
+---
+<!doctype html>
+<html lang="en">
+<head><BaseHead title={title} description={description} image={profile?.headshot_url || undefined} /></head>
+<body>
+<Header />
+{profile && (<main class="agent-page" style={'--agent-primary:'+primary+';--agent-accent:'+accent}>
+  <section class="agent-hero">
+    <div class="agent-intro">
+      <div class="eyebrow">BROKER PAL REALTOR NETWORK</div>
+      {profile.logo_url && <img class="agent-logo" src={profile.logo_url} alt={profile.display_name+" logo"} loading="eager" />}
+      <h1>{profile.display_name}</h1>
+      {profile.professional_title && <p class="professional-title">{profile.professional_title}</p>}
+      {profile.brokerage_name && <p class="brokerage">{profile.brokerage_name}</p>}
+      <p class="bio">{profile.bio || 'Local guidance, thoughtful service, and a clear path to your next real estate move.'}</p>
+      {profile.service_areas?.length > 0 && <div class="areas"><b>Serving</b> {profile.service_areas.join(' · ')}</div>}
+      <div class="hero-actions">
+        {profile.phone && <a class="agent-button" href={'tel:'+profile.phone}>Call {profile.phone}</a>}
+        {profile.public_email && <a class="agent-outline" href={'mailto:'+profile.public_email}>Email Realtor</a>}
+      </div>
+    </div>
+    {profile.headshot_url && <img class="headshot" src={profile.headshot_url} alt={'Professional portrait of '+profile.display_name} loading="eager" />}
+    {!profile.headshot_url && <div class="headshot-placeholder">{profile.display_name.split(' ').map((part:string)=>part[0]).join('').slice(0,2).toUpperCase()}</div>}
+  </section>
+  {profile.specialties?.length > 0 && <section class="specialties"><div class="eyebrow">AREAS OF FOCUS</div><div class="chips">{profile.specialties.map((item:string)=><span>{item}</span>)}</div></section>}
+  {profile.featured_properties?.length > 0 && <section class="listings"><div class="section-heading"><div class="eyebrow">FEATURED PROPERTIES</div><h2>Properties to explore</h2></div><div class="listing-grid">{profile.featured_properties.map((item:any)=><article class="listing-card">{item.image_url && <img src={item.image_url} alt={item.title || item.address || 'Featured property'} loading="lazy" />}<div class="listing-copy">{item.title && <h3>{item.title}</h3>}{item.price && <b class="price">{item.price}</b>}{(item.address || item.city) && <p>{[item.address,item.city,item.state].filter(Boolean).join(', ')}</p>}{item.description && <p>{item.description}</p>}{item.listing_url && <a href={item.listing_url} target="_blank" rel="noopener noreferrer">View property details →</a>}</div></article>)}</div></section>}
+  <section class="financing">
+    <div><div class="eyebrow">FINANCING CONNECTION</div><h2>Need financing for your next move?</h2><p>Broker Pal can discuss DSCR rental, fix-and-flip, bridge, commercial, and business-purpose financing. Your inquiry is attributed to {profile.display_name} so the referring relationship is clear.</p><p class="privacy-note">Your contact information is sent to Broker Pal for this financing inquiry. It is not automatically shared with other agents or service providers.</p></div>
+    <form id="agentLead">
+      <h3>Request a financing conversation</h3>
+      <div class="fields"><label>First name<input name="firstName" required maxlength="80" autocomplete="given-name" /></label><label>Last name<input name="lastName" required maxlength="80" autocomplete="family-name" /></label><label>Email<input type="email" name="email" maxlength="254" autocomplete="email" /></label><label>Phone<input type="tel" name="phone" maxlength="40" autocomplete="tel" /></label><label class="wide">Financing interest<select name="programInterest"><option>DSCR rental</option><option>Fix and flip</option><option>Bridge loan</option><option>Commercial / business purpose</option><option>Not sure yet</option></select></label><label class="wide">What are you working on?<textarea name="message" rows="3" maxlength="1000"></textarea></label></div>
+      <label class="consent-row"><input type="checkbox" name="emailMarketingConsent"><span>I’d also like occasional email updates about commercial real estate financing and investor resources. I can unsubscribe at any time.</span></label><div class="turnstile"></div><button type="submit" disabled={!siteKey}>Send financing inquiry →</button><p class="status" role="status" aria-live="polite"></p><small>By submitting, you agree Broker Pal may contact you about this inquiry. This form does not authorize automated marketing calls or texts.</small>
+    </form>
+  </section>
+  <footer class="agent-footer">
+    <div><b>{profile.display_name}</b>{profile.license_number && <span> · License {profile.license_number}</span>}</div>
+    <div class="socials">{profile.website_url && <a href={profile.website_url} target="_blank" rel="noopener noreferrer">Website</a>}{profile.instagram_url && <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer">Instagram</a>}{profile.facebook_url && <a href={profile.facebook_url} target="_blank" rel="noopener noreferrer">Facebook</a>}{profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">LinkedIn</a>}</div>
+    <small>Powered by Broker Pal · Financing inquiries are handled separately from real estate representation.</small>
+  </footer>
+</main>)}
+{!profile && (<main class="unavailable"><div class="eyebrow">BROKER PAL REALTOR NETWORK</div><h1>This Realtor page isn't available yet.</h1><p>The page may be unpublished or its profile has not been configured. You can still reach Broker Pal for help with a real estate financing question.</p><a href="/contact">Contact Broker Pal →</a></main>)}
+<Footer />
+<script is:inline define:vars={{siteKey,agentName:profile?.display_name || '',agentEmail:profile?.public_email || '',agentPage:profile ? '/realtor/'+profile.slug : ''}}>
+const form=document.querySelector('#agentLead');const status=form?.querySelector('.status');const submit=form?.querySelector('button[type="submit"]');let turnstileToken='';
+if(form&&siteKey){const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;script.defer=true;script.onload=()=>{if(window.turnstile)window.turnstile.render(form.querySelector('.turnstile'),{sitekey:siteKey,callback:t=>{turnstileToken=t;submit.disabled=false;},'expired-callback':()=>{turnstileToken='';submit.disabled=true;}});};document.head.appendChild(script);if(submit)submit.disabled=true;}
+form?.addEventListener('submit',async e=>{e.preventDefault();status.textContent='';const d=new FormData(form);if(!d.get('email')&&!d.get('phone')){status.textContent='Please provide an email address or phone number.';return;}if(!turnstileToken){status.textContent='Please complete the security check.';return;}submit.disabled=true;try{const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:d.get('firstName'),lastName:d.get('lastName'),email:d.get('email'),phone:d.get('phone'),leadType:'financing',programInterest:d.get('programInterest'),message:d.get('message'),websitePath:agentPage,agentName,agentEmail,agentPage,turnstileToken,emailMarketingConsent:d.get('emailMarketingConsent')==='on'})});const result=await response.json();if(!response.ok)throw new Error(result.error||'We could not submit your inquiry.');form.reset();turnstileToken='';status.textContent='Thank you. Your financing inquiry has been received.';if(window.turnstile){window.turnstile.reset();}submit.disabled=true;}catch(error){status.textContent=error.message||'Please try again.';turnstileToken='';if(window.turnstile)window.turnstile.reset();submit.disabled=true;}});
+</script>
+<style>
+:global(body){margin:0;background:#002447;color:#f7fbff;font-family:Arial,Helvetica,sans-serif}.agent-page{--agent-primary:#002447;--agent-accent:#18d0d0;max-width:1180px;margin:auto;padding:48px 26px 75px}.agent-hero{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;padding:38px;background:linear-gradient(120deg,var(--agent-primary),#0c3d5b);border:1px solid #28607b;border-radius:16px}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:900;color:var(--agent-accent)}.agent-logo{display:block;max-width:190px;max-height:70px;object-fit:contain;margin:14px 0}.agent-hero h1{font-size:clamp(40px,6vw,64px);letter-spacing:-2px;line-height:1.03;margin:15px 0;color:white}.professional-title{font-size:20px;font-weight:700;color:var(--agent-accent);margin:0 0 6px}.brokerage{color:#d5e4ea;font-weight:700}.bio{max-width:680px;color:#d8e5eb;line-height:1.75}.areas{color:#e3edf1;margin:20px 0}.areas b{color:var(--agent-accent);margin-right:8px}.headshot,.headshot-placeholder{width:250px;height:290px;object-fit:cover;border-radius:12px;border:3px solid var(--agent-accent)}.headshot-placeholder{display:grid;place-items:center;background:#0c4a68;color:var(--agent-accent);font-size:65px;font-weight:900}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.agent-button,.agent-outline{padding:12px 18px;border-radius:25px;font-weight:800;text-decoration:none}.agent-button{background:var(--agent-accent);color:var(--agent-primary)}.agent-outline{border:1px solid var(--agent-accent);color:white}.specialties,.listings{margin:55px 0}.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.chips span{padding:9px 13px;background:#0b3c5b;border:1px solid #236080;border-radius:20px;color:#e8f4f6;font-size:13px}.section-heading h2,.financing h2{font-size:clamp(29px,4vw,40px);line-height:1.1;margin:12px 0;color:white}.listing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}.listing-card{overflow:hidden;background:#f6fafc;color:#1b354b;border-radius:12px}.listing-card>img{width:100%;height:190px;object-fit:cover}.listing-copy{padding:18px}.listing-copy h3{margin:0 0 8px}.listing-copy p{font-size:13px;line-height:1.55;color:#53697a}.listing-copy a{color:#087f87;font-weight:800;text-decoration:none}.price{color:#0a6870}.financing{display:grid;grid-template-columns:.9fr 1.1fr;gap:42px;align-items:start;padding:34px;background:#073354;border:1px solid #176083;border-radius:14px}.financing p{color:#cbd9e3;line-height:1.7}.privacy-note{font-size:12px;color:#9fb8c5!important}.financing form{background:#f7fbfc;color:#18324a;padding:25px;border-radius:10px;display:grid;gap:14px}.financing form h3{margin:0;font-size:22px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fields label{display:grid;gap:6px;font-size:13px;font-weight:700}.fields .wide{grid-column:1/-1}.fields input,.fields select,.fields textarea{width:100%;box-sizing:border-box;border:1px solid #c6d5df;border-radius:6px;padding:11px;font:inherit;color:#18324a;background:white}.turnstile{min-height:65px}.financing form button{border:0;border-radius:25px;padding:14px;background:var(--agent-accent);color:var(--agent-primary);font-weight:900;cursor:pointer}.financing form button:disabled{opacity:.5;cursor:not-allowed}.status{font-size:13px;color:#075e69;font-weight:800;margin:0}.financing form small{font-size:11px;line-height:1.5;color:#65798a}.agent-footer{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;padding:25px 4px;color:#cad8e1}.agent-footer small{width:100%;color:#91aebc}.socials{display:flex;gap:15px}.socials a,.unavailable a{color:var(--agent-accent);font-weight:800;text-decoration:none}.unavailable{max-width:850px;margin:100px auto;padding:30px;min-height:40vh}.unavailable h1{font-size:clamp(36px,6vw,58px)}.unavailable p{color:#d0dce3;line-height:1.7}@media(max-width:760px){.agent-page{padding:28px 16px 55px}.agent-hero,.financing{grid-template-columns:1fr;padding:22px}.headshot,.headshot-placeholder{width:100%;height:270px}.listing-grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.fields .wide{grid-column:auto}.agent-footer{align-items:flex-start;flex-direction:column}.agent-footer small{width:auto}}
+</style>
