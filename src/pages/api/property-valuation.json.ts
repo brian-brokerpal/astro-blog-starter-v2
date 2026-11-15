@@ -26,11 +26,40 @@ async function sha256(value) {
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
+const ALLOWED_HOSTNAMES = new Set(["yourbrokerpal.com", "www.yourbrokerpal.com"]);
+
+async function verifyTurnstile(token, request, secret) {
+  const hostname = new URL(request.url).hostname.toLowerCase();
+  if (!ALLOWED_HOSTNAMES.has(hostname)) return false;
+  if (!token || token.length > 2048) return false;
+
+  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      secret,
+      response: token,
+      remoteip: request.headers.get("CF-Connecting-IP") || ""
+    })
+  });
+  if (!response.ok) return null;
+  const result = await response.json().catch(() => null);
+  return result?.success === true &&
+    ALLOWED_HOSTNAMES.has(String(result.hostname || "").toLowerCase());
+}
+
 export async function GET({ request, locals }) {
   try {
     const env = locals?.runtime?.env ?? {};
     const db = env.PROPERTY_USAGE_DB;
     const apiKey = env.RENTCAST_API_KEY;
+    const turnstileSecret = env.TURNSTILE_SECRET_KEY;
+
+    if (!turnstileSecret) return json({ error: "Property valuation security verification is not configured." }, 503);
+    const token = request.headers.get("x-turnstile-token") || "";
+    const verified = await verifyTurnstile(token, request, turnstileSecret);
+    if (verified === null) return json({ error: "Security verification is temporarily unavailable. No valuation request was made." }, 503);
+    if (!verified) return json({ error: "Complete the security check and retry. No valuation request was made." }, 403);
 
     if (!db) return json({ error: "Property valuation usage database is not configured." }, 503);
     if (!apiKey) return json({ error: "Property valuation provider key is not configured." }, 503);
