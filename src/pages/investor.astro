@@ -846,8 +846,66 @@ import Footer from '../components/Footer.astro';
 .glossary-content .resource-links{margin-top:8px}
 .glossary-content .standards-subhead{margin-top:24px}
 @media(max-width:760px){.glossary-expand{margin:24px 18px}.glossary-expand>summary{padding:21px 20px}.glossary-expand>summary:after{right:17px}.glossary-content{padding:0 18px 20px}}
+
+/* Compact, accessible topic accordions for the long-form investor education page. */
+.investor-topic-accordion{max-width:1100px;margin:0 auto 14px;border:1px solid #294a60;border-radius:8px;background:#0d293d;overflow:hidden}
+.investor-topic-accordion>summary{list-style:none;cursor:pointer;position:relative;display:grid;gap:5px;padding:20px 58px 20px 24px}
+.investor-topic-accordion>summary::-webkit-details-marker{display:none}
+.investor-topic-accordion>summary:after{content:"＋";position:absolute;right:23px;top:50%;transform:translateY(-50%);font-size:25px;line-height:1;color:#69d9ce}
+.investor-topic-accordion[open]>summary:after{content:"−"}
+.investor-topic-accordion>summary:focus-visible{outline:3px solid #69d9ce;outline-offset:-3px}
+.investor-topic-accordion .topic-kicker{font-size:10px;font-weight:850;letter-spacing:1.7px;color:#69d9ce}
+.investor-topic-accordion .topic-title{font-size:clamp(18px,2.4vw,25px);font-weight:800;line-height:1.25;color:#f3f8fa}
+.investor-topic-accordion .topic-hint{font-size:11px;color:#9fb7c3}
+.investor-topic-accordion>section{margin-top:0!important}
+.investor-topic-accordion[open]>section{border-top:1px solid #294a60}
+@media(max-width:760px){.investor-topic-accordion{margin:0 18px 12px}.investor-topic-accordion>summary{padding:18px 48px 18px 18px}.investor-topic-accordion>summary:after{right:16px}}
+
 </style>
 <script>
+
+/* Turn the long education chapters into native, keyboard-accessible accordions. */
+const investorMain = document.querySelector('.investor-page');
+if (investorMain) {
+  const alwaysVisible = ['investor-hero', 'llc-guide-promo', 'next-step', 'closing-cta'];
+  investorMain.querySelectorAll(':scope > section').forEach((section) => {
+    if (alwaysVisible.some((name) => section.classList.contains(name))) return;
+    if (section.closest('details')) return;
+    const heading = section.querySelector('h2');
+    if (!heading) return;
+    const accordion = document.createElement('details');
+    accordion.className = 'investor-topic-accordion';
+    const summary = document.createElement('summary');
+    const label = section.querySelector('.section-label');
+    const kicker = document.createElement('span');
+    kicker.className = 'topic-kicker';
+    kicker.textContent = label?.textContent?.trim() || 'INVESTOR EDUCATION';
+    const title = document.createElement('span');
+    title.className = 'topic-title';
+    title.textContent = heading.textContent.trim();
+    const hint = document.createElement('span');
+    hint.className = 'topic-hint';
+    hint.textContent = 'Expand to read this topic';
+    summary.append(kicker, title, hint);
+    accordion.append(summary);
+    section.parentNode.insertBefore(accordion, section);
+    accordion.append(section);
+  });
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link) return;
+    const id = decodeURIComponent(link.getAttribute('href').slice(1));
+    const target = id ? document.getElementById(id) : null;
+    const accordion = target?.closest('details.investor-topic-accordion');
+    if (accordion) accordion.open = true;
+  });
+  if (window.location.hash) {
+    const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    const accordion = target?.closest('details.investor-topic-accordion');
+    if (accordion) accordion.open = true;
+  }
+}
+
 const rentInput = document.querySelector('#monthly-rent');
 const pitiaInput = document.querySelector('#monthly-pitia');
 const result = document.querySelector('#dscr-result');
