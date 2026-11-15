@@ -867,7 +867,7 @@ import Footer from '../components/Footer.astro';
 /* Turn the long education chapters into native, keyboard-accessible accordions. */
 const investorMain = document.querySelector('.investor-page');
 if (investorMain) {
-  const alwaysVisible = ['investor-hero', 'llc-guide-promo', 'next-step'];
+  const alwaysVisible = ['investor-hero', 'llc-guide-promo', 'next-step', 'closing-cta'];
   investorMain.querySelectorAll(':scope > section').forEach((section) => {
     if (alwaysVisible.some((name) => section.classList.contains(name))) return;
     if (section.closest('details')) return;
