@@ -519,11 +519,8 @@ function updateShortTermEstimate() {
   const breakEven = rate > 0 ? (pitia + costs) / (rate * 30) * 100 : Infinity;
   const result = document.getElementById('st-result');
   const detail = document.getElementById('st-detail');
-  if (result) result.textContent = (net < 0 ? '-
- : '
-) + Math.abs(Math.round(net)).toLocaleString('en-US');
-  if (detail) detail.textContent = 'Estimated monthly gross bookings: 
- + Math.round(gross).toLocaleString('en-US') + ' · Break-even occupancy: ' + (Number.isFinite(breakEven) ? breakEven.toFixed(1) + '%' : 'not available') + '.';
+  if (result) result.textContent = (net < 0 ? '-$' : '$') + Math.abs(Math.round(net)).toLocaleString('en-US');
+  if (detail) detail.textContent = 'Estimated monthly gross bookings: $' + Math.round(gross).toLocaleString('en-US') + ' · Break-even occupancy: ' + (Number.isFinite(breakEven) ? breakEven.toFixed(1) + '%' : 'not available') + '.';
 }
 ['lt-rent','lt-pitia','lt-management','lt-vacancy','lt-maintenance','lt-other'].forEach(id => document.getElementById(id)?.addEventListener('input', updateLongTermEstimate));
 ['st-rate','st-occupancy','st-pitia','st-costs'].forEach(id => document.getElementById(id)?.addEventListener('input', updateShortTermEstimate));
