@@ -121,6 +121,10 @@ export async function GET({ request, locals }) {
       }
     }
 
+    const monthlyRemaining = reservation
+      ? Math.max(0, 50 - Number(reservation.request_count))
+      : 0;
+
     const upstream = await fetch("https://api.rentcast.io/v1/avm/value?" + params.toString(), {
       method: "GET",
       headers: { Accept: "application/json", "X-Api-Key": apiKey }
@@ -134,7 +138,7 @@ export async function GET({ request, locals }) {
           : "The property valuation provider could not complete the estimate.",
         providerStatus: upstream.status,
         usageCounted: true,
-        remainingFreeRequests: Math.max(0, 50 - Number(reservation.request_count))
+        remainingFreeRequests: monthlyRemaining
       }, upstream.status === 404 ? 404 : 502);
     }
 
@@ -157,7 +161,8 @@ export async function GET({ request, locals }) {
       provider: "RentCast",
       cached: false,
       usageCounted: true,
-      remainingFreeRequests: Math.max(0, 50 - Number(reservation.request_count))
+      remainingFreeRequests: monthlyRemaining,
+      approvedOverage: Boolean(approvedGrant)
     };
 
     await db.prepare(
