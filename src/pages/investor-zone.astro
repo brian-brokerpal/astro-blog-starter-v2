@@ -133,6 +133,7 @@ if (root) {
   const defaults = { company: 'My Investment Co.', display: '', theme: 'dark', accent: '#22c7c5', density: 'comfortable', start: 'overview' };
   let settings = { ...defaults };
   let logoUrl = '';
+  const safeLogoData = value => typeof value === 'string' && value.length <= 2800000 && /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(value);
   const renderBrandAvatar = () => {
     const safePattern = new RegExp('^data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*' + String.fromCharCode(36));
     if (typeof logoUrl === 'string' && logoUrl.length <= 2800000 && safePattern.test(logoUrl)) {
@@ -170,6 +171,7 @@ if (root) {
         density: ['comfortable','compact'].includes(parsed.density) ? parsed.density : defaults.density,
         start: ['overview','properties','documents','cpa-access','bills','expenses','services','customize'].includes(parsed.start) ? parsed.start : defaults.start
       };
+      logoUrl = safeLogoData(parsed.logoUrl) ? parsed.logoUrl : '';
     }
   } catch {}
   apply();
@@ -184,11 +186,11 @@ if (root) {
     if (!file) return;
     if (!/^image\/(png|jpeg|webp)$/.test(file.type) || file.size > 2 * 1024 * 1024) { $('save-status').textContent = 'Choose a PNG, JPG or WebP image under 2 MB.'; return; }
     const reader = new FileReader();
-    reader.onload = () => { logoUrl = String(reader.result); renderBrandAvatar(); $('save-status').textContent = 'Logo preview loaded for this session; it is not uploaded.'; };
+    reader.onload = () => { logoUrl = safeLogoData(reader.result) ? String(reader.result) : ''; renderBrandAvatar(); $('save-status').textContent = 'Logo preview loaded. Select Save design to keep it on this device; it is not uploaded.'; };
     reader.readAsDataURL(file);
   });
   $('save-design').addEventListener('click', () => {
-    try { localStorage.setItem('brokerpal-investor-design', JSON.stringify(settings)); $('save-status').textContent = 'Design saved on this device only.'; }
+    try { localStorage.setItem('brokerpal-investor-design', JSON.stringify({ ...settings, logoUrl })); $('save-status').textContent = 'Design and logo saved on this device only.'; }
     catch { $('save-status').textContent = 'Could not save in this browser. Your current preview remains active.'; }
     const target = document.getElementById(settings.start);
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
