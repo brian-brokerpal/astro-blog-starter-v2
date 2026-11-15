@@ -18,10 +18,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 <section class="approved-programs" id="loan-programs">
   <h2><span></span>Our Investment Loan Programs<span></span></h2>
   <div class="approved-program-grid">
-    <a href="/apply"><b class="program-icon">⌂</b><strong>DSCR Rental Loans</strong><small>Financing based on<br/>rental income.</small></a>
-    <a href="/apply"><b class="program-icon">⚒</b><strong>Fix &amp; Flip Loans</strong><small>Short-term financing<br/>for your next project.</small></a>
-    <a href="/apply"><b class="program-icon">⌁</b><strong>Bridge Loans</strong><small>Quick financing for<br/>time-sensitive opportunities.</small></a>
-    <a href="/apply"><b class="program-icon">▦</b><strong>Commercial &amp; Business<br/>Purpose Loans</strong><small>Solutions for your business<br/>and investment needs.</small></a>
+    <a href="/apply"><b class="program-icon">⌂</b><strong>DSCR Rental Loans</strong><small>Investment-property financing<br/>focused on rental income.</small></a>
+    <a href="/apply"><b class="program-icon">⚒</b><strong>Fix &amp; Flip Loans</strong><small>Short-term financing for eligible<br/>purchase-and-renovation projects.</small></a>
+    <a href="/apply"><b class="program-icon">⌁</b><strong>Bridge Loans</strong><small>Short-term financing for eligible<br/>acquisitions and transitions.</small></a>
+    <a href="#commercial-inquiries"><b class="program-icon">▦</b><strong>Commercial &amp; Business<br/>Purpose Loans</strong><small>Tell us about a unique or larger<br/>commercial property opportunity.</small></a>
+  </div>
+  <div class="commercial-inquiry" id="commercial-inquiries">
+    <div><b>Have a unique or larger commercial property?</b><p>Send us the property details and a brief outline of the financing request. We review opportunities individually and may explore private-investor options when the property and transaction fit. Financing is subject to investor interest, underwriting, due diligence, and final terms.</p></div>
+    <a class="approved-cta" href="/apply">Submit an Inquiry <span>→</span></a>
   </div>
 
   <div class="itin-feature">
@@ -115,6 +119,10 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 @media(max-width:800px){.hero{grid-template-columns:1fr;padding:54px 25px 60px;gap:35px}.hero-art{min-height:330px}.visual-main{min-height:240px}.city-art{width:70%;right:-12%}.visual-copy{width:65%}.trust{gap:22px;flex-wrap:wrap;justify-content:flex-start}.trust div{min-width:40%}.step-grid{grid-template-columns:1fr}.closing{align-items:flex-start;flex-direction:column}.intro{padding:68px 25px}.program-grid{grid-template-columns:1fr}.program-grid p{min-height:0}}
 @media(max-width:650px){.toolkit-grid{grid-template-columns:1fr}.report-promo{padding:38px 24px}.report-promo-inner{gap:10px}.report-promo-mark{width:90px;flex-basis:90px;transform:scale(.8);transform-origin:center right}.report-promo-button{font-size:13px;padding:13px 14px}}
 @media(max-width:460px){.hero h1{font-size:43px;letter-spacing:-1.8px}.hero-art{min-height:285px;padding:20px}.visual-main{min-height:210px}.visual-copy h2{font-size:34px}.city-art{width:78%;right:-22%;opacity:.72}.visual-index{display:none}.visual-bottom{font-size:7px;letter-spacing:1px}.trust div{min-width:100%}}
+
+.commercial-inquiry{max-width:1450px;margin:0 auto 24px;padding:22px 26px;border:1px solid #13d0d0;border-radius:12px;background:#062b4b;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.commercial-inquiry>div{max-width:950px}.commercial-inquiry b{display:block;color:#f8fbff;font-size:19px}.commercial-inquiry p{margin:7px 0 0;color:#e0eaf1;font-size:14px;line-height:1.6}.commercial-inquiry .approved-cta{flex-shrink:0}
+@media(max-width:700px){.commercial-inquiry{align-items:flex-start;flex-direction:column;margin:0 0 22px;padding:20px}.commercial-inquiry .approved-cta{white-space:normal}}
 </style>
 <style>
 :global(html),:global(body),:global(main.home){background:#002447!important;color:#f7f9fc!important}
