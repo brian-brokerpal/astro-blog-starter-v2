@@ -6,45 +6,79 @@ on:
       - ops/los-d1-preflight-20261115
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   inspect-production-d1:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Verify production D1 target and inspect schema (read only)
+      - name: Check out release-preflight branch
+        uses: actions/checkout@v4
+      - name: Inspect production D1 and save a read-only report
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: 3089c709-9f68-4740-b15e-2c7d6060a0b6
-        shell: bash
         run: |
-          set -euo pipefail
-          API="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID"
-          curl -fsS "$API" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" > /tmp/d1-meta.json
-          node -e "const d=require('/tmp/d1-meta.json'); if(!d.success) throw new Error(JSON.stringify(d.errors)); console.log('Confirmed D1 database:', d.result.name, 'ID:', d.result.uuid);"
-          query() {
-            local sql="$1"
-            curl -fsS -X POST "$API/query" \
-              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-              -H "Content-Type: application/json" \
-              --data "$(node -e 'process.stdout.write(JSON.stringify({sql:process.argv[1]}))' "$sql")"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = [];
+          const token = process.env.CLOUDFLARE_API_TOKEN || '';
+          const account = process.env.CLOUDFLARE_ACCOUNT_ID || '';
+          const id = process.env.D1_DATABASE_ID;
+          if (!token || !account) {
+            report.push('BLOCKED: production Cloudflare secrets were not available to this branch workflow.');
+          } else {
+            const base = `https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${id}`;
+            async function call(url, options = {}) {
+              const response = await fetch(url, { ...options, headers: {
+                Authorization: `Bearer ${token}`,
+                ...(options.headers || {})
+              }});
+              const data = await response.json().catch(() => ({}));
+              if (!response.ok || data.success !== true) {
+                throw new Error(`Cloudflare API returned HTTP ${response.status}: ${JSON.stringify(data.errors || data.messages || [])}`);
+              }
+              return data;
+            }
+            try {
+              const meta = await call(base);
+              report.push(`Database confirmed: ${meta.result.name}`);
+              report.push(`Database ID: ${meta.result.uuid}`);
+              async function query(sql) {
+                const data = await call(base + '/query', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ sql })
+                });
+                return (data.result || []).flatMap(x => x.results || []);
+              }
+              const tables = await query("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
+              const columns = await query("PRAGMA table_info(los_leads)");
+              const releaseTables = await query("SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE '%migration%' OR name LIKE '%realtor%' OR name LIKE '%email_campaign%' OR name LIKE '%direct_mail%' OR name LIKE '%public_record_mail_queue%' OR name LIKE '%research%' OR name LIKE '%entity_links%' OR name LIKE '%public_lead_alert%') ORDER BY name");
+              report.push('', '## Existing tables', ...tables.map(x => x.name));
+              report.push('', '## los_leads columns', ...columns.map(x => `${x.name} (${x.type})`));
+              report.push('', '## Release-related tables', ...releaseTables.map(x => x.name));
+              report.push('', 'READ ONLY: no database writes were performed.');
+            } catch (error) {
+              report.push('PREFLIGHT FAILED: ' + String(error.message || error));
+            }
           }
-          query "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name" > /tmp/d1-tables.json
-          query "PRAGMA table_info(los_leads)" > /tmp/d1-leads.json
-          query "SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE '%migration%' OR name LIKE '%realtor%' OR name LIKE '%email_campaign%' OR name LIKE '%direct_mail%' OR name LIKE '%public_record_mail_queue%' OR name LIKE '%research%' OR name LIKE '%entity_links%' OR name LIKE '%public_lead_alert%') ORDER BY name" > /tmp/d1-release-tables.json
-          node <<'NODE'
-          const fs = require('fs');
-          function rows(path) {
-            const d = JSON.parse(fs.readFileSync(path, 'utf8'));
-            if (!d.success) throw new Error(JSON.stringify(d.errors || d));
-            return (d.result || []).flatMap(x => x.results || []);
-          }
-          console.log('--- Existing tables ---');
-          console.log(rows('/tmp/d1-tables.json').map(x => x.name).join('\n'));
-          console.log('--- los_leads columns ---');
-          console.log(rows('/tmp/d1-leads.json').map(x => x.name + ' (' + x.type + ')').join('\n'));
-          console.log('--- Release-related tables ---');
-          console.log(rows('/tmp/d1-release-tables.json').map(x => x.name).join('\n'));
+          fs.writeFileSync('los-d1-preflight-report.md', report.join('\n') + '\n');
+          console.log(report.join('\n'));
           NODE
+      - name: Save preflight report to this temporary branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -f los-d1-preflight-report.md ]; then
+            git add los-d1-preflight-report.md
+            if ! git diff --cached --quiet; then
+              git commit -m "[skip ci] save read-only LOS D1 preflight report"
+              git push
+            fi
+          fi
