@@ -45,6 +45,15 @@ jobs:
           echo "LOS Pages project lookup HTTP: $project_status"
           jq -c '{success, errors, result: (if .result then {name: .result.name, subdomain: .result.subdomain, domains: .result.domains} else null end)}' /tmp/pages-project.json
 
+          deployments_status=$(curl -sS -o /tmp/pages-deployments.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr/deployments?per_page=5")
+          echo "LOS Pages recent deployments HTTP: $deployments_status"
+          jq -c '{success, errors, deployments: [.result[]? | {id,short_id,environment,created_on,modified_on,url,aliases,latest_stage: .latest_stage.status, deployment_trigger: .deployment_trigger.metadata.commit_hash}]}' /tmp/pages-deployments.json
+
+          for host in los.yourbrokerpal.com yourbrokerpal-los--dscr.pages.dev; do
+            code=$(curl -sS -L --max-time 20 -o /dev/null -w "%{http_code}" "https://$host/")
+            echo "Public host probe $host HTTP: $code"
+          done
+
           domains_status=$(curl -sS -o /tmp/pages-domains.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr/domains")
           echo "LOS Pages custom-domain list HTTP: $domains_status"
           jq -c '{success, errors, result: [.result[]? | {name, status, validation_status: .validation_data.status, verification_status: .verification_data.status}]}' /tmp/pages-domains.json
