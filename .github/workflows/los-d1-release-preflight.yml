@@ -1,0 +1,50 @@
+name: LOS D1 release preflight (read only)
+
+on:
+  push:
+    branches:
+      - ops/los-d1-preflight-20261115
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-production-d1:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Verify production D1 target and inspect schema (read only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: 3089c709-9f68-4740-b15e-2c7d6060a0b6
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/$D1_DATABASE_ID"
+          curl -fsS "$API" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" > /tmp/d1-meta.json
+          node -e "const d=require('/tmp/d1-meta.json'); if(!d.success) throw new Error(JSON.stringify(d.errors)); console.log('Confirmed D1 database:', d.result.name, 'ID:', d.result.uuid);"
+          query() {
+            local sql="$1"
+            curl -fsS -X POST "$API/query" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data "$(node -e 'process.stdout.write(JSON.stringify({sql:process.argv[1]}))' "$sql")"
+          }
+          query "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name" > /tmp/d1-tables.json
+          query "PRAGMA table_info(los_leads)" > /tmp/d1-leads.json
+          query "SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE '%migration%' OR name LIKE '%realtor%' OR name LIKE '%email_campaign%' OR name LIKE '%direct_mail%' OR name LIKE '%public_record_mail_queue%' OR name LIKE '%research%' OR name LIKE '%entity_links%' OR name LIKE '%public_lead_alert%') ORDER BY name" > /tmp/d1-release-tables.json
+          node <<'NODE'
+          const fs = require('fs');
+          function rows(path) {
+            const d = JSON.parse(fs.readFileSync(path, 'utf8'));
+            if (!d.success) throw new Error(JSON.stringify(d.errors || d));
+            return (d.result || []).flatMap(x => x.results || []);
+          }
+          console.log('--- Existing tables ---');
+          console.log(rows('/tmp/d1-tables.json').map(x => x.name).join('\n'));
+          console.log('--- los_leads columns ---');
+          console.log(rows('/tmp/d1-leads.json').map(x => x.name + ' (' + x.type + ')').join('\n'));
+          console.log('--- Release-related tables ---');
+          console.log(rows('/tmp/d1-release-tables.json').map(x => x.name).join('\n'));
+          NODE
