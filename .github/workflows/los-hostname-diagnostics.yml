@@ -47,7 +47,7 @@ jobs:
 
           project_status=$(curl -sS -o /tmp/pages-project.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr")
           echo "LOS Pages project lookup HTTP: $project_status"
-          jq -c '{success, errors, result: (if .result then {name: .result.name, subdomain: .result.subdomain, domains: .result.domains} else null end)}' /tmp/pages-project.json
+          jq -c '{success, errors, result: (if .result then {name: .result.name, subdomain: .result.subdomain, domains: .result.domains, production_bindings: {d1_databases: [.result.deployment_configs.production.d1_databases[]? | {binding, database_name, database_id}], r2_buckets: [.result.deployment_configs.production.r2_buckets[]? | {binding, bucket_name}]}} else null end)}' /tmp/pages-project.json
 
           deployments_status=$(curl -sS -o /tmp/pages-deployments.json -w "%{http_code}" -H "$AUTH" "$BASE/pages/projects/yourbrokerpal-los--dscr/deployments?per_page=5")
           echo "LOS Pages recent deployments HTTP: $deployments_status"
