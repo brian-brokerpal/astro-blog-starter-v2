@@ -375,6 +375,17 @@ import Footer from '../components/Footer.astro';
         <div class="history-chart-legend"><span><i class="legend-line"></i><span id="history-legend-label">FHFA home-price index (1980 Q1 = 100)</span></span><span id="history-chart-range">1975–2025</span></div>
         <p class="history-chart-note" id="history-chart-note">An index tracks changes over time; it is not the average dollar price of a home. The FHFA series uses repeat-sales and appraisal data for single-family properties associated with conventional conforming mortgages.</p>
       </div>
+
+      <div class="history-payment-example">
+        <div><span class="history-kicker">WHAT A RATE MEANS IN DOLLARS</span><h3>Compare the payment—not just the percentage.</h3><p>Illustrative monthly principal-and-interest payment on a $100,000, 30-year fixed loan. Taxes, insurance, mortgage insurance, HOA dues, points, and fees are excluded.</p></div>
+        <div class="payment-rate-grid">
+          <article><b>2.96%</b><strong>$419</strong><small>2021 annual average</small></article>
+          <article><b>6.60%</b><strong>$639</strong><small>2025 annual average</small></article>
+          <article><b>8.05%</b><strong>$737</strong><small>2000 annual average</small></article>
+          <article><b>16.64%</b><strong>$1,396</strong><small>1981 annual average</small></article>
+        </div>
+        <p class="fine-print">A rate comparison is not the whole affordability story. Home prices, down payments, wages, property taxes, insurance, credit standards, and available loan products all affect the real monthly burden. The 2021 rate was historically exceptional; it is not a fair assumption for every future buyer.</p>
+      </div>
       <div class="history-explainer-grid">
         <article><h3>How mortgage financing evolved</h3><ul>
           <li><b>1932:</b> Federal Home Loan Bank System created to support mortgage lending institutions.</li>
@@ -403,7 +414,7 @@ import Footer from '../components/Footer.astro';
         <a href="https://www.hud.gov/aboutus/fhahistory" target="_blank" rel="noopener noreferrer">HUD: FHA history ↗</a>
         <a href="https://www.fanniemae.com/about-us/corporate-governance/fannie-mae-charter" target="_blank" rel="noopener noreferrer">Fannie Mae history ↗</a>
       </div>
-      <p class="fine-print">Historical data are subject to revisions and differences in index construction. The home-price chart uses FHFA national All-Transactions HPI fourth-quarter values, 1975–2025. The mortgage-rate chart uses selected annual-average milestones from Freddie Mac's PMMS; it is not a complete weekly-rate series. The 1942–2025 decline count is from the Shiller-based series linked in the accompanying methodology note. Educational information only; not a forecast or investment recommendation.</p>
+      <p class="fine-print">Historical data are subject to revisions and differences in index construction. The home-price chart uses FHFA national All-Transactions HPI fourth-quarter values, 1975–2025. The mortgage-rate chart uses annual averages for every calendar year from 1971 through 2025, calculated from Freddie Mac PMMS weekly observations (1971 begins in April). The 1942–2025 decline count is from the Shiller-based series linked in the accompanying methodology note. The 1942–2025 decline count is from the Shiller-based series linked in the accompanying methodology note. Educational information only; not a forecast or investment recommendation.</p>
     </section>
     <section class="closing-cta">
       <div><div class="section-label">YOUR NEXT INVESTMENT STARTS WITH A CONVERSATION</div><h2>Have a property in mind?</h2><p>Share the basics and let's review potential financing paths for your rental investment.</p></div>
@@ -585,6 +596,18 @@ import Footer from '../components/Footer.astro';
 .portability-panel h3{font-size:25px;margin:8px 0 14px}
 .portability-panel p+p{margin-top:12px}
 @media(max-width:760px){.rate-mechanics-grid{grid-template-columns:1fr}.rate-flow{grid-template-columns:1fr}.rate-flow>i{transform:rotate(90deg);justify-self:center}.rate-flow>div{padding:15px}.portability-panel{padding:20px}}
+
+
+.history-payment-example{display:grid;grid-template-columns:.85fr 1.15fr;gap:24px;align-items:center;background:#102d43;border:1px solid #31576b;border-radius:8px;padding:24px;margin:26px 0}
+.history-payment-example h3{font-size:22px;line-height:1.2;margin:8px 0;color:#f3f7f8}
+.history-payment-example p{font-size:13px;line-height:1.65;color:#bfd0d9;margin:0}
+.payment-rate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.payment-rate-grid article{display:grid;gap:2px;padding:15px;background:#0a2538;border:1px solid #294b60;border-radius:5px}
+.payment-rate-grid b{font-size:12px;color:#69d9ce}
+.payment-rate-grid strong{font-size:28px;color:#f5f8f9;line-height:1.2}
+.payment-rate-grid small{font-size:10px;color:#a9bfca}
+.history-payment-example .fine-print{grid-column:1/-1;margin:0}
+@media(max-width:760px){.history-payment-example{grid-template-columns:1fr}.payment-rate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 </style>
 <script>
