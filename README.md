@@ -55,6 +55,20 @@ All commands are run from the root of the project, from a terminal:
 | `npm run build && npm run deploy` | Deploy your production site to Cloudflare        |
 | `npm wrangler tail`               | View real-time logs for all Workers              |
 
+
+## Production intake configuration
+
+The public property-report form sends submissions to `/api/public-leads`. That same-origin route forwards the request to the LOS; it does not save leads in this website's own database. Before enabling the form in production, configure these Cloudflare Worker variables:
+
+| Variable | Type | Purpose |
+| --- | --- | --- |
+| `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Full HTTPS URL of the LOS public intake endpoint, ending in `/api/public-leads` |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Build-time public variable | Cloudflare Turnstile site key embedded in the property-report page |
+
+On the LOS Worker, configure `ALLOWED_ORIGIN=https://yourbrokerpal.com` and the matching Turnstile `TURNSTILE_SECRET_KEY`. The site key and secret must belong to the same Turnstile widget and the widget must allow the production hostname. The LOS also needs its D1 binding and any desired transactional-email settings. Never put the Turnstile secret or email-provider API key in this website repository or a public build variable.
+
+The website proxy returns a clear `503` if `LOS_PUBLIC_LEADS_URL` is missing. A successful website build does not prove that the upstream URL, Turnstile credentials, LOS database, or email alerts are configured. Verify a test submission in the LOS Lead Center before announcing the integration as live.
+
 ## 👀 Want to learn more?
 
 Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
