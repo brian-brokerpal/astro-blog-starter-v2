@@ -73,6 +73,10 @@ On the LOS Worker, configure `ALLOWED_ORIGIN=https://yourbrokerpal.com` and the 
 
 The website proxy returns a clear `503` if `LOS_PUBLIC_LEADS_URL` is missing. A successful website build does not prove that the upstream URL, Turnstile credentials, LOS database, or email alerts are configured. Verify a test submission in the LOS Lead Center before announcing the integration as live.
 
+## Dependency security posture
+
+The production-only audit (`npm audit --omit=dev`) reports zero vulnerable runtime dependencies. The full development-tool audit still reports 13 high-severity package entries, all cascading from the single upstream `picomatch` ReDoS advisory [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), which affects versions through 4.0.7; no patched npm release is available in the current dependency registry. These are build-toolchain dependencies, not installed runtime dependencies in the deployed Worker bundle. Do not run `npm audit fix` blindly: its suggested Astro 5.3.0 downgrade would reintroduce the critical Astro advisory removed by the Astro 7 upgrade. Recheck this advisory on future dependency updates and apply the upstream patch when published.
+
 ## Build toolchain
 
 The site is built with Astro 7.4.12 and `@astrojs/cloudflare` 14.4.8. Cloudflare Workers Builds and GitHub Actions are pinned to Node 22.23.4 and npm 10.9.2; Wrangler is pinned to 4.164.0. Astro, its integrations, TypeScript, and Wrangler are build-time tools and are classified as development dependencies because the deployed Worker is the generated bundle.
