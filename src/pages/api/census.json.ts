@@ -17,8 +17,8 @@ function json(data: unknown, status = 200) {
 
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    const runtime = locals?.runtime;
-    const env = runtime?.env ?? {};
+    const runtime = (locals as any)?.runtime;
+    const env: any = runtime?.env ?? {};
     const apiKey = env.CENSUS_API_KEY;
     const incoming = new URL(request.url);
 
