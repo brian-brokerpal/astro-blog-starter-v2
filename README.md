@@ -62,7 +62,7 @@ The public property-report form sends submissions to `/api/public-leads`. That s
 
 | Variable | Type | Purpose |
 | --- | --- | --- |
-| `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Set in production `wrangler.json` to the LOS public intake endpoint; preview config intentionally omits it so preview forms do not send test leads to production |
+| `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Set in production `wrangler.json` to the LOS public intake endpoint; branch previews are independently blocked by the production-host allowlist |
 | `PUBLIC_TURNSTILE_SITE_KEY` | GitHub Actions production environment variable | Public Cloudflare Turnstile site key embedded during the production build; the deploy workflow now fails closed if this value is missing |
 | `PROPERTY_USAGE_DB` | D1 binding | Usage counter and 30-day response cache for property valuation requests; configured in `wrangler.json` |
 | `CENSUS_API_KEY` | Encrypted secret | Server-side key for the Census API route |
@@ -72,6 +72,10 @@ The public property-report form sends submissions to `/api/public-leads`. That s
 On the LOS Worker, configure `ALLOWED_ORIGIN=https://yourbrokerpal.com` and the matching Turnstile `TURNSTILE_SECRET_KEY`. The site key and secret must belong to the same Turnstile widget and the widget must allow the production hostname. The LOS also needs its D1 binding and any desired transactional-email settings. Never put the Turnstile secret or email-provider API key in this website repository or a public build variable.
 
 The website proxy returns a clear `503` if `LOS_PUBLIC_LEADS_URL` is missing. A successful website build does not prove that the upstream URL, Turnstile credentials, LOS database, or email alerts are configured. Verify a test submission in the LOS Lead Center before announcing the integration as live.
+
+## Preview safety
+
+Cloudflare Workers Builds creates a branch preview for `feature/property-report-lead-center-label`. The `/api/public-leads`, `/api/census.json`, and `/api/property-valuation.json` routes reject every host except `yourbrokerpal.com` and `www.yourbrokerpal.com`, before forwarding leads or calling Census/RentCast. Automated preview testing therefore cannot create production leads or consume provider quota. The standalone `wrangler.preview.json` also omits the production LOS URL and D1 binding; it is not used by the Workers Builds branch-preview pipeline.
 
 ## Dependency security posture
 
