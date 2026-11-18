@@ -81,6 +81,10 @@ The production-only audit (`npm audit --omit=dev`) reports zero vulnerable runti
 
 The site is built with Astro 7.4.12 and `@astrojs/cloudflare` 14.4.8. Cloudflare Workers Builds and GitHub Actions are pinned to Node 22.23.4 and npm 10.9.2; Wrangler is pinned to 4.164.0. Astro, its integrations, TypeScript, and Wrangler are build-time tools and are classified as development dependencies because the deployed Worker is the generated bundle.
 
+## Preview deployment safety
+
+The isolated preview Worker is named `astro-blog-starter-v2-preview` and uses the generated Astro entrypoint and client assets only. It intentionally has no D1 binding or LOS intake URL. In addition, the public lead intake, Census lookup, and RentCast valuation endpoints enforce an exact `yourbrokerpal.com` / `www.yourbrokerpal.com` host allowlist; Workers Builds preview URLs and `workers.dev` URLs receive HTTP 503 before any lead forwarding or external provider request. This remains a defense even if a preview build inherits production bindings.
+
 ## Property usage D1 migration notes
 
 The production `PROPERTY_USAGE_DB` binding points to `yourbrokerpal-property-usage` (`3089c709-9f68-4740-b15e-2c7d6060a0b6`). The migration directory currently contains two differently named `0001` files: `0001_property_usage.sql` and `0001_rentcast_usage.sql`. They create the same `rentcast_monthly_usage` table, `rentcast_valuation_cache` table, and cache index, all with `IF NOT EXISTS`. They are redundant but safe as no-op duplicates; do not delete or rewrite either until the remote D1 migration ledger has been checked. Before changing this database, inspect `npx wrangler d1 migrations list yourbrokerpal-property-usage --remote` and the actual table schema. No D1 migration was applied as part of this branch work.
