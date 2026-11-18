@@ -1,9 +1,15 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
+import { isProductionHost } from '../../lib/production-host.js';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
+  if (!isProductionHost(new URL(request.url).hostname)) {
+    return new Response(JSON.stringify({ error: 'Website inquiry intake is disabled on preview deployments.' }), {
+      status: 503, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    });
+  }
   const upstream = String(env.LOS_PUBLIC_LEADS_URL || '').trim();
   if (!upstream) {
     return new Response(JSON.stringify({ error: 'Secure inquiry intake is not configured yet.' }), {
