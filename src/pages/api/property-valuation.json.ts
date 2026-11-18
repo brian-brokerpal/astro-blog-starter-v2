@@ -74,10 +74,10 @@ export const GET: APIRoute = async ({ request, locals }) => {
     // Reserve a request atomically against the manually confirmed provider billing
     // period. The key is changed only after RentCast confirms its free quota reset.
     // This avoids assuming the provider resets on the first of each calendar month.
-    const monthKey = billingPeriodKey;
+    const usagePeriodKey = billingPeriodKey;
     const reservation = await db.prepare(
       "INSERT INTO rentcast_monthly_usage (month_key, request_count, updated_at) VALUES (?, 1, CURRENT_TIMESTAMP) ON CONFLICT(month_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 50 RETURNING request_count"
-    ).bind(monthKey).first();
+    ).bind(usagePeriodKey).first();
 
     if (!reservation) {
       return json({
