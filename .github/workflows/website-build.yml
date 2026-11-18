@@ -78,9 +78,23 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Upload isolated preview version
+      - name: Upload and smoke-test isolated preview version
         if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feature/property-report-lead-center-label' && github.event.pull_request.head.repo.full_name == github.repository
-        run: npx wrangler versions upload --config wrangler.preview.json
+        run: |
+          set -euo pipefail
+          npx wrangler versions upload --config wrangler.preview.json | tee /tmp/wrangler-preview-upload.log
+          PREVIEW_URL="$(sed -n 's/.*Version Preview URL: //p' /tmp/wrangler-preview-upload.log | tail -n 1 | tr -d '\r')"
+          test -n "$PREVIEW_URL"
+          echo "Preview URL: $PREVIEW_URL"
+          curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "$PREVIEW_URL/" -o /tmp/preview-home.html
+          curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-connrefused "$PREVIEW_URL/tools/property-report" -o /tmp/preview-property-report.html
+          for path in /api/census.json /api/property-valuation.json; do
+            status="$(curl --silent --show-error -o /tmp/preview-api-body -w '%{http_code}' "$PREVIEW_URL$path")"
+            test "$status" = "503"
+          done
+          status="$(curl --silent --show-error -o /tmp/preview-lead-body -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$PREVIEW_URL/api/public-leads")"
+          test "$status" = "503"
+          echo "Preview pages load; lead intake and external data APIs are safely disabled."
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
