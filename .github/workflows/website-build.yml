@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build website
-        run: npm run build
+        run: npm run check
       - name: Deploy isolated preview
         if: github.event_name == 'pull_request' && (github.event.pull_request.head.ref == 'feature/investor-education-page' || github.event.pull_request.head.ref == 'fix/about-page-readability') && github.event.pull_request.head.repo.full_name == github.repository
         run: npx wrangler versions upload --config wrangler.preview.json
