@@ -28,3 +28,14 @@ test("property valuation fails closed without a confirmed period and reserves at
   assert.match(route, /\.bind\(usagePeriodKey\)\.first\(\)/);
   assert.ok(route.indexOf("request_count < 50") < route.indexOf('fetch("https://api.rentcast.io/v1/avm/value?'));
 });
+
+test("uncached valuation requests are limited per client without storing raw IP addresses", async () => {
+  const route = await readFile(new URL("../src/pages/api/property-valuation.json.ts", import.meta.url), "utf8");
+  assert.match(route, /CF-Connecting-IP/);
+  assert.match(route, /privateClientKey\(clientIp, apiKey\)/);
+  assert.match(route, /HMAC/);
+  assert.match(route, /WHERE request_count < 3 RETURNING request_count/);
+  assert.match(route, /DELETE FROM rentcast_client_daily_usage WHERE day_key < date\('now', '-7 days'\)/);
+  assert.ok(route.indexOf("clientReservation") < route.indexOf('fetch("https://api.rentcast.io/v1/avm/value?'));
+  assert.doesNotMatch(route, /detail: error instanceof Error/);
+});
