@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getRentCastBillingPeriodKey } from '../../lib/rentcast-billing.js';
 
 export const prerender = false;
 
@@ -33,9 +34,11 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const env = (locals as any)?.runtime?.env;
     const db: any = env?.PROPERTY_USAGE_DB;
     const apiKey = String(env?.RENTCAST_API_KEY || "");
+    const billingPeriodKey = getRentCastBillingPeriodKey(env?.RENTCAST_BILLING_PERIOD_KEY);
 
     if (!db) return json({ error: "Property valuation usage database is not configured." }, 503);
     if (!apiKey) return json({ error: "Property valuation provider key is not configured." }, 503);
+    if (!billingPeriodKey) return json({ error: "Automated valuation is paused until the free-plan billing period is confirmed and configured. No provider request was made." }, 503);
 
     const incoming = new URL(request.url);
     const address = (incoming.searchParams.get("address") || "").trim();
@@ -68,16 +71,17 @@ export const GET: APIRoute = async ({ request, locals }) => {
       return json({ ...(JSON.parse(cached.response_json)), cached: true, usageCounted: false });
     }
 
-    // Reserve a request atomically. The conditional UPSERT cannot raise the monthly
-    // counter above 50, even when multiple visitors submit at the same time.
-    const monthKey = new Date().toISOString().slice(0, 7);
+    // Reserve a request atomically against the manually confirmed provider billing
+    // period. The key is changed only after RentCast confirms its free quota reset.
+    // This avoids assuming the provider resets on the first of each calendar month.
+    const monthKey = billingPeriodKey;
     const reservation = await db.prepare(
       "INSERT INTO rentcast_monthly_usage (month_key, request_count, updated_at) VALUES (?, 1, CURRENT_TIMESTAMP) ON CONFLICT(month_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 50 RETURNING request_count"
     ).bind(monthKey).first();
 
     if (!reservation) {
       return json({
-        error: "The free monthly property-valuation allowance has been reached. No additional provider request was made. Please try again next month.",
+        error: "The 50-request free-plan allowance for this confirmed billing period has been reached. No additional provider request was made.",
         quotaReached: true
       }, 429);
     }
