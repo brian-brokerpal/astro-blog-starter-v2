@@ -29,6 +29,10 @@ jobs:
         run: |
           npm audit --json > /tmp/npm-audit.json || true
           node -e 'const a=require("/tmp/npm-audit.json"); console.log(JSON.stringify({metadata:a.metadata?.vulnerabilities, advisories:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,range:v.range,fixAvailable:v.fixAvailable}))},null,2))'
+      - name: Preview compatible dependency security fixes
+        run: |
+          npm audit fix --dry-run --json > /tmp/npm-audit-fix-plan.json || true
+          node -e 'const p=require("/tmp/npm-audit-fix-plan.json"); console.log(JSON.stringify({added:p.added,removed:p.removed,changed:p.changed,audit:p.audit?.metadata?.vulnerabilities,topLevel:p.added||p.removed||p.changed ? "Review proposed dependency tree before applying" : "No compatible changes reported"},null,2))'
       - name: Build website
         run: npm run check
       - name: Run billing safety unit tests
