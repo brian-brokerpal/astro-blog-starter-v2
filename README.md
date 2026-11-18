@@ -66,7 +66,8 @@ The public property-report form sends submissions to `/api/public-leads`. That s
 | `PUBLIC_TURNSTILE_SITE_KEY` | GitHub Actions production environment variable | Public Cloudflare Turnstile site key embedded during the production build; the deploy workflow now fails closed if this value is missing |
 | `PROPERTY_USAGE_DB` | D1 binding | Usage counter and 30-day response cache for property valuation requests; configured in `wrangler.json` |
 | `CENSUS_API_KEY` | Encrypted secret | Server-side key for the Census API route |
-| `RENTCAST_API_KEY` | Encrypted secret | Server-side key for the optional automated valuation route; use only RentCast's $0 Developer plan. The route atomically caps attempts at 50 per calendar month (including failed attempts) to prevent overage requests; do not upgrade or enable paid overages |
+| `RENTCAST_API_KEY` | Encrypted secret | Server-side key for the optional automated valuation route; use only RentCast's $0 Developer plan; route stays disabled if the billing-period key is missing |
+| `RENTCAST_BILLING_PERIOD_KEY` | Non-secret Worker variable | Operator-managed identifier for the current provider billing period (for example, `2026-11-17`). Change it only after confirming the 50-request free allowance has reset in RentCast; the endpoint atomically caps attempts at 50 per key, including failed attempts |
 
 On the LOS Worker, configure `ALLOWED_ORIGIN=https://yourbrokerpal.com` and the matching Turnstile `TURNSTILE_SECRET_KEY`. The site key and secret must belong to the same Turnstile widget and the widget must allow the production hostname. The LOS also needs its D1 binding and any desired transactional-email settings. Never put the Turnstile secret or email-provider API key in this website repository or a public build variable.
 
