@@ -33,6 +33,13 @@ jobs:
         run: npm run check
       - name: Run billing safety unit tests
         run: npm test
+      - name: Read-only property usage D1 migration status
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        run: npx wrangler d1 migrations list yourbrokerpal-property-usage --remote --config wrangler.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Deploy isolated preview
         if: github.event_name == 'pull_request' && (github.event.pull_request.head.ref == 'feature/investor-education-page' || github.event.pull_request.head.ref == 'fix/about-page-readability' || github.event.pull_request.head.ref == 'feature/property-report-lead-center-label') && github.event.pull_request.head.repo.full_name == github.repository
         run: npx wrangler versions upload --config wrangler.preview.json
