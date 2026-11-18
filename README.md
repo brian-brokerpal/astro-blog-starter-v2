@@ -76,6 +76,7 @@ The website proxy returns a clear `503` if `LOS_PUBLIC_LEADS_URL` is missing. A 
 ## Property usage D1 migration notes
 
 The production `PROPERTY_USAGE_DB` binding points to `yourbrokerpal-property-usage` (`3089c709-9f68-4740-b15e-2c7d6060a0b6`). The migration directory currently contains two differently named `0001` files: `0001_property_usage.sql` and `0001_rentcast_usage.sql`. They create the same `rentcast_monthly_usage` table, `rentcast_valuation_cache` table, and cache index, all with `IF NOT EXISTS`. They are redundant but safe as no-op duplicates; do not delete or rewrite either until the remote D1 migration ledger has been checked. Before changing this database, inspect `npx wrangler d1 migrations list yourbrokerpal-property-usage --remote` and the actual table schema. No D1 migration was applied as part of this branch work.
+The PR workflow now attempts that migration-list command read-only, but the current Cloudflare API token returned error `7403` (account invalid or not authorized for D1 query access). The step is non-blocking, so a green website build does **not** mean the remote migration ledger or table schema has been verified. Grant the CI token D1 read/query permission or run the command with an appropriately scoped token before any production schema change. Do not grant write permission just for this check.
 
 ## 👀 Want to learn more?
 
