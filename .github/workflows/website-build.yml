@@ -23,8 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Regenerate lockfile for declared framework versions
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Install dependencies
         run: npm ci
       - name: Report dependency security findings
@@ -57,13 +55,6 @@ jobs:
         run: npm run check
       - name: Run billing safety unit tests
         run: npm test
-      - name: Preserve tested dependency lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: website-tested-package-lock
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 7
       - name: Read-only property usage D1 migration status
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         continue-on-error: true
