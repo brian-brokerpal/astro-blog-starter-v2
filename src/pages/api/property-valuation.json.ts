@@ -30,7 +30,7 @@ async function sha256(value: string) {
 
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    const env = locals?.runtime?.env ?? {};
+    const env: any = (locals as any)?.runtime?.env ?? {};
     const db = env.PROPERTY_USAGE_DB;
     const apiKey = env.RENTCAST_API_KEY;
 
