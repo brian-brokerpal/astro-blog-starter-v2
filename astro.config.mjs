@@ -5,6 +5,7 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   site: 'https://yourbrokerpal.com',
   output: 'server',
-  session: { driver: 'memory' },
-  adapter: cloudflare()
+  session: false,
+  compressHTML: true,
+  adapter: cloudflare({ imageService: 'compile' })
 });
