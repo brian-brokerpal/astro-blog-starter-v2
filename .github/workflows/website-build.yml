@@ -31,6 +31,8 @@ jobs:
           node -e 'const a=require("/tmp/npm-audit.json"); console.log(JSON.stringify({metadata:a.metadata?.vulnerabilities, advisories:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,range:v.range,fixAvailable:v.fixAvailable}))},null,2))'
       - name: Build website
         run: npm run check
+      - name: Run billing safety unit tests
+        run: npm test
       - name: Deploy isolated preview
         if: github.event_name == 'pull_request' && (github.event.pull_request.head.ref == 'feature/investor-education-page' || github.event.pull_request.head.ref == 'fix/about-page-readability' || github.event.pull_request.head.ref == 'feature/property-report-lead-center-label') && github.event.pull_request.head.repo.full_name == github.repository
         run: npx wrangler versions upload --config wrangler.preview.json
