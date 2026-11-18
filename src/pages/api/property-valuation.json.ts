@@ -30,9 +30,9 @@ async function sha256(value: string) {
 
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    const env: any = (locals as any)?.runtime?.env ?? {};
-    const db = env.PROPERTY_USAGE_DB;
-    const apiKey = env.RENTCAST_API_KEY;
+    const env = (locals as any)?.runtime?.env;
+    const db: any = env?.PROPERTY_USAGE_DB;
+    const apiKey = String(env?.RENTCAST_API_KEY || "");
 
     if (!db) return json({ error: "Property valuation usage database is not configured." }, 503);
     if (!apiKey) return json({ error: "Property valuation provider key is not configured." }, 503);
