@@ -29,7 +29,23 @@ jobs:
         run: |
           npm audit --json > /tmp/npm-audit.json || true
           npm audit --omit=dev --json > /tmp/npm-audit-production.json || true
-          node -e 'for (const [scope,path] of [["all dependencies","/tmp/npm-audit.json"],["production dependencies only","/tmp/npm-audit-production.json"]]) { const a=JSON.parse(require("fs").readFileSync(path,"utf8")); console.log("AUDIT SCOPE: "+scope); console.log(JSON.stringify({metadata:a.metadata?.vulnerabilities, advisories:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,range:v.range,fixAvailable:v.fixAvailable}))},null,2)); }'
+          node <<'NODE'
+          const fs = require("fs");
+          for (const [scope, path] of [["all dependencies", "/tmp/npm-audit.json"], ["production dependencies only", "/tmp/npm-audit-production.json"]]) {
+            const audit = JSON.parse(fs.readFileSync(path, "utf8"));
+            console.log("AUDIT SCOPE: " + scope);
+            console.log(JSON.stringify({
+              metadata: audit.metadata?.vulnerabilities,
+              advisories: Object.entries(audit.vulnerabilities || {}).map(([name, item]) => ({
+                name,
+                severity: item.severity,
+                range: item.range,
+                fixAvailable: item.fixAvailable,
+                via: item.via.map(value => typeof value === "string" ? value : { title: value.title, url: value.url, range: value.range })
+              }))
+            }, null, 2));
+          }
+          NODE
       - name: Preview compatible dependency security fixes
         run: |
           npm audit fix --dry-run --json > /tmp/npm-audit-fix-plan.json || true
