@@ -1,7 +1,9 @@
 {
-  "name": "astro-blog-starter-v2",
+  "name": "astro-blog-starter-v2-preview",
   "compatibility_date": "2025-10-08",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "./dist/server/entry.mjs",
   "workers_dev": true,
   "assets": {
