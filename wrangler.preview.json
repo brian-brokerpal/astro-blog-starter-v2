@@ -2,7 +2,7 @@
   "name": "astro-blog-starter-v2",
   "compatibility_date": "2025-10-08",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "./dist/_worker.js/index.js",
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "workers_dev": true,
   "assets": {
     "directory": "./dist",
