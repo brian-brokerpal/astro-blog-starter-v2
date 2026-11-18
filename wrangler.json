@@ -23,5 +23,7 @@
       "database_id": "3089c709-9f68-4740-b15e-2c7d6060a0b6",
       "migrations_dir": "migrations"
     }
-  ]
+  ],
+  "preview_urls": true,
+  "previews": {}
 }
