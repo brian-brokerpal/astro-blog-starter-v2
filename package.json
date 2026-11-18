@@ -12,28 +12,28 @@
     "publish": true
   },
   "dependencies": {
-    "@astrojs/cloudflare": "12.6.12",
-    "@astrojs/mdx": "4.3.13",
-    "@astrojs/rss": "4.0.14",
-    "@astrojs/sitemap": "3.6.1",
-    "astro": "5.16.9",
+    "@astrojs/cloudflare": "14.4.8",
+    "@astrojs/mdx": "8.1.6",
+    "@astrojs/rss": "4.0.19",
+    "@astrojs/sitemap": "3.7.5",
+    "astro": "7.4.12",
     "typescript": "5.9.3"
   },
   "devDependencies": {
-    "wrangler": "4.136.1"
+    "wrangler": "4.164.0"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.23.0"
   },
   "private": true,
   "scripts": {
     "astro": "astro",
     "build": "astro build",
     "cf-typegen": "wrangler types",
-    "check": "astro build && tsc && wrangler deploy --dry-run",
+    "check": "wrangler types && astro build && tsc && wrangler deploy --dry-run",
     "deploy": "wrangler deploy",
-    "dev": "astro dev",
-    "preview": "astro build && wrangler dev",
+    "dev": "wrangler types && astro dev",
+    "preview": "wrangler types && astro build && wrangler dev --config wrangler.preview.json",
     "test": "node --test"
   },
   "type": "module"
