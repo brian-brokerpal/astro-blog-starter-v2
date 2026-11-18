@@ -58,12 +58,12 @@ All commands are run from the root of the project, from a terminal:
 
 ## Production intake configuration
 
-The public property-report form sends submissions to `/api/public-leads`. That same-origin route forwards the request to the LOS; it does not save leads in this website's own database. Before enabling the form in production, configure these Cloudflare Worker variables:
+The public property-report form sends submissions to `/api/public-leads`. That same-origin route forwards the request to the LOS; it does not save leads in this website's own database. Before enabling the form in production, configure the following values:
 
 | Variable | Type | Purpose |
 | --- | --- | --- |
 | `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Set in production `wrangler.json` to the LOS public intake endpoint; preview config intentionally omits it so preview forms do not send test leads to production |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Build-time public variable | Cloudflare Turnstile site key embedded in the property-report page |
+| `PUBLIC_TURNSTILE_SITE_KEY` | GitHub Actions production environment variable | Public Cloudflare Turnstile site key embedded during the production build; the deploy workflow now fails closed if this value is missing |
 | `PROPERTY_USAGE_DB` | D1 binding | Usage counter and 30-day response cache for property valuation requests; configured in `wrangler.json` |
 | `CENSUS_API_KEY` | Encrypted secret | Server-side key for the Census API route |
 | `RENTCAST_API_KEY` | Encrypted secret | Server-side key for the optional automated valuation route; use only RentCast's $0 Developer plan. The route atomically caps attempts at 50 per calendar month (including failed attempts) to prevent overage requests; do not upgrade or enable paid overages |
