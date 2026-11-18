@@ -13,6 +13,9 @@
     "enabled": true
   },
   "upload_source_maps": true,
+  "vars": {
+    "LOS_PUBLIC_LEADS_URL": "https://yourbrokerpal-los--dscr.pages.dev/api/public-leads"
+  },
   "d1_databases": [
     {
       "binding": "PROPERTY_USAGE_DB",
