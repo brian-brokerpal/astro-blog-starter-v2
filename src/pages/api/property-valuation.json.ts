@@ -1,3 +1,5 @@
+import type { APIRoute } from 'astro';
+
 export const prerender = false;
 
 const ALLOWED_TYPES = new Set([
@@ -10,7 +12,7 @@ const ALLOWED_TYPES = new Set([
   "Land"
 ]);
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -20,13 +22,13 @@ function json(data, status = 200) {
   });
 }
 
-async function sha256(value) {
+async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function GET({ request, locals }) {
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const env = locals?.runtime?.env ?? {};
     const db = env.PROPERTY_USAGE_DB;
@@ -130,4 +132,4 @@ export async function GET({ request, locals }) {
       detail: error instanceof Error ? error.message : "Unknown error"
     }, 500);
   }
-}
+};
