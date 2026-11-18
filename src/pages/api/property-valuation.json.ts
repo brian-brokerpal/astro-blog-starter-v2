@@ -103,6 +103,12 @@ export const GET: APIRoute = async ({ request }) => {
     ).bind(usagePeriodKey).first();
 
     if (!reservation) {
+      // The provider-wide quota was unavailable, so this visitor did not get
+      // an upstream attempt. Release the visitor reservation rather than
+      // charging their daily allowance for a request we never made.
+      await db.prepare(
+        "UPDATE rentcast_client_daily_usage SET request_count = request_count - 1, updated_at = CURRENT_TIMESTAMP WHERE day_key = ? AND client_key = ? AND request_count > 0"
+      ).bind(dailyKey, clientKey).run();
       return json({
         error: "The 50-request free-plan allowance for this confirmed billing period has been reached. No additional provider request was made.",
         quotaReached: true
