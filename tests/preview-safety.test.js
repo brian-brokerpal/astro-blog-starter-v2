@@ -36,3 +36,18 @@ test("property report provides the email action referenced by its report builder
   assert.match(page, /<a id="email" href="mailto:brian@yourbrokerpal\.com">/);
   assert.match(page, /el\('email'\)\.href\s*=\s*'mailto:brian@yourbrokerpal\.com/);
 });
+
+test("Property Report handoff sends structured property fields to Lead Center intake", async () => {
+  const page = await readFile(new URL("../src/pages/tools/property-report.astro", import.meta.url), "utf8");
+  for (const field of [
+    "propertyAddress:el('address').value.trim()",
+    "propertyCity:el('city').value.trim()",
+    "propertyState:el('state').value.trim()",
+    "propertyZip:el('zip').value.trim()",
+    "propertyType:el('type').value",
+    "purchasePrice:el('asking').value",
+    "monthlyMarketRent:el('rent').value"
+  ]) assert.ok(page.includes(field), `Missing structured lead field: ${field}`);
+  assert.match(page, /leadType:'property_report_request'/);
+  assert.match(page, /emailMarketingConsent:data\.get\('emailMarketingConsent'\)==='on'/);
+});
