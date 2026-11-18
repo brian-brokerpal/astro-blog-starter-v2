@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { isProductionHost } from '../../lib/production-host.js';
+import { readLimitedJson } from '../../lib/read-limited-json.js';
 
 export const prerender = false;
 
@@ -23,10 +24,15 @@ export const POST: APIRoute = async ({ request }) => {
   }
   const length = Number(request.headers.get('content-length') || 0);
   if (length > 12000) return new Response(JSON.stringify({ error: 'Submission is too large.' }), { status: 413 });
-  let body: unknown;
-  try { body = await request.json(); } catch {
-    return new Response(JSON.stringify({ error: 'Invalid submission.' }), { status: 400 });
+  const parsed = await readLimitedJson(request, 12000);
+  if (!parsed.ok) {
+    const tooLarge = parsed.error === 'Submission is too large.';
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: tooLarge ? 413 : 400,
+      headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    });
   }
+  const body: unknown = parsed.value;
   try {
     const response = await fetch(upstream, {
       method: 'POST',
