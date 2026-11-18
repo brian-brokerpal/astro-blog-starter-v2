@@ -30,12 +30,11 @@ async function sha256(value: string) {
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
-    const env = (locals as any)?.runtime?.env;
-    const db: any = env?.PROPERTY_USAGE_DB;
-    const apiKey = String(env?.RENTCAST_API_KEY || "");
-    const billingPeriodKey = getRentCastBillingPeriodKey(env?.RENTCAST_BILLING_PERIOD_KEY);
+    const db: any = env.PROPERTY_USAGE_DB;
+    const apiKey = String(env.RENTCAST_API_KEY || "");
+    const billingPeriodKey = getRentCastBillingPeriodKey(env.RENTCAST_BILLING_PERIOD_KEY);
 
     if (!db) return json({ error: "Property valuation usage database is not configured." }, 503);
     if (!apiKey) return json({ error: "Property valuation provider key is not configured." }, 503);
