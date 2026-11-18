@@ -9,7 +9,7 @@ export async function readLimitedJson(request, maxBytes) {
       if (done) break;
       total += value.byteLength;
       if (total > maxBytes) {
-        await reader.cancel();
+        try { await reader.cancel(); } catch {}
         return { ok: false, error: "Submission is too large." };
       }
       chunks.push(value);
