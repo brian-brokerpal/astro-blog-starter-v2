@@ -29,3 +29,10 @@ test("preview hosts cannot submit leads or call Census and RentCast providers", 
   const valuation = await readFile(new URL("../src/pages/api/property-valuation.json.ts", import.meta.url), "utf8");
   assert.ok(valuation.indexOf("isProductionHost(") < valuation.indexOf('fetch("https://api.rentcast.io/'));
 });
+
+
+test("property report provides the email action referenced by its report builder", async () => {
+  const page = await readFile(new URL("../src/pages/tools/property-report.astro", import.meta.url), "utf8");
+  assert.match(page, /<a id="email" href="mailto:brian@yourbrokerpal\.com">/);
+  assert.match(page, /el\('email'\)\.href\s*=\s*'mailto:brian@yourbrokerpal\.com/);
+});
