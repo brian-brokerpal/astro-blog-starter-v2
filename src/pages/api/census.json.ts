@@ -16,18 +16,16 @@ function json(data: unknown, status = 200) {
   });
 }
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
-    const runtime = (locals as any)?.runtime;
-    const apiKey = String(runtime?.env?.CENSUS_API_KEY || "");
+    const apiKey = String(env.CENSUS_API_KEY || "");
     const incoming = new URL(request.url);
 
     // Safe diagnostic: confirms route and secret binding without exposing the key.
     if (incoming.searchParams.get("diagnostic") === "1") {
       return json({
         route: "census-api-active",
-        runtimeAvailable: Boolean(runtime),
-        envAvailable: Boolean(runtime?.env),
+        envAvailable: Boolean(env),
         censusApiKeyAvailable: Boolean(apiKey),
         worker: "astro-blog-starter-v2"
       });
