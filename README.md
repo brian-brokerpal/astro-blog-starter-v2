@@ -62,7 +62,7 @@ The public property-report form sends submissions to `/api/public-leads`. That s
 
 | Variable | Type | Purpose |
 | --- | --- | --- |
-| `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Full HTTPS URL of the LOS public intake endpoint, ending in `/api/public-leads` |
+| `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Set in production `wrangler.json` to the LOS public intake endpoint; preview config intentionally omits it so preview forms do not send test leads to production |
 | `PUBLIC_TURNSTILE_SITE_KEY` | Build-time public variable | Cloudflare Turnstile site key embedded in the property-report page |
 | `PROPERTY_USAGE_DB` | D1 binding | Usage counter and 30-day response cache for property valuation requests; configured in `wrangler.json` |
 | `CENSUS_API_KEY` | Encrypted secret | Server-side key for the Census API route |
