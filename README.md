@@ -73,6 +73,10 @@ On the LOS Worker, configure `ALLOWED_ORIGIN=https://yourbrokerpal.com` and the 
 
 The website proxy returns a clear `503` if `LOS_PUBLIC_LEADS_URL` is missing. A successful website build does not prove that the upstream URL, Turnstile credentials, LOS database, or email alerts are configured. Verify a test submission in the LOS Lead Center before announcing the integration as live.
 
+## Build toolchain
+
+The site is built with Astro 7.4.12 and `@astrojs/cloudflare` 14.4.8. Cloudflare Workers Builds and GitHub Actions are pinned to Node 22.23.4 and npm 10.9.2; Wrangler is pinned to 4.164.0. Astro, its integrations, TypeScript, and Wrangler are build-time tools and are classified as development dependencies because the deployed Worker is the generated bundle.
+
 ## Property usage D1 migration notes
 
 The production `PROPERTY_USAGE_DB` binding points to `yourbrokerpal-property-usage` (`3089c709-9f68-4740-b15e-2c7d6060a0b6`). The migration directory currently contains two differently named `0001` files: `0001_property_usage.sql` and `0001_rentcast_usage.sql`. They create the same `rentcast_monthly_usage` table, `rentcast_valuation_cache` table, and cache index, all with `IF NOT EXISTS`. They are redundant but safe as no-op duplicates; do not delete or rewrite either until the remote D1 migration ledger has been checked. Before changing this database, inspect `npx wrangler d1 migrations list yourbrokerpal-property-usage --remote` and the actual table schema. No D1 migration was applied as part of this branch work.
