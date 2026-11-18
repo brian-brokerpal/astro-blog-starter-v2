@@ -37,5 +37,7 @@ test("uncached valuation requests are limited per client without storing raw IP 
   assert.match(route, /WHERE request_count < 3 RETURNING request_count/);
   assert.match(route, /DELETE FROM rentcast_client_daily_usage WHERE day_key < date\('now', '-7 days'\)/);
   assert.ok(route.indexOf("clientReservation") < route.indexOf('fetch("https://api.rentcast.io/v1/avm/value?'));
+  assert.match(route, /UPDATE rentcast_client_daily_usage SET request_count = request_count - 1/);
+  assert.ok(route.indexOf("UPDATE rentcast_client_daily_usage SET request_count = request_count - 1") < route.indexOf("quotaReached: true"));
   assert.doesNotMatch(route, /detail: error instanceof Error/);
 });
