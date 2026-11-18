@@ -55,6 +55,12 @@ jobs:
           tail -n 100 /tmp/npm-audit-fix-plan.txt
       - name: Build website
         run: npm run check
+      - name: Inspect generated Worker entrypoint
+        run: |
+          echo "Generated Wrangler configuration:"
+          cat dist/server/wrangler.json
+          echo "Generated server files:"
+          find dist/server -maxdepth 2 -type f -print | sort
       - name: Run billing safety unit tests
         run: npm test
       - name: Read-only property usage D1 migration status
