@@ -48,8 +48,9 @@ jobs:
           NODE
       - name: Preview compatible dependency security fixes
         run: |
-          npm audit fix --dry-run --json > /tmp/npm-audit-fix-plan.json || true
-          node -e 'const p=require("/tmp/npm-audit-fix-plan.json"); console.log(JSON.stringify({added:p.added,removed:p.removed,changed:p.changed,audit:p.audit?.metadata?.vulnerabilities,topLevel:p.added||p.removed||p.changed ? "Review proposed dependency tree before applying" : "No compatible changes reported"},null,2))'
+          npm audit fix --dry-run --loglevel=error > /tmp/npm-audit-fix-plan.txt 2>&1 || true
+          echo "Non-mutating npm audit fix preview (review before applying):"
+          tail -n 100 /tmp/npm-audit-fix-plan.txt
       - name: Build website
         run: npm run check
       - name: Run billing safety unit tests
