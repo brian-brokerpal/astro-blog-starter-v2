@@ -1,10 +1,9 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const runtime = (locals as any).runtime;
-  const env = runtime?.env || {};
+export const POST: APIRoute = async ({ request }) => {
   const upstream = String(env.LOS_PUBLIC_LEADS_URL || '').trim();
   if (!upstream) {
     return new Response(JSON.stringify({ error: 'Secure inquiry intake is not configured yet.' }), {
