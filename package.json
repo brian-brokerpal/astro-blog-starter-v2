@@ -36,5 +36,6 @@
     "preview": "wrangler types && astro build && wrangler dev --config wrangler.preview.json",
     "test": "node --test"
   },
-  "type": "module"
+  "type": "module",
+  "packageManager": "npm@10.9.2"
 }
