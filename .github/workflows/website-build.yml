@@ -55,12 +55,6 @@ jobs:
           tail -n 100 /tmp/npm-audit-fix-plan.txt
       - name: Build website
         run: npm run check
-      - name: Inspect generated Worker entrypoint
-        run: |
-          echo "Generated Wrangler configuration:"
-          cat dist/server/wrangler.json
-          echo "Generated server files:"
-          find dist/server -maxdepth 2 -type f -print | sort
       - name: Run billing safety unit tests
         run: npm test
       - name: Read-only property usage D1 migration status
@@ -74,12 +68,6 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         continue-on-error: true
         run: npx wrangler d1 info yourbrokerpal-property-usage --config wrangler.json --json
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Deploy isolated preview
-        if: github.event_name == 'pull_request' && (github.event.pull_request.head.ref == 'feature/investor-education-page' || github.event.pull_request.head.ref == 'fix/about-page-readability' || github.event.pull_request.head.ref == 'feature/property-report-lead-center-label') && github.event.pull_request.head.repo.full_name == github.repository
-        run: npx wrangler versions upload --config wrangler.preview.json
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
