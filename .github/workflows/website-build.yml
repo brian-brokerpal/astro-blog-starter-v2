@@ -25,6 +25,8 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm ci
+      - name: Require clean production dependency audit
+        run: npm audit --omit=dev
       - name: Report dependency security findings
         run: |
           npm audit --json > /tmp/npm-audit.json || true
