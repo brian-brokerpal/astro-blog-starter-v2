@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
+import { isProductionHost } from '../../lib/production-host.js';
 import { getRentCastBillingPeriodKey } from '../../lib/rentcast-billing.js';
 
 export const prerender = false;
@@ -31,6 +32,7 @@ async function sha256(value: string) {
 }
 
 export const GET: APIRoute = async ({ request }) => {
+  if (!isProductionHost(new URL(request.url).hostname)) return json({ error: 'Automated valuation is disabled on preview deployments.' }, 503);
   try {
     const db: any = env.PROPERTY_USAGE_DB;
     const optionalSecrets = env as typeof env & { RENTCAST_API_KEY?: string; RENTCAST_BILLING_PERIOD_KEY?: string };
