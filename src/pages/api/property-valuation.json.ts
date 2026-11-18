@@ -1,3 +1,8 @@
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
+import { isProductionHost } from '../../lib/production-host.js';
+import { getRentCastBillingPeriodKey } from '../../lib/rentcast-billing.js';
+
 export const prerender = false;
 
 const ALLOWED_TYPES = new Set([
@@ -10,7 +15,7 @@ const ALLOWED_TYPES = new Set([
   "Land"
 ]);
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -20,20 +25,29 @@ function json(data, status = 200) {
   });
 }
 
-async function sha256(value) {
+async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function GET({ request, locals }) {
+async function privateClientKey(ip: string, secret: string) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(ip));
+  return Array.from(new Uint8Array(signature), b => b.toString(16).padStart(2, "0")).join("");
+}
+
+export const GET: APIRoute = async ({ request }) => {
+  if (!isProductionHost(new URL(request.url).hostname)) return json({ error: 'Automated valuation is disabled on preview deployments.' }, 503);
   try {
-    const env = locals?.runtime?.env ?? {};
-    const db = env.PROPERTY_USAGE_DB;
-    const apiKey = env.RENTCAST_API_KEY;
+    const db: any = env.PROPERTY_USAGE_DB;
+    const optionalSecrets = env as typeof env & { RENTCAST_API_KEY?: string; RENTCAST_BILLING_PERIOD_KEY?: string };
+    const apiKey = String(optionalSecrets.RENTCAST_API_KEY || "");
+    const billingPeriodKey = getRentCastBillingPeriodKey(optionalSecrets.RENTCAST_BILLING_PERIOD_KEY);
 
     if (!db) return json({ error: "Property valuation usage database is not configured." }, 503);
     if (!apiKey) return json({ error: "Property valuation provider key is not configured." }, 503);
+    if (!billingPeriodKey) return json({ error: "Automated valuation is paused until the free-plan billing period is confirmed and configured. No provider request was made." }, 503);
 
     const incoming = new URL(request.url);
     const address = (incoming.searchParams.get("address") || "").trim();
@@ -66,16 +80,37 @@ export async function GET({ request, locals }) {
       return json({ ...(JSON.parse(cached.response_json)), cached: true, usageCounted: false });
     }
 
-    // Reserve a request atomically. The conditional UPSERT cannot raise the monthly
-    // counter above 50, even when multiple visitors submit at the same time.
-    const monthKey = new Date().toISOString().slice(0, 7);
+    // Protect the shared free allowance from a single visitor exhausting it.
+    // The IP is HMACed with the provider key; raw IP addresses are never stored.
+    const clientIp = request.headers.get("CF-Connecting-IP");
+    if (!clientIp) return json({ error: "The valuation service could not verify the request source. No provider request was made." }, 503);
+    const clientKey = await privateClientKey(clientIp, apiKey);
+    const dailyKey = new Date().toISOString().slice(0, 10);
+    await db.prepare("DELETE FROM rentcast_client_daily_usage WHERE day_key < date('now', '-7 days')").run();
+    const clientReservation = await db.prepare(
+      "INSERT INTO rentcast_client_daily_usage (day_key, client_key, request_count, updated_at) VALUES (?, ?, 1, CURRENT_TIMESTAMP) ON CONFLICT(day_key, client_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 3 RETURNING request_count"
+    ).bind(dailyKey, clientKey).first();
+    if (!clientReservation) {
+      return json({ error: "This connection has reached its three uncached valuation requests for today. Please try again tomorrow.", rateLimited: true }, 429);
+    }
+
+    // Reserve a request atomically against the manually confirmed provider billing
+    // period. The key is changed only after RentCast confirms its free quota reset.
+    // This avoids assuming the provider resets on the first of each calendar month.
+    const usagePeriodKey = billingPeriodKey;
     const reservation = await db.prepare(
       "INSERT INTO rentcast_monthly_usage (month_key, request_count, updated_at) VALUES (?, 1, CURRENT_TIMESTAMP) ON CONFLICT(month_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 50 RETURNING request_count"
-    ).bind(monthKey).first();
+    ).bind(usagePeriodKey).first();
 
     if (!reservation) {
+      // The provider-wide quota was unavailable, so this visitor did not get
+      // an upstream attempt. Release the visitor reservation rather than
+      // charging their daily allowance for a request we never made.
+      await db.prepare(
+        "UPDATE rentcast_client_daily_usage SET request_count = request_count - 1, updated_at = CURRENT_TIMESTAMP WHERE day_key = ? AND client_key = ? AND request_count > 0"
+      ).bind(dailyKey, clientKey).run();
       return json({
-        error: "The free monthly property-valuation allowance has been reached. No additional provider request was made. Please try again next month.",
+        error: "The 50-request free-plan allowance for this confirmed billing period has been reached. No additional provider request was made.",
         quotaReached: true
       }, 429);
     }
@@ -127,7 +162,6 @@ export async function GET({ request, locals }) {
   } catch (error) {
     return json({
       error: "The property valuation service encountered an unexpected error.",
-      detail: error instanceof Error ? error.message : "Unknown error"
     }, 500);
   }
-}
+};

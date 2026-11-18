@@ -1,8 +1,12 @@
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
+import { isProductionHost } from '../../lib/production-host.js';
+
 export const prerender = false;
 
 const ALLOWED_VARIABLES = "NAME,B01003_001E,B19013_001E,B25003_003E,B25064_001E,B25002_003E";
 
-function json(data, status = 200) {
+function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -13,19 +17,17 @@ function json(data, status = 200) {
   });
 }
 
-export async function GET({ request, locals }) {
+export const GET: APIRoute = async ({ request }) => {
+  if (!isProductionHost(new URL(request.url).hostname)) return json({ error: 'Census lookups are disabled on preview deployments.' }, 503);
   try {
-    const runtime = locals?.runtime;
-    const env = runtime?.env ?? {};
-    const apiKey = env.CENSUS_API_KEY;
+    const apiKey = String((env as typeof env & { CENSUS_API_KEY?: string }).CENSUS_API_KEY || "");
     const incoming = new URL(request.url);
 
     // Safe diagnostic: confirms route and secret binding without exposing the key.
     if (incoming.searchParams.get("diagnostic") === "1") {
       return json({
         route: "census-api-active",
-        runtimeAvailable: Boolean(runtime),
-        envAvailable: Boolean(runtime?.env),
+        envAvailable: Boolean(env),
         censusApiKeyAvailable: Boolean(apiKey),
         worker: "astro-blog-starter-v2"
       });
@@ -87,4 +89,4 @@ export async function GET({ request, locals }) {
       detail: error instanceof Error ? error.message : "Unknown runtime error"
     }, 500);
   }
-}
+};
