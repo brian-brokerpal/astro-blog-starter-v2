@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import { getRentCastBillingPeriodKey } from '../../lib/rentcast-billing.js';
 
 export const prerender = false;
