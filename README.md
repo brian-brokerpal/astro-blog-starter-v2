@@ -75,7 +75,7 @@ The website proxy returns a clear `503` if `LOS_PUBLIC_LEADS_URL` is missing. A 
 
 ## Preview safety
 
-Cloudflare Workers Builds creates a branch preview for `feature/property-report-lead-center-label`. The `/api/public-leads`, `/api/census.json`, and `/api/property-valuation.json` routes reject every host except `yourbrokerpal.com` and `www.yourbrokerpal.com`, before forwarding leads or calling Census/RentCast. Automated preview testing therefore cannot create production leads or consume provider quota. The standalone `wrangler.preview.json` also omits the production LOS URL and D1 binding; it is not used by the Workers Builds branch-preview pipeline.
+Cloudflare Workers Builds creates a branch preview for `feature/property-report-lead-center-label`. The `previews` block in `wrangler.json` is intentionally empty, so branch previews do not inherit production variables or the production D1 binding; `preview_urls` is explicitly enabled. The `/api/public-leads`, `/api/census.json`, and `/api/property-valuation.json` routes also reject every host except `yourbrokerpal.com` and `www.yourbrokerpal.com`, before forwarding leads or calling Census/RentCast. Automated preview testing therefore cannot create production leads or consume provider quota. The standalone `wrangler.preview.json` is retained for a future separately named Worker but is not used by the Workers Builds branch-preview pipeline.
 
 ## Dependency security posture
 
