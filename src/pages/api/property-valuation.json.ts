@@ -31,6 +31,12 @@ async function sha256(value: string) {
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
 
+async function privateClientKey(ip: string, secret: string) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(ip));
+  return Array.from(new Uint8Array(signature), b => b.toString(16).padStart(2, "0")).join("");
+}
+
 export const GET: APIRoute = async ({ request }) => {
   if (!isProductionHost(new URL(request.url).hostname)) return json({ error: 'Automated valuation is disabled on preview deployments.' }, 503);
   try {
@@ -72,6 +78,20 @@ export const GET: APIRoute = async ({ request }) => {
 
     if (cached?.response_json) {
       return json({ ...(JSON.parse(cached.response_json)), cached: true, usageCounted: false });
+    }
+
+    // Protect the shared free allowance from a single visitor exhausting it.
+    // The IP is HMACed with the provider key; raw IP addresses are never stored.
+    const clientIp = request.headers.get("CF-Connecting-IP");
+    if (!clientIp) return json({ error: "The valuation service could not verify the request source. No provider request was made." }, 503);
+    const clientKey = await privateClientKey(clientIp, apiKey);
+    const dailyKey = new Date().toISOString().slice(0, 10);
+    await db.prepare("DELETE FROM rentcast_client_daily_usage WHERE day_key < date('now', '-7 days')").run();
+    const clientReservation = await db.prepare(
+      "INSERT INTO rentcast_client_daily_usage (day_key, client_key, request_count, updated_at) VALUES (?, ?, 1, CURRENT_TIMESTAMP) ON CONFLICT(day_key, client_key) DO UPDATE SET request_count = request_count + 1, updated_at = CURRENT_TIMESTAMP WHERE request_count < 3 RETURNING request_count"
+    ).bind(dailyKey, clientKey).first();
+    if (!clientReservation) {
+      return json({ error: "This connection has reached its three uncached valuation requests for today. Please try again tomorrow.", rateLimited: true }, 429);
     }
 
     // Reserve a request atomically against the manually confirmed provider billing
@@ -136,7 +156,6 @@ export const GET: APIRoute = async ({ request }) => {
   } catch (error) {
     return json({
       error: "The property valuation service encountered an unexpected error.",
-      detail: error instanceof Error ? error.message : "Unknown error"
     }, 500);
   }
 };
