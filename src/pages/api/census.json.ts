@@ -18,7 +18,7 @@ function json(data: unknown, status = 200) {
 
 export const GET: APIRoute = async ({ request }) => {
   try {
-    const apiKey = String(env.CENSUS_API_KEY || "");
+    const apiKey = String((env as typeof env & { CENSUS_API_KEY?: string }).CENSUS_API_KEY || "");
     const incoming = new URL(request.url);
 
     // Safe diagnostic: confirms route and secret binding without exposing the key.
