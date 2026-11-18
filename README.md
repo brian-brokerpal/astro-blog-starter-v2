@@ -64,6 +64,9 @@ The public property-report form sends submissions to `/api/public-leads`. That s
 | --- | --- | --- |
 | `LOS_PUBLIC_LEADS_URL` | Non-secret variable | Full HTTPS URL of the LOS public intake endpoint, ending in `/api/public-leads` |
 | `PUBLIC_TURNSTILE_SITE_KEY` | Build-time public variable | Cloudflare Turnstile site key embedded in the property-report page |
+| `PROPERTY_USAGE_DB` | D1 binding | Usage counter and 30-day response cache for property valuation requests; configured in `wrangler.json` |
+| `CENSUS_API_KEY` | Encrypted secret | Server-side key for the Census API route |
+| `RENTCAST_API_KEY` | Encrypted secret | Server-side key for the optional automated valuation route; the code caps provider calls at 50 per calendar month, but verify the provider's current no-cost allowance before enabling it |
 
 On the LOS Worker, configure `ALLOWED_ORIGIN=https://yourbrokerpal.com` and the matching Turnstile `TURNSTILE_SECRET_KEY`. The site key and secret must belong to the same Turnstile widget and the widget must allow the production hostname. The LOS also needs its D1 binding and any desired transactional-email settings. Never put the Turnstile secret or email-provider API key in this website repository or a public build variable.
 
