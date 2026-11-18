@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
+import { isProductionHost } from '../../lib/production-host.js';
 
 export const prerender = false;
 
@@ -17,6 +18,7 @@ function json(data: unknown, status = 200) {
 }
 
 export const GET: APIRoute = async ({ request }) => {
+  if (!isProductionHost(new URL(request.url).hostname)) return json({ error: 'Census lookups are disabled on preview deployments.' }, 503);
   try {
     const apiKey = String((env as typeof env & { CENSUS_API_KEY?: string }).CENSUS_API_KEY || "");
     const incoming = new URL(request.url);
