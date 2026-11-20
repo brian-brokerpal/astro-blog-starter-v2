@@ -6,6 +6,15 @@ function clean(value, max = MAX_FIELD) {
     ? value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, max)
     : "";
 }
+function cleanSource(value) {
+  const raw = clean(value, 120);
+  if (!raw) return "";
+  if (/^https?:\/\//i.test(raw)) {
+    try { return new URL(raw).hostname.toLowerCase().slice(0, 120); }
+    catch { return ""; }
+  }
+  return raw.split(/[\/?#]/, 1)[0].slice(0, 120);
+}
 
 function externalReferrerHost(referrer, hostname) {
   try {
@@ -57,7 +66,7 @@ export function buildAttribution({ search = "", referrer = "", hostname = "", st
 
   const fallbackSource = referrerHost || (referralCode ? "partner_referral" : "direct");
   const fallbackMedium = referrerHost ? referrerMedium(referrerHost) : referralCode ? "referral" : "direct";
-  const firstTouchSource = clean(stored.firstTouchSource || incomingFirstSource || fallbackSource);
+  const firstTouchSource = cleanSource(stored.firstTouchSource || incomingFirstSource || fallbackSource);
   const firstTouchMedium = clean(stored.firstTouchMedium || incomingFirstMedium || (firstTouchSource === "direct" ? "direct" : referrerHost || referralCode ? fallbackMedium : "other"));
   const firstTouchCampaign = clean(stored.firstTouchCampaign || incomingFirstCampaign);
   const firstTouchContent = clean(stored.firstTouchContent || incomingFirstContent);
