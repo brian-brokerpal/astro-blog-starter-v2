@@ -102,3 +102,12 @@ test("forwards first-touch and latest-touch attribution to the LOS apply link", 
   assert.equal(target.searchParams.get("latestTouchCampaign"), "november-update");
   assert.equal(JSON.parse(stored.brokerpal_attribution_v1).firstTouchSource, "linkedin");
 });
+test("reduces a URL supplied as a UTM source to its hostname", () => {
+  const value = buildAttribution({
+    search: "?utm_source=https%3A%2F%2Fexample.com%2Fcampaign%3Femail%3Dprivate%40example.com&utm_medium=referral",
+    hostname: "yourbrokerpal.com"
+  });
+  assert.equal(value.firstTouchSource, "example.com");
+  assert.equal(value.latestTouchSource, "example.com");
+  assert.equal(JSON.stringify(value).includes("private@example.com"), false);
+});
