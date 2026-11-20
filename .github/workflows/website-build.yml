@@ -25,6 +25,11 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm ci
+      - name: Inventory dependency security advisories
+        shell: bash
+        run: |
+          npm audit --json > /tmp/npm-audit.json || true
+          node -e 'const fs=require("fs");const a=JSON.parse(fs.readFileSync("/tmp/npm-audit.json","utf8"));const v=a.metadata?.vulnerabilities||{};console.log("Dependency audit totals:",JSON.stringify(v));for(const [name,item] of Object.entries(a.vulnerabilities||{})){const via=(item.via||[]).map(x=>typeof x==="string"?x:x.title);console.log(JSON.stringify({package:name,severity:item.severity,isDirect:item.isDirect,range:item.range,fixAvailable:item.fixAvailable,advisories:via}));}'
       - name: Run intake regression tests
         run: npm test
       - name: Build website
