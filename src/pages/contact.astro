@@ -60,6 +60,7 @@ form.addEventListener('submit',async event=>{
  const data=new FormData(form);
  const email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim();
  if(!email&&!phone){statusEl.textContent='Please provide an email address or phone number.';return}
+ if(data.get('emailMarketingConsent')==='on'&&!email){statusEl.textContent='Please provide an email address to receive optional email updates, or leave that box unchecked.';return}
  if(!turnstileToken){statusEl.textContent='Please complete the security check before sending your inquiry.';return}
  submit.disabled=true;statusEl.textContent='Sending your inquiry…';
  try{
