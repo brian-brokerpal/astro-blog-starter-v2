@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const form = await readFile(new URL('../src/pages/tools/property-report.astro', import.meta.url), 'utf8');
 const proxy = await readFile(new URL('../src/pages/api/public-leads.ts', import.meta.url), 'utf8');
+const contact = await readFile(new URL('../src/pages/contact.astro', import.meta.url), 'utf8');
 
 test('Property Report retries reuse a key and successful submissions rotate it', () => {
   assert.match(form, /sessionStorage\.getItem\(reportSubmissionStorageKey\)/);
@@ -31,3 +32,18 @@ test('website proxy enforces a streamed body limit and forwards the parsed key u
   assert.match(proxy, /body: JSON\.stringify\(body\)/);
   assert.doesNotMatch(proxy, /await request\.json\(\)/);
 });
+
+test('Contact form creates a Lead Center financing inquiry with consent separated', () => {
+  assert.match(contact, /id="contact-form"/);
+  assert.match(contact, /leadType:'financing'/);
+  assert.match(contact, /campaign:'Website Contact Form'/);
+  assert.match(contact, /websitePath:'\/contact'/);
+  assert.match(contact, /submissionKey,turnstileToken/);
+  assert.match(contact, /emailMarketingConsent:data\.get\('emailMarketingConsent'\)==='on'/);
+  assert.match(contact, /Please provide an email address or phone number/);
+  assert.match(contact, /sessionStorage\.getItem\(storageKey\)/);
+  assert.match(contact, /submissionKey=newKey\(\)/);
+  assert.match(contact, /not consent to automated marketing calls or text messages/i);
+  assert.match(contact, /PUBLIC_TURNSTILE_SITE_KEY/);
+});
+
