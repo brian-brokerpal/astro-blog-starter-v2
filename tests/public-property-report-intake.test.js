@@ -48,3 +48,15 @@ test('Contact form creates a Lead Center financing inquiry with consent separate
   assert.match(contact, /PUBLIC_TURNSTILE_SITE_KEY/);
 });
 
+
+
+test('website inquiry permission wording matches the LOS contact-consent records', () => {
+  const financingConsent = 'By submitting, you ask Broker Pal to contact you about this inquiry using the contact information you provide. This is not consent to automated marketing calls or text messages.';
+  const propertyReportConsent = 'By submitting, you ask Broker Pal to contact you about this property report and related financing inquiry. This is not consent to automated marketing calls or text messages.';
+  assert.ok(contact.includes(financingConsent));
+  assert.ok(form.includes(propertyReportConsent));
+  assert.match(contact, /emailMarketingConsent:data\.get\('emailMarketingConsent'\)==='on'/);
+  assert.match(form, /emailMarketingConsent:data\.get\('emailMarketingConsent'\)==='on'/);
+  assert.match(contact, /leadType:'financing'/);
+  assert.match(form, /leadType:'property_report_request'/);
+});
