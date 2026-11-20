@@ -109,5 +109,6 @@ test("reduces a URL supplied as a UTM source to its hostname", () => {
   });
   assert.equal(value.firstTouchSource, "example.com");
   assert.equal(value.latestTouchSource, "example.com");
+  assert.equal(value.latestTouchSource, "example.com");
   assert.equal(JSON.stringify(value).includes("private@example.com"), false);
 });
