@@ -44,8 +44,21 @@ function cards(target,items){el(target).innerHTML=items.map(([k,v])=>'<div><smal
 function link(label,url){return '<li><a target="_blank" rel="noopener noreferrer" href="'+url+'">'+esc(label)+' ↗</a></li>'}
 async function getJson(url){const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Source returned '+r.status);return r.json()}
 let reportTurnstileToken='',reportTurnstileWidget=null,reportTurnstileLoading=false;
-// Keep one key across retries; rotate it only after the server confirms receipt.
-let reportSubmissionKey=crypto.randomUUID();
+// Keep one key across retries and page reloads in this tab; rotate only after confirmed receipt.
+const reportSubmissionStorageKey='brokerpal_property_report_submission_key';
+function createReportSubmissionKey(){
+ const key=crypto.randomUUID();
+ try{sessionStorage.setItem(reportSubmissionStorageKey,key);}catch{}
+ return key;
+}
+function getReportSubmissionKey(){
+ try{
+  const existing=sessionStorage.getItem(reportSubmissionStorageKey)||'';
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(existing))return existing;
+ }catch{}
+ return createReportSubmissionKey();
+}
+let reportSubmissionKey=getReportSubmissionKey();
 function renderReportTurnstile(){
  const target=el('report-turnstile'),key=target?.dataset.sitekey||'';
  if(!key){el('report-lead-status').textContent='Secure inquiry submission is still being configured. You can continue using the report and PDF tools.';el('report-submit').disabled=true;return;}
@@ -68,7 +81,7 @@ async function submitReportLead(event){
   const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),leadType:'property_report_request',propertyAddress:el('address').value.trim(),propertyCity:el('city').value.trim(),propertyState:el('state').value.trim().toUpperCase(),propertyZip:propertyZip,propertyType:el('type').value,purchasePrice:el('asking').value,monthlyMarketRent:el('rent').value,programInterest:'Investment property report — '+el('type').value,campaign:'Property Report Tool',message:details,websitePath:'/tools/property-report',submissionKey:reportSubmissionKey,turnstileToken:reportTurnstileToken,emailMarketingConsent:data.get('emailMarketingConsent')==='on'})});
   const result=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(result.error||'We could not submit your request. Please try again.');
-  form.reset();reportTurnstileToken='';reportSubmissionKey=crypto.randomUUID();status.textContent='Your property report request has been received. Broker Pal has the property details and will follow up using the contact information you provided.';
+  form.reset();reportTurnstileToken='';reportSubmissionKey=createReportSubmissionKey();status.textContent='Your property report request has been received. Broker Pal has the property details and will follow up using the contact information you provided.';
   if(window.turnstile&&reportTurnstileWidget!==null)window.turnstile.reset(reportTurnstileWidget);
  }catch(error){status.textContent=error.message||'Please try again.';reportTurnstileToken='';if(window.turnstile&&reportTurnstileWidget!==null)window.turnstile.reset(reportTurnstileWidget);}
  finally{submit.disabled=false;}
