@@ -33,8 +33,7 @@ const accent = profile?.accent_color || '#18d0d0';
 <head><BaseHead title={title} description={description} image={profile?.headshot_url || undefined} /></head>
 <body>
 <Header />
-{#if profile}
-<main class="agent-page" style={'--agent-primary:'+primary+';--agent-accent:'+accent}>
+{profile && <main class="agent-page" style={'--agent-primary:'+primary+';--agent-accent:'+accent}>
   <section class="agent-hero">
     <div class="agent-intro">
       <div class="eyebrow">BROKER PAL REALTOR NETWORK</div>
@@ -67,10 +66,8 @@ const accent = profile?.accent_color || '#18d0d0';
     <div class="socials">{profile.website_url && <a href={profile.website_url} target="_blank" rel="noopener noreferrer">Website</a>}{profile.instagram_url && <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer">Instagram</a>}{profile.facebook_url && <a href={profile.facebook_url} target="_blank" rel="noopener noreferrer">Facebook</a>}{profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">LinkedIn</a>}</div>
     <small>Powered by Broker Pal · Financing inquiries are handled separately from real estate representation.</small>
   </footer>
-</main>
-{:else}
-<main class="unavailable"><div class="eyebrow">BROKER PAL REALTOR NETWORK</div><h1>This Realtor page isn't available yet.</h1><p>The page may be unpublished or its profile has not been configured. You can still reach Broker Pal for help with a real estate financing question.</p><a href="/contact">Contact Broker Pal →</a></main>
-{/if}
+</main>}
+{!profile && <main class="unavailable"><div class="eyebrow">BROKER PAL REALTOR NETWORK</div><h1>This Realtor page isn't available yet.</h1><p>The page may be unpublished or its profile has not been configured. You can still reach Broker Pal for help with a real estate financing question.</p><a href="/contact">Contact Broker Pal →</a></main>}
 <Footer />
 <script define:vars={{siteKey,agentName:profile?.display_name || '',agentEmail:profile?.public_email || '',agentPage:profile ? '/realtor/'+profile.slug : ''}}>
 const form=document.querySelector('#agentLead');const status=form?.querySelector('.status');const submit=form?.querySelector('button[type="submit"]');let turnstileToken='';
