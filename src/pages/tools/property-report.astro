@@ -44,6 +44,8 @@ function cards(target,items){el(target).innerHTML=items.map(([k,v])=>'<div><smal
 function link(label,url){return '<li><a target="_blank" rel="noopener noreferrer" href="'+url+'">'+esc(label)+' ↗</a></li>'}
 async function getJson(url){const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Source returned '+r.status);return r.json()}
 let reportTurnstileToken='',reportTurnstileWidget=null,reportTurnstileLoading=false;
+// Keep one key across retries; rotate it only after the server confirms receipt.
+let reportSubmissionKey=crypto.randomUUID();
 function renderReportTurnstile(){
  const target=el('report-turnstile'),key=target?.dataset.sitekey||'';
  if(!key){el('report-lead-status').textContent='Secure inquiry submission is still being configured. You can continue using the report and PDF tools.';el('report-submit').disabled=true;return;}
@@ -61,10 +63,10 @@ async function submitReportLead(event){
  const details=['Property report request', 'Address: '+address, 'Property type: '+el('type').value, 'Asking price: '+(el('asking').value||'Not provided'), 'Estimated monthly rent: '+(el('rent').value||'Not provided'), 'Annual property tax: '+(el('tax').value||'Not provided'), 'Annual insurance: '+(el('insurance').value||'Not provided'), 'Notes: '+(el('notes').value||'None'), 'Valuation: '+valueText, 'Public data: '+publicText, 'Investment metrics: '+metricsText].join('\n');
  submit.disabled=true;status.textContent='Sending your property report request…';
  try{
-  const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),leadType:'financing',programInterest:'Investment property report — '+el('type').value,campaign:'Property Report Tool',message:details,websitePath:'/tools/property-report',turnstileToken:reportTurnstileToken,emailMarketingConsent:data.get('emailMarketingConsent')==='on'})});
+  const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),leadType:'financing',programInterest:'Investment property report — '+el('type').value,campaign:'Property Report Tool',message:details,websitePath:'/tools/property-report',submissionKey:reportSubmissionKey,turnstileToken:reportTurnstileToken,emailMarketingConsent:data.get('emailMarketingConsent')==='on'})});
   const result=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(result.error||'We could not submit your request. Please try again.');
-  form.reset();reportTurnstileToken='';status.textContent='Your property report request has been received. Broker Pal has the property details and will follow up using the contact information you provided.';
+  form.reset();reportTurnstileToken='';reportSubmissionKey=crypto.randomUUID();status.textContent='Your property report request has been received. Broker Pal has the property details and will follow up using the contact information you provided.';
   if(window.turnstile&&reportTurnstileWidget!==null)window.turnstile.reset(reportTurnstileWidget);
  }catch(error){status.textContent=error.message||'Please try again.';reportTurnstileToken='';if(window.turnstile&&reportTurnstileWidget!==null)window.turnstile.reset(reportTurnstileWidget);}
  finally{submit.disabled=false;}
