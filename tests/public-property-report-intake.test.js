@@ -6,6 +6,18 @@ const form = await readFile(new URL('../src/pages/tools/property-report.astro', 
 const proxy = await readFile(new URL('../src/pages/api/public-leads.ts', import.meta.url), 'utf8');
 const contact = await readFile(new URL('../src/pages/contact.astro', import.meta.url), 'utf8');
 
+test('public Census route does not expose diagnostic endpoints or runtime exception details', async () => {
+  const census = await readFile(new URL('../src/pages/api/census.json.ts', import.meta.url), 'utf8');
+  assert.doesNotMatch(census, /diagnostic|tract-list|bodyPreview|censusApiKeyAvailable/);
+  assert.doesNotMatch(census, /error instanceof Error \? error\.message/);
+});
+
+test('public valuation route does not return raw provider or database exception details', async () => {
+  const valuation = await readFile(new URL('../src/pages/api/property-valuation.json.ts', import.meta.url), 'utf8');
+  assert.match(valuation, /Please retry later\. No valuation was returned\./);
+  assert.doesNotMatch(valuation, /error instanceof Error \? error\.message/);
+});
+
 test('Property Report retries reuse a key and successful submissions rotate it', () => {
   assert.match(form, /sessionStorage\.getItem\(reportSubmissionStorageKey\)/);
   assert.match(form, /sessionStorage\.setItem\(reportSubmissionStorageKey,key\)/);
