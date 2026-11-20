@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: website-build-${{ github.ref }}
@@ -23,6 +23,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Regenerate and commit dependency lockfile for the dedicated upgrade branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'security/astro7-dependency-upgrade' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          npm install --package-lock-only --ignore-scripts
+          if ! git diff --quiet -- package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "build: regenerate lockfile for Astro 7 security upgrade"
+            git push origin "HEAD:$GITHUB_HEAD_REF"
+          fi
       - name: Install dependencies
         run: npm ci
       - name: Inventory dependency security advisories
