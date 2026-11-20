@@ -72,7 +72,7 @@ export function buildAttribution({ search = "", referrer = "", hostname = "", st
   const firstTouchContent = clean(stored.firstTouchContent || incomingFirstContent);
   const firstTouchTerm = clean(stored.firstTouchTerm || incomingFirstTerm);
 
-  const latestTouchSource = clean(
+  const latestTouchSource = cleanSource(
     utmSource || explicitLatestSource || (hasExternalTouch ? referrerHost : newReferralCode ? "partner_referral" : "") ||
     (hasNewTouch ? firstTouchSource : stored.latestTouchSource || firstTouchSource)
   );
