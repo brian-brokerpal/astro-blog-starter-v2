@@ -24,8 +24,24 @@ const losApplyUrl = 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
 </Layout>\n<script is:inline>
 (() => {
   const link = document.getElementById('los-apply-link');
-  const data = window.BrokerPalAttribution || {};
   if (!link) return;
+  const key = 'brokerpal_attribution_v1';
+  let data = window.BrokerPalAttribution || {};
+  try { data = Object.keys(data).length ? data : JSON.parse(sessionStorage.getItem(key) || '{}') || {}; } catch {}
+  const current = new URLSearchParams(window.location.search);
+  const map = {
+    firstTouchSource:'utm_source', firstTouchMedium:'utm_medium', firstTouchCampaign:'utm_campaign',
+    firstTouchContent:'utm_content', firstTouchTerm:'utm_term'
+  };
+  for (const [field,param] of Object.entries(map)) if (!data[field] && current.has(param)) data[field] = current.get(param);
+  if (!data.firstTouchSource) {
+    data.firstTouchSource = 'direct';
+    data.firstTouchMedium = 'direct';
+  }
+  for (const field of ['latestTouchSource','latestTouchMedium','latestTouchCampaign','latestTouchContent','latestTouchTerm']) {
+    if (!data[field]) data[field] = data[field.replace('latestTouch','firstTouch')] || '';
+  }
+  if (!data.referralCode) data.referralCode = current.get('ref') || current.get('partner') || '';
   const target = new URL(link.href);
   const fields = ['firstTouchSource','firstTouchMedium','firstTouchCampaign','firstTouchContent','firstTouchTerm','latestTouchSource','latestTouchMedium','latestTouchCampaign','latestTouchContent','latestTouchTerm','referralCode'];
   for (const field of fields) if (data[field]) target.searchParams.set(field, String(data[field]).slice(0,120));
