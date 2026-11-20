@@ -30,6 +30,8 @@ test('website proxy enforces a streamed body limit and forwards the parsed key u
   assert.match(proxy, /readLimitedJson\(request, 12000\)/);
   assert.match(proxy, /total > maxBytes/);
   assert.match(proxy, /body: JSON\.stringify\(body\)/);
+  assert.match(proxy, /request\.headers\.get\('CF-Connecting-IP'\)/);
+  assert.match(proxy, /headers\['CF-Connecting-IP'\] = clientIp/);
   assert.doesNotMatch(proxy, /await request\.json\(\)/);
 });
 
