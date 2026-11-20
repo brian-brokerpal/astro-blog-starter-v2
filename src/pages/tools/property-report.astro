@@ -9,7 +9,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 <div class="panel">
 <label>Property street address<input id="address" autocomplete="street-address" placeholder="123 Main Street"></label>
 <div class="two"><label>City<input id="city" autocomplete="address-level2" placeholder="Atlanta"></label><label>State<input id="state" maxlength="2" autocomplete="address-level1" placeholder="GA"></label></div>
-<div class="two"><label>ZIP code<input id="zip" autocomplete="postal-code" inputmode="numeric" placeholder="30303"></label><label>Property type<select id="type"><option>Single-family</option><option>Duplex</option><option>Triplex</option><option>Fourplex</option><option>Multifamily (5+ units)</option><option>Condominium</option><option>Townhome</option><option>Manufactured / mobile home</option><option>Commercial</option><option>Land / lot</option><option>Other / not sure</option></select></label></div>
+<div class="two"><label>ZIP code<input id="zip" required pattern="[0-9]{5}(-?[0-9]{4})?" autocomplete="postal-code" inputmode="numeric" placeholder="30303"></label><label>Property type<select id="type"><option>Single-family</option><option>Duplex</option><option>Triplex</option><option>Fourplex</option><option>Multifamily (5+ units)</option><option>Condominium</option><option>Townhome</option><option>Manufactured / mobile home</option><option>Commercial</option><option>Land / lot</option><option>Other / not sure</option></select></label></div>
 <div class="two"><label>Asking price ($) — optional<input id="asking" type="number" min="0" placeholder="350000"></label><label>Estimated monthly rent ($) — optional<input id="rent" type="number" min="0" placeholder="2800"></label></div>
 <div class="two"><label>Annual property tax ($)<input id="tax" type="number" min="0" placeholder="4200"></label><label>Annual insurance ($)<input id="insurance" type="number" min="0" placeholder="1800"></label></div>
 <label>Known repairs / condition / other notes<textarea id="notes" rows="3" placeholder="Roof age, updates, deferred maintenance, rent assumptions..."></textarea></label>
@@ -34,7 +34,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 <div id="report-turnstile" class="turnstile" data-sitekey={siteKey}></div>
 <button type="submit" id="report-submit">Send my property report request</button>
 <p id="report-lead-status" class="status" role="status" aria-live="polite">Provide an email address or phone number so we can respond to your request.</p>
-<label class="marketing-consent"><input type="checkbox" name="emailMarketingConsent"> I’d also like occasional Broker Pal email updates about commercial real estate financing and investor resources. I can unsubscribe at any time.</label><small>By submitting, you ask Broker Pal to contact you about this property report and related financing inquiry. The optional email updates are separate.</small>
+<label class="marketing-consent"><input type="checkbox" name="emailMarketingConsent"> I’d also like occasional Broker Pal email updates about commercial real estate financing and investor resources. I can unsubscribe at any time.</label><small>By submitting, you ask Broker Pal to contact you about this property report and related financing inquiry. This is not consent to automated marketing calls or text messages. Optional email updates are separate.</small>
 </form></section>
 </section></section>
 <script is:inline>
@@ -44,6 +44,21 @@ function cards(target,items){el(target).innerHTML=items.map(([k,v])=>'<div><smal
 function link(label,url){return '<li><a target="_blank" rel="noopener noreferrer" href="'+url+'">'+esc(label)+' ↗</a></li>'}
 async function getJson(url){const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Source returned '+r.status);return r.json()}
 let reportTurnstileToken='',reportTurnstileWidget=null,reportTurnstileLoading=false;
+// Keep one key across retries and page reloads in this tab; rotate only after confirmed receipt.
+const reportSubmissionStorageKey='brokerpal_property_report_submission_key';
+function createReportSubmissionKey(){
+ const key=crypto.randomUUID();
+ try{sessionStorage.setItem(reportSubmissionStorageKey,key);}catch{}
+ return key;
+}
+function getReportSubmissionKey(){
+ try{
+  const existing=sessionStorage.getItem(reportSubmissionStorageKey)||'';
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(existing))return existing;
+ }catch{}
+ return createReportSubmissionKey();
+}
+let reportSubmissionKey=getReportSubmissionKey();
 function renderReportTurnstile(){
  const target=el('report-turnstile'),key=target?.dataset.sitekey||'';
  if(!key){el('report-lead-status').textContent='Secure inquiry submission is still being configured. You can continue using the report and PDF tools.';el('report-submit').disabled=true;return;}
@@ -55,16 +70,18 @@ function renderReportTurnstile(){
 async function submitReportLead(event){
  event.preventDefault();const form=el('report-lead-form'),status=el('report-lead-status'),submit=el('report-submit'),data=new FormData(form);
  if(!data.get('email')&&!data.get('phone')){status.textContent='Please provide an email address or phone number.';return;}
+ const propertyZip=el('zip').value.trim();
+ if(!/^[0-9]{5}(?:-?[0-9]{4})?$/.test(propertyZip)){status.textContent='Please enter a valid 5-digit or ZIP+4 code for the property.';el('zip').focus();return;}
  if(!reportTurnstileToken){status.textContent='Please complete the security check before submitting.';return;}
  const address=[el('address').value.trim(),el('city').value.trim(),el('state').value.trim(),el('zip').value.trim()].filter(Boolean).join(', ');
  const valueText=el('valuation').innerText||'Data Not Available',publicText=el('publicdata').innerText||'Data Not Available',metricsText=el('metrics').innerText||'Data Not Available';
  const details=['Property report request', 'Address: '+address, 'Property type: '+el('type').value, 'Asking price: '+(el('asking').value||'Not provided'), 'Estimated monthly rent: '+(el('rent').value||'Not provided'), 'Annual property tax: '+(el('tax').value||'Not provided'), 'Annual insurance: '+(el('insurance').value||'Not provided'), 'Notes: '+(el('notes').value||'None'), 'Valuation: '+valueText, 'Public data: '+publicText, 'Investment metrics: '+metricsText].join('\n');
  submit.disabled=true;status.textContent='Sending your property report request…';
  try{
-  const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),leadType:'financing',programInterest:'Investment property report — '+el('type').value,campaign:'Property Report Tool',message:details,websitePath:'/tools/property-report',turnstileToken:reportTurnstileToken,emailMarketingConsent:data.get('emailMarketingConsent')==='on'})});
+  const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),leadType:'property_report_request',propertyAddress:el('address').value.trim(),propertyCity:el('city').value.trim(),propertyState:el('state').value.trim().toUpperCase(),propertyZip:propertyZip,propertyType:el('type').value,purchasePrice:el('asking').value,monthlyMarketRent:el('rent').value,programInterest:'Investment property report — '+el('type').value,campaign:'Property Report Tool',message:details,websitePath:'/tools/property-report',...(window.BrokerPalAttribution||{}),submissionKey:reportSubmissionKey,turnstileToken:reportTurnstileToken,emailMarketingConsent:data.get('emailMarketingConsent')==='on'})});
   const result=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(result.error||'We could not submit your request. Please try again.');
-  form.reset();reportTurnstileToken='';status.textContent='Your property report request has been received. Broker Pal has the property details and will follow up using the contact information you provided.';
+  form.reset();reportTurnstileToken='';reportSubmissionKey=createReportSubmissionKey();status.textContent='Your property report request has been received. Broker Pal has the property details and will follow up using the contact information you provided.';
   if(window.turnstile&&reportTurnstileWidget!==null)window.turnstile.reset(reportTurnstileWidget);
  }catch(error){status.textContent=error.message||'Please try again.';reportTurnstileToken='';if(window.turnstile&&reportTurnstileWidget!==null)window.turnstile.reset(reportTurnstileWidget);}
  finally{submit.disabled=false;}

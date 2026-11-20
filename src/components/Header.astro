@@ -1,8 +1,9 @@
 ---
 import HeaderLink from './HeaderLink.astro';
+const showStaffSignIn = ['yourbrokerpal.com', 'www.yourbrokerpal.com'].includes(Astro.url.hostname);
 ---
 <header class="site-header approved-header">
-  <a class="brand" href="/" aria-label="broker pal home"><span class="brand-word"><span class="broker">broker</span> <span class="pal">pal</span></span></a>
+  <a class="brand" href="/" aria-label="Broker Pal home"><img src="/broker-pal-wordmark.svg" alt="Broker Pal — DSCR and Investment Loans" width="280" height="64" fetchpriority="high" /></a>
   <nav aria-label="Main navigation">
     <a class="active" href="/">Home</a>
     <a href="/#loan-programs">Loan Programs⌄</a>
@@ -14,7 +15,7 @@ import HeaderLink from './HeaderLink.astro';
     <a href="/how-it-works">Resources⌄</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
-    <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>
+    {showStaffSignIn && <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>}
     <a class="nav-cta" href="/apply">Apply Now <span>→</span></a>
   </nav>
 </header>
@@ -35,5 +36,5 @@ import HeaderLink from './HeaderLink.astro';
 @media(max-width:460px){.site-header{padding:16px 18px}.site-header nav{gap:10px 13px}}
 </style>
 <style>
-.approved-header{max-width:none;width:100%;box-sizing:border-box;padding:18px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b;display:flex;align-items:center;justify-content:space-between;gap:28px}.approved-header .brand-word{font-size:clamp(32px,3.4vw,46px);letter-spacing:-2px;font-weight:850}.approved-header .brand{gap:0}.approved-header .brand-tagline{display:none}.approved-header .broker{color:#f8fbff}.approved-header .pal{color:#18d0d0}.approved-header nav{display:flex;align-items:center;gap:clamp(15px,2.1vw,32px)}.approved-header nav a{font-size:15px;font-weight:700;color:#f5f8fb;text-decoration:none}.approved-header nav a:hover,.approved-header nav a.active{color:#18d0d0}.approved-header nav a.active{border-bottom:3px solid #18d0d0;padding:8px 14px}.approved-header nav .staff-nav-link{font-size:11px;color:#8fdedc}.approved-header nav .nav-cta{border-radius:26px;background:#18d0d0;color:#002447;padding:12px 23px;font-size:15px}.approved-header nav .nav-cta:hover{background:#64e5e0;color:#002447}@media(max-width:900px){.approved-header{padding:16px 22px;flex-direction:column;align-items:flex-start}.approved-header nav{flex-wrap:wrap;gap:12px 18px}.approved-header nav a{font-size:13px}}@media(max-width:480px){.approved-header{padding:14px 18px}.approved-header .brand-word{font-size:34px}.approved-header nav{gap:10px 14px}}
+.approved-header{max-width:none;width:100%;box-sizing:border-box;padding:18px max(5.1vw,28px);background:#002447;border-bottom:1px solid #16466b;display:flex;align-items:center;justify-content:space-between;gap:28px}.approved-header .brand-word{font-size:clamp(32px,3.4vw,46px);letter-spacing:-2px;font-weight:850}.approved-header .brand{gap:0;display:flex;align-items:center;flex:0 0 auto;text-decoration:none}.approved-header .brand img{display:block;width:clamp(220px,23vw,280px);height:auto;max-width:100%;object-fit:contain}.approved-header .brand-tagline{display:none}.approved-header .broker{color:#f8fbff}.approved-header .pal{color:#18d0d0}.approved-header nav{display:flex;align-items:center;gap:clamp(15px,2.1vw,32px)}.approved-header nav a{font-size:15px;font-weight:700;color:#f5f8fb;text-decoration:none}.approved-header nav a:hover,.approved-header nav a.active{color:#18d0d0}.approved-header nav a.active{border-bottom:3px solid #18d0d0;padding:8px 14px}.approved-header nav .staff-nav-link{font-size:11px;color:#8fdedc}.approved-header nav .nav-cta{border-radius:26px;background:#18d0d0;color:#002447;padding:12px 23px;font-size:15px}.approved-header nav .nav-cta:hover{background:#64e5e0;color:#002447}@media(max-width:900px){.approved-header{padding:16px 22px;flex-direction:column;align-items:flex-start}.approved-header nav{flex-wrap:wrap;gap:12px 18px}.approved-header nav a{font-size:13px}}@media(max-width:480px){.approved-header{padding:14px 18px}.approved-header .brand img{width:230px}.approved-header nav{gap:10px 14px}}
 </style>

@@ -1,7 +1,89 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 ---
-<Layout title="Contact broker pal" description="Contact broker pal about DSCR financing for your investment property.">
-<div class="page"><div class="kicker">CONTACT</div><h1>Let's talk about your investment property.</h1><p class="lead">Have a purchase or refinance in mind? Send a note with a few details and we'll follow up about possible next steps.</p><div class="contact-card"><div><small>EMAIL</small><a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a></div><div><small>WHAT TO INCLUDE</small><p>Property city and state, purchase or refinance, estimated loan amount, and the best way to reach you.</p></div><a class="button" href="mailto:brian@yourbrokerpal.com?subject=broker%20pal%20financing%20inquiry">Email broker pal ↗</a></div><p class="fine">For your protection, please do not send Social Security numbers, bank statements, tax returns, or other sensitive personal or financial documents by regular email.</p></div>
+<Layout title="Contact Broker Pal | Investment Property Financing" description="Send Broker Pal a question about DSCR, rental property, or business-purpose financing.">
+<div class="page">
+  <div class="kicker">CONTACT BROKER PAL</div>
+  <h1>Let's talk about your investment property.</h1>
+  <p class="lead">Have a purchase, refinance, or financing question? Send a few details and we'll follow up about your inquiry.</p>
+  <form id="contact-form" class="contact-card">
+    <div class="two">
+      <label>First name *<input name="firstName" required maxlength="80" autocomplete="given-name"></label>
+      <label>Last name<input name="lastName" maxlength="80" autocomplete="family-name"></label>
+    </div>
+    <div class="two">
+      <label>Email<input name="email" type="email" maxlength="254" autocomplete="email"></label>
+      <label>Phone<input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+    </div>
+    <p class="hint">Provide at least one way for us to respond: email or phone.</p>
+    <label>What can we help with? *
+      <select name="programInterest" required>
+        <option value="">Select a topic</option>
+        <option>DSCR rental property financing</option>
+        <option>Fix and flip financing</option>
+        <option>Commercial or business-purpose financing</option>
+        <option>Purchase or refinance options</option>
+        <option>General question</option>
+      </select>
+    </label>
+    <label>Property city and state (optional)<input name="propertyLocation" maxlength="120" placeholder="Atlanta, GA"></label>
+    <label>Message *<textarea name="message" rows="5" maxlength="3000" required placeholder="Tell us briefly what you're looking to accomplish. Please do not include sensitive personal or financial information."></textarea></label>
+    <div id="contact-turnstile" class="turnstile" data-sitekey={siteKey}></div>
+    <button id="contact-submit" type="submit">Send inquiry</button>
+    <p id="contact-status" class="status" role="status" aria-live="polite">By submitting, you ask Broker Pal to contact you about this inquiry using the contact information you provide. This is not consent to automated marketing calls or text messages.</p>
+    <label class="marketing-consent"><input type="checkbox" name="emailMarketingConsent"> I’d also like occasional Broker Pal email updates about commercial real estate financing and investor resources. I can unsubscribe at any time.</label>
+    <small class="privacy-note">Email updates are optional and separate from your inquiry. See our <a href="/privacy">Privacy Policy</a>.</small>
+  </form>
+  <p class="fine">For your protection, do not submit Social Security numbers, dates of birth, bank statements, tax returns, or other sensitive personal or financial documents through this form or regular email. You can also reach us at <a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a> or <a href="tel:4046062943">404-606-2943</a>.</p>
+</div>
 </Layout>
-<style>.page{max-width:800px;margin:auto;padding:35px 0 70px}.kicker{font-size:11px;letter-spacing:2px;color:#18bfc0;font-weight:800}.page h1{font-size:clamp(38px,5vw,56px);line-height:1.08;letter-spacing:-2px;color:#002447;margin:20px 0}.lead{font-size:18px;color:#617387;line-height:1.8}.contact-card{margin-top:35px;background:#eaf2f5;padding:30px;display:grid;gap:25px}.contact-card small{display:block;font-size:10px;letter-spacing:2px;color:#18bfc0;font-weight:800;margin-bottom:7px}.contact-card a:not(.button){font-size:20px;color:#002447;font-weight:800}.contact-card p{color:#596d81;margin:0}.button{display:inline-block;background:#18d0d0;color:#002447;text-decoration:none;font-weight:800;padding:13px 19px;width:max-content}.fine{font-size:13px;color:#778696;margin-top:20px}</style>
+<script is:inline>
+const form=document.getElementById('contact-form');
+const statusEl=document.getElementById('contact-status');
+const submit=document.getElementById('contact-submit');
+const storageKey='brokerpal_contact_submission_key';
+const newKey=()=>{const key=crypto.randomUUID();try{sessionStorage.setItem(storageKey,key)}catch{}return key};
+const getKey=()=>{try{const key=sessionStorage.getItem(storageKey)||'';if(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key))return key}catch{}return newKey()};
+let submissionKey=getKey(),turnstileToken='',turnstileWidget=null,turnstileLoading=false;
+function renderTurnstile(){
+ const target=document.getElementById('contact-turnstile'),siteKey=target?.dataset.sitekey||'';
+ if(!siteKey){statusEl.textContent='Secure inquiry submission is not configured yet. Please contact us by email or phone.';submit.disabled=true;return}
+ const render=()=>{if(!window.turnstile||turnstileWidget!==null)return;turnstileWidget=window.turnstile.render(target,{sitekey:siteKey,callback:token=>turnstileToken=token,'expired-callback':()=>turnstileToken=''})};
+ if(window.turnstile){render();return}
+ if(turnstileLoading)return;
+ turnstileLoading=true;
+ const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;script.defer=true;script.onload=render;script.onerror=()=>{statusEl.textContent='The secure inquiry check could not load. Please refresh and try again.';turnstileLoading=false};document.head.appendChild(script);
+}
+form.addEventListener('submit',async event=>{
+ event.preventDefault();
+ const data=new FormData(form);
+ const email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim();
+ if(!email&&!phone){statusEl.textContent='Please provide an email address or phone number.';return}
+ if(data.get('emailMarketingConsent')==='on'&&!email){statusEl.textContent='Please provide an email address to receive optional email updates, or leave that box unchecked.';return}
+ if(!turnstileToken){statusEl.textContent='Please complete the security check before sending your inquiry.';return}
+ submit.disabled=true;statusEl.textContent='Sending your inquiry…';
+ try{
+  const response=await fetch('/api/public-leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
+   firstName:data.get('firstName'),lastName:data.get('lastName'),email,phone,
+   leadType:'financing',programInterest:data.get('programInterest'),
+   message:[String(data.get('message')||'').trim(),data.get('propertyLocation')?'Property location: '+String(data.get('propertyLocation')).trim():''].filter(Boolean).join('\n\n'),
+   campaign:'Website Contact Form',websitePath:'/contact',submissionKey,turnstileToken,...(window.BrokerPalAttribution||{}),
+   emailMarketingConsent:data.get('emailMarketingConsent')==='on'
+  })});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'We could not send your inquiry. Please try again.');
+  form.reset();submissionKey=newKey();turnstileToken='';
+  statusEl.textContent='Thank you. Your inquiry has been received by Broker Pal. We will follow up using the contact information you provided.';
+  if(window.turnstile&&turnstileWidget!==null)window.turnstile.reset(turnstileWidget);
+ }catch(error){
+  statusEl.textContent=error.message||'The inquiry could not be sent. Please try again.';
+  turnstileToken='';
+  if(window.turnstile&&turnstileWidget!==null)window.turnstile.reset(turnstileWidget);
+ }finally{submit.disabled=false}
+});
+renderTurnstile();
+</script>
+<style>
+.page{max-width:800px;margin:auto;padding:35px 28px 70px;color:#52697b}.kicker{font-size:11px;letter-spacing:2px;color:#078f9d;font-weight:800}.page h1{font-size:clamp(38px,5vw,56px);line-height:1.08;letter-spacing:-2px;color:#102b49;margin:20px 0}.lead{font-size:18px;color:#617387;line-height:1.8}.contact-card{margin-top:28px;background:#edf5f6;padding:26px;display:grid;gap:16px;border-top:4px solid #079eaa}.contact-card label{display:grid;gap:6px;font-size:13px;font-weight:700;color:#29435b}.contact-card input,.contact-card select,.contact-card textarea{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd8df;border-radius:4px;background:#fff;font:inherit;font-size:16px;color:#20374e}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.hint,.status,.privacy-note{font-size:12px;line-height:1.6;color:#718295;margin:0}.contact-card button{background:#078f9d;color:#fff;border:0;padding:14px 20px;font-weight:800;width:max-content;cursor:pointer;border-radius:4px}.contact-card button:disabled{opacity:.6}.turnstile{min-height:65px}.marketing-consent{display:flex!important;flex-direction:row;align-items:flex-start;gap:9px;font-size:12px!important;line-height:1.55;color:#536b80!important}.marketing-consent input{width:auto;margin:3px 0 0}.privacy-note a,.fine a{color:#078f9d;font-weight:700}.fine{font-size:13px;color:#778696;margin-top:20px;line-height:1.7}@media(max-width:620px){.two{grid-template-columns:1fr}.contact-card{padding:20px}}
+</style>

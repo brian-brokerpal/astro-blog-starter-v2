@@ -642,9 +642,12 @@ import Footer from '../components/Footer.astro';
   <Footer />
 </body>
 </html>
+<style is:global>
+body{margin:0;background:#071827;color:#e6eff3;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65}
+</style>
 <style>
 :global(html){background:#071827;scroll-behavior:smooth}
-:global(body){margin:0;background:#071827;color:#e6eff3;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65}
+
 :global(main.investor-page){width:100%;max-width:none;margin:0;padding:0;background:#071827}
 :global(h1),:global(h2),:global(h3){color:#f4f8fa}
 :global(a){transition:color .18s ease,background .18s ease}
