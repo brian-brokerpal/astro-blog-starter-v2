@@ -36,7 +36,7 @@ test("records referral codes as claims, not verified partner identity", () => {
     search: "?ref=agent_42",
     hostname: "yourbrokerpal.com"
   });
-  assert.equal(value.firstTouchSource, "referral");
+  assert.equal(value.firstTouchSource, "partner_referral");
   assert.equal(value.firstTouchMedium, "referral");
   assert.equal(value.referralCode, "agent_42");
 });
