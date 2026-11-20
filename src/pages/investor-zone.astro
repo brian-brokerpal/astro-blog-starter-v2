@@ -20,8 +20,9 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
     </form>
   </section>
 </main><Footer />
-<script define:vars={{siteKey}}>
+<script>
 const form=document.querySelector('#investorLead');
+const siteKey=document.querySelector('.turnstile')?.dataset.sitekey||'';
 const status=form?.querySelector('.status');
 const statusChoice=document.querySelectorAll('input[name="realtorStatus"]');
 const hasRealtor=document.querySelector('#hasRealtor');
