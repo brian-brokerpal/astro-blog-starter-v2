@@ -68,7 +68,7 @@ form.addEventListener('submit',async event=>{
    firstName:data.get('firstName'),lastName:data.get('lastName'),email,phone,
    leadType:'financing',programInterest:data.get('programInterest'),
    message:[String(data.get('message')||'').trim(),data.get('propertyLocation')?'Property location: '+String(data.get('propertyLocation')).trim():''].filter(Boolean).join('\n\n'),
-   campaign:'Website Contact Form',websitePath:'/contact',submissionKey,turnstileToken,
+   campaign:'Website Contact Form',websitePath:'/contact',submissionKey,turnstileToken,...(window.BrokerPalAttribution||{}),
    emailMarketingConsent:data.get('emailMarketingConsent')==='on'
   })});
   const result=await response.json().catch(()=>({}));
