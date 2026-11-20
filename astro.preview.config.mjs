@@ -7,5 +7,6 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   site: 'https://yourbrokerpal.com',
   output: 'server',
+  session: false,
   adapter: cloudflare({ configPath: 'wrangler.preview.json' })
 });
