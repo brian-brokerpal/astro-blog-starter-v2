@@ -16,6 +16,12 @@ function externalReferrerHost(referrer, hostname) {
   }
 }
 
+function referrerMedium(host) {
+  if (/(^|\.)(google|bing|yahoo|duckduckgo)\./i.test(host)) return "organic";
+  if (/(facebook|instagram|linkedin|tiktok|x|twitter)\./i.test(host)) return "social";
+  return "referral";
+}
+
 export function buildAttribution({ search = "", referrer = "", hostname = "", stored = {} } = {}) {
   const params = new URLSearchParams(search);
   const param = (...names) => {
@@ -27,26 +33,47 @@ export function buildAttribution({ search = "", referrer = "", hostname = "", st
   };
 
   const referralCode = clean(param("referralCode", "ref", "partner") || stored.referralCode || "", 64);
-  const externalHost = externalReferrerHost(referrer, hostname);
+  const newReferralCode = !!param("referralCode", "ref", "partner") && param("referralCode", "ref", "partner") !== stored.referralCode;
+  const referrerHost = externalReferrerHost(referrer, hostname);
   const utmSource = param("utm_source");
   const utmMedium = param("utm_medium");
+  const utmCampaign = param("utm_campaign");
+  const utmContent = param("utm_content");
+  const utmTerm = param("utm_term");
+  const hasUtmTouch = !!(utmSource || utmMedium || utmCampaign || utmContent || utmTerm);
+  const explicitLatestSource = param("latestTouchSource");
+  const explicitLatestMedium = param("latestTouchMedium");
+  const explicitLatestCampaign = param("latestTouchCampaign");
+  const explicitLatestContent = param("latestTouchContent");
+  const explicitLatestTerm = param("latestTouchTerm");
+  const hasExternalTouch = !!referrerHost;
+  const hasNewTouch = hasUtmTouch || hasExternalTouch || newReferralCode;
+
   const incomingFirstSource = param("firstTouchSource") || utmSource;
   const incomingFirstMedium = param("firstTouchMedium") || utmMedium;
-  const incomingFirstCampaign = param("firstTouchCampaign", "utm_campaign");
-  const incomingFirstContent = param("firstTouchContent", "utm_content");
-  const incomingFirstTerm = param("firstTouchTerm", "utm_term");
+  const incomingFirstCampaign = param("firstTouchCampaign") || utmCampaign;
+  const incomingFirstContent = param("firstTouchContent") || utmContent;
+  const incomingFirstTerm = param("firstTouchTerm") || utmTerm;
 
-  const firstTouchSource = clean(stored.firstTouchSource || incomingFirstSource || (referralCode ? "referral" : externalHost || "direct"));
-  const firstTouchMedium = clean(stored.firstTouchMedium || incomingFirstMedium || (referralCode || externalHost ? "referral" : firstTouchSource === "direct" ? "direct" : "other"));
+  const fallbackSource = referrerHost || (referralCode ? "partner_referral" : "direct");
+  const fallbackMedium = referrerHost ? referrerMedium(referrerHost) : referralCode ? "referral" : "direct";
+  const firstTouchSource = clean(stored.firstTouchSource || incomingFirstSource || fallbackSource);
+  const firstTouchMedium = clean(stored.firstTouchMedium || incomingFirstMedium || (firstTouchSource === "direct" ? "direct" : referrerHost || referralCode ? fallbackMedium : "other"));
   const firstTouchCampaign = clean(stored.firstTouchCampaign || incomingFirstCampaign);
   const firstTouchContent = clean(stored.firstTouchContent || incomingFirstContent);
   const firstTouchTerm = clean(stored.firstTouchTerm || incomingFirstTerm);
 
-  const latestTouchSource = clean(utmSource || param("latestTouchSource") || (referralCode && referralCode !== stored.referralCode ? "referral" : stored.latestTouchSource) || firstTouchSource);
-  const latestTouchMedium = clean(utmMedium || param("latestTouchMedium") || (referralCode && referralCode !== stored.referralCode ? "referral" : stored.latestTouchMedium) || firstTouchMedium);
-  const latestTouchCampaign = clean(param("utm_campaign", "latestTouchCampaign") || stored.latestTouchCampaign || firstTouchCampaign);
-  const latestTouchContent = clean(param("utm_content", "latestTouchContent") || stored.latestTouchContent || firstTouchContent);
-  const latestTouchTerm = clean(param("utm_term", "latestTouchTerm") || stored.latestTouchTerm || firstTouchTerm);
+  const latestTouchSource = clean(
+    utmSource || explicitLatestSource || (hasExternalTouch ? referrerHost : newReferralCode ? "partner_referral" : "") ||
+    (hasNewTouch ? firstTouchSource : stored.latestTouchSource || firstTouchSource)
+  );
+  const latestTouchMedium = clean(
+    utmMedium || explicitLatestMedium || (hasExternalTouch ? referrerMedium(referrerHost) : newReferralCode ? "referral" : "") ||
+    (hasNewTouch ? firstTouchMedium : stored.latestTouchMedium || firstTouchMedium)
+  );
+  const latestTouchCampaign = clean(hasNewTouch ? utmCampaign || explicitLatestCampaign : stored.latestTouchCampaign || explicitLatestCampaign || firstTouchCampaign);
+  const latestTouchContent = clean(hasNewTouch ? utmContent || explicitLatestContent : stored.latestTouchContent || explicitLatestContent || firstTouchContent);
+  const latestTouchTerm = clean(hasNewTouch ? utmTerm || explicitLatestTerm : stored.latestTouchTerm || explicitLatestTerm || firstTouchTerm);
 
   return {
     firstTouchSource: firstTouchSource || "direct",
@@ -84,19 +111,7 @@ export function initializeAttribution() {
   const applyLink = document.getElementById("los-apply-link");
   if (applyLink) {
     const target = new URL(applyLink.href, window.location.href);
-    for (const [key, value] of Object.entries({
-      firstTouchSource: attribution.firstTouchSource,
-      firstTouchMedium: attribution.firstTouchMedium,
-      firstTouchCampaign: attribution.firstTouchCampaign,
-      firstTouchContent: attribution.firstTouchContent,
-      firstTouchTerm: attribution.firstTouchTerm,
-      latestTouchSource: attribution.latestTouchSource,
-      latestTouchMedium: attribution.latestTouchMedium,
-      latestTouchCampaign: attribution.latestTouchCampaign,
-      latestTouchContent: attribution.latestTouchContent,
-      latestTouchTerm: attribution.latestTouchTerm,
-      referralCode: attribution.referralCode
-    })) {
+    for (const [key, value] of Object.entries(attribution)) {
       if (value) target.searchParams.set(key, value);
     }
     applyLink.href = target.toString();
