@@ -29,7 +29,7 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <script is:inline>
 (() => {
   const key = 'brokerpal_attribution_v1';
-  const clean = value => String(value || '').replace(/[\\u0000-\\u001f\\u007f]/g, '').trim().slice(0, 120);
+  const clean = value => String(value || '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 120);
   const params = new URLSearchParams(window.location.search);
   let saved = {};
   try { saved = JSON.parse(sessionStorage.getItem(key) || '{}') || {}; } catch {}
@@ -38,8 +38,8 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
     const referrer = new URL(document.referrer);
     if (referrer.hostname && referrer.hostname !== window.location.hostname) referrerHost = referrer.hostname.toLowerCase();
   } catch {}
-  const searchHost = /(^|\\.)(google|bing|yahoo|duckduckgo)\\./i.test(referrerHost);
-  const socialHost = /(facebook|instagram|linkedin|tiktok|x|twitter)\\./i.test(referrerHost);
+  const searchHost = /(^|\.)(google|bing|yahoo|duckduckgo)\./i.test(referrerHost);
+  const socialHost = /(facebook|instagram|linkedin|tiktok|x|twitter)\./i.test(referrerHost);
   const refCode = clean(params.get('ref') || params.get('partner')).replace(/[^a-zA-Z0-9_-]/g, '').slice(0,64);
   const hasCampaign = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].some(k => params.has(k));
   const hasNewTouch = hasCampaign || !!referrerHost || !!refCode;
