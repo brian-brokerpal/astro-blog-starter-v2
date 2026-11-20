@@ -40,6 +40,7 @@ test('Contact form creates a Lead Center financing inquiry with consent separate
   assert.match(contact, /websitePath:'\/contact'/);
   assert.match(contact, /submissionKey,turnstileToken/);
   assert.match(contact, /emailMarketingConsent:data\.get\('emailMarketingConsent'\)==='on'/);
+  assert.match(contact, /emailMarketingConsent'==='on'&&!email/);
   assert.match(contact, /Please provide an email address or phone number/);
   assert.match(contact, /sessionStorage\.getItem\(storageKey\)/);
   assert.match(contact, /submissionKey=newKey\(\)/);
