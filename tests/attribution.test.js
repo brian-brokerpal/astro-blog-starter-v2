@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildAttribution } from "../src/scripts/attribution.js";
+import { buildAttribution, initializeAttribution } from "../src/scripts/attribution.js";
 
 test("captures the first UTM touch and keeps latest touch fields distinct", () => {
   const value = buildAttribution({
@@ -67,4 +67,38 @@ test("bounds attribution fields and strips control characters", () => {
   assert.equal(value.latestTouchCampaign, "safename");
   const long = buildAttribution({ search: "?utm_source=" + "x".repeat(180) });
   assert.equal(long.firstTouchSource.length, 120);
+});
+
+test("forwards first-touch and latest-touch attribution to the LOS apply link", (t) => {
+  const originalWindow = globalThis.window;
+  const originalDocument = globalThis.document;
+  const stored = {};
+  const link = { href: "https://yourbrokerpal-los--dscr.pages.dev/apply.html" };
+  globalThis.window = {
+    location: { search: "?utm_source=linkedin&utm_medium=social&utm_campaign=november-update", hostname: "yourbrokerpal.com" },
+    sessionStorage: {
+      getItem: key => stored[key] || null,
+      setItem: (key, value) => { stored[key] = value; }
+    }
+  };
+  globalThis.document = {
+    referrer: "",
+    getElementById: id => id === "los-apply-link" ? link : null
+  };
+  t.after(() => {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+    if (originalDocument === undefined) delete globalThis.document;
+    else globalThis.document = originalDocument;
+  });
+
+  const value = initializeAttribution();
+  const target = new URL(link.href);
+  assert.equal(value.firstTouchSource, "linkedin");
+  assert.equal(target.searchParams.get("firstTouchSource"), "linkedin");
+  assert.equal(target.searchParams.get("firstTouchMedium"), "social");
+  assert.equal(target.searchParams.get("firstTouchCampaign"), "november-update");
+  assert.equal(target.searchParams.get("latestTouchSource"), "linkedin");
+  assert.equal(target.searchParams.get("latestTouchCampaign"), "november-update");
+  assert.equal(JSON.parse(stored.brokerpal_attribution_v1).firstTouchSource, "linkedin");
 });
