@@ -23,6 +23,9 @@ test('Property Report inquiries arrive as structured Property Report leads', () 
 });
 
 test('website proxy enforces a streamed body limit and forwards the parsed key unchanged', () => {
+  assert.match(proxy, /request\.headers\.get\('Origin'\)/);
+  assert.match(proxy, /origin !== 'https:\/\/yourbrokerpal\.com'/);
+  assert.match(proxy, /typeof body !== 'object' \|\| Array\.isArray\(body\)/);
   assert.match(proxy, /readLimitedJson\(request, 12000\)/);
   assert.match(proxy, /total > maxBytes/);
   assert.match(proxy, /body: JSON\.stringify\(body\)/);
