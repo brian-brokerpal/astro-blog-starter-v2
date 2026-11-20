@@ -6,9 +6,11 @@ const form = await readFile(new URL('../src/pages/tools/property-report.astro', 
 const proxy = await readFile(new URL('../src/pages/api/public-leads.ts', import.meta.url), 'utf8');
 
 test('Property Report retries reuse a key and successful submissions rotate it', () => {
-  assert.match(form, /let reportSubmissionKey=crypto\.randomUUID\(\)/);
+  assert.match(form, /sessionStorage\.getItem\(reportSubmissionStorageKey\)/);
+  assert.match(form, /sessionStorage\.setItem\(reportSubmissionStorageKey,key\)/);
+  assert.match(form, /let reportSubmissionKey=getReportSubmissionKey\(\)/);
   assert.match(form, /submissionKey:reportSubmissionKey/);
-  assert.match(form, /if\(!response\.ok\)throw[\s\S]*?reportSubmissionKey=crypto\.randomUUID\(\)/);
+  assert.match(form, /if\(!response\.ok\)throw[\s\S]*?reportSubmissionKey=createReportSubmissionKey\(\)/);
 });
 
 test('Property Report inquiries arrive as structured Property Report leads', () => {
