@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'security/astro7-dependency-upgrade' && github.event.pull_request.head.sha || '' }}
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Regenerate and commit dependency lockfile for the dedicated upgrade branch
@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           npm audit --json > /tmp/npm-audit.json || true
-          node -e 'const fs=require("fs");const a=JSON.parse(fs.readFileSync("/tmp/npm-audit.json","utf8"));const v=a.metadata?.vulnerabilities||{};console.log("Dependency audit totals:",JSON.stringify(v));for(const [name,item] of Object.entries(a.vulnerabilities||{})){const via=(item.via||[]).map(x=>typeof x==="string"?x:x.title);console.log(JSON.stringify({package:name,severity:item.severity,isDirect:item.isDirect,range:item.range,fixAvailable:item.fixAvailable,advisories:via}));}'
+          node -e 'const fs=require("fs");const a=JSON.parse(fs.readFileSync("/tmp/npm-audit.json","utf8"));const v=a.metadata?.vulnerabilities||{};console.log("Dependency audit totals:",JSON.stringify(v));for(const [name,item] of Object.entries(a.vulnerabilities||{})){const via=(item.via||[]).map(x=>typeof x==="string"?x:x.title);console.log(JSON.stringify({package:name,severity:item.severity,isDirect:item.isDirect,range:item.range,fixAvailable:item.fixAvailable,advisories:via}));}if((v.high||0)+(v.critical||0)>0)process.exit(1);'
       - name: Run intake regression tests
         run: npm test
       - name: Build website
