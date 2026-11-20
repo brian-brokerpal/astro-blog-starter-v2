@@ -25,3 +25,57 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
+<!-- Broker Pal first-touch / latest-touch attribution; stores only bounded campaign values and external referrer hostname. -->
+<script is:inline>
+(() => {
+  const key = 'brokerpal_attribution_v1';
+  const clean = value => String(value || '').replace(/[\\u0000-\\u001f\\u007f]/g, '').trim().slice(0, 120);
+  const params = new URLSearchParams(window.location.search);
+  let saved = {};
+  try { saved = JSON.parse(sessionStorage.getItem(key) || '{}') || {}; } catch {}
+  let referrerHost = '';
+  try {
+    const referrer = new URL(document.referrer);
+    if (referrer.hostname && referrer.hostname !== window.location.hostname) referrerHost = referrer.hostname.toLowerCase();
+  } catch {}
+  const searchHost = /(^|\\.)(google|bing|yahoo|duckduckgo)\\./i.test(referrerHost);
+  const socialHost = /(facebook|instagram|linkedin|tiktok|x|twitter)\\./i.test(referrerHost);
+  const refCode = clean(params.get('ref') || params.get('partner')).replace(/[^a-zA-Z0-9_-]/g, '').slice(0,64);
+  const hasCampaign = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].some(k => params.has(k));
+  const hasNewTouch = hasCampaign || !!referrerHost || !!refCode;
+  const touch = hasNewTouch ? {
+    source: clean(params.get('utm_source')) || referrerHost || (refCode ? 'partner_referral' : 'direct'),
+    medium: clean(params.get('utm_medium')) || (refCode ? 'referral' : searchHost ? 'organic' : socialHost ? 'social' : referrerHost ? 'referral' : 'direct'),
+    campaign: clean(params.get('utm_campaign')),
+    content: clean(params.get('utm_content')),
+    term: clean(params.get('utm_term'))
+  } : null;
+  if (!saved.firstTouchSource) {
+    const first = touch || {source:'direct',medium:'direct',campaign:'',content:'',term:''};
+    saved.firstTouchSource = first.source;
+    saved.firstTouchMedium = first.medium;
+    saved.firstTouchCampaign = first.campaign;
+    saved.firstTouchContent = first.content;
+    saved.firstTouchTerm = first.term;
+    saved.attributionFirstSeenAt = new Date().toISOString();
+  }
+  if (touch) {
+    saved.latestTouchSource = touch.source;
+    saved.latestTouchMedium = touch.medium;
+    saved.latestTouchCampaign = touch.campaign;
+    saved.latestTouchContent = touch.content;
+    saved.latestTouchTerm = touch.term;
+    saved.attributionLastSeenAt = new Date().toISOString();
+  }
+  if (!saved.latestTouchSource) {
+    saved.latestTouchSource = saved.firstTouchSource;
+    saved.latestTouchMedium = saved.firstTouchMedium;
+    saved.latestTouchCampaign = saved.firstTouchCampaign || '';
+    saved.latestTouchContent = saved.firstTouchContent || '';
+    saved.latestTouchTerm = saved.firstTouchTerm || '';
+  }
+  if (refCode) saved.referralCode = refCode;
+  try { sessionStorage.setItem(key, JSON.stringify(saved)); } catch {}
+  window.BrokerPalAttribution = saved;
+})();
+</script>
