@@ -41,6 +41,15 @@ test("records referral codes as claims, not verified partner identity", () => {
   assert.equal(value.referralCode, "agent_42");
 });
 
+test("classifies search referrers as organic without retaining the full URL", () => {
+  const value = buildAttribution({
+    referrer: "https://www.google.com/search?q=private",
+    hostname: "yourbrokerpal.com"
+  });
+  assert.equal(value.firstTouchSource, "www.google.com");
+  assert.equal(value.firstTouchMedium, "organic");
+});
+
 test("uses only the external referrer host and does not retain the full referrer URL", () => {
   const value = buildAttribution({
     referrer: "https://partner.example/listing?borrower=private",
