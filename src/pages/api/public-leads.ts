@@ -34,6 +34,12 @@ async function readLimitedJson(request: Request, maxBytes: number): Promise<{ ok
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
+  const origin = request.headers.get('Origin');
+  if (origin !== 'https://yourbrokerpal.com') {
+    return new Response(JSON.stringify({ error: 'Request origin is not allowed.' }), {
+      status: 403, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    });
+  }
   const runtime = (locals as any).runtime;
   const env = runtime?.env || {};
   const upstream = String(env.LOS_PUBLIC_LEADS_URL || '').trim();
@@ -56,6 +62,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
   const body = parsed.value;
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return new Response(JSON.stringify({ error: 'Invalid submission.' }), {
+      status: 400, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    });
+  }
   try {
     const response = await fetch(upstream, {
       method: 'POST',
