@@ -68,9 +68,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
   try {
+    // Preserve the edge-observed client IP for server-side Turnstile verification
+    // and the LOS consent audit record. Cloudflare supplies this header at the edge.
+    const clientIp = request.headers.get('CF-Connecting-IP');
+    const headers: Record<string, string> = {
+      'content-type': 'application/json',
+      'origin': 'https://yourbrokerpal.com'
+    };
+    if (clientIp) headers['CF-Connecting-IP'] = clientIp;
     const response = await fetch(upstream, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'origin': 'https://yourbrokerpal.com' },
+      headers,
       body: JSON.stringify(body)
     });
     const payload = await response.text();
