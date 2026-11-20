@@ -21,7 +21,49 @@ const losApplyUrl = 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
     <p class="fine"><strong>Important:</strong> This is an initial inquiry, not a credit application, approval, or commitment to lend. Do not enter Social Security numbers, dates of birth, bank account details, or upload tax returns, bank statements, or other sensitive documents. The intake form is hosted separately by broker pal's loan system.</p>
     <p class="contact">Questions? <a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a> · <a href="tel:4046062943">404-606-2943</a></p>
   </div>
-</Layout>\n
+</Layout>
+<script is:inline>
+(() => {
+  const link = document.getElementById('los-apply-link');
+  if (!link) return;
+  const storageKey = 'brokerpal_attribution_v1';
+  let data = window.BrokerPalAttribution || {};
+  try {
+    if (!Object.keys(data).length) data = JSON.parse(sessionStorage.getItem(storageKey) || '{}') || {};
+  } catch {}
+  const params = new URLSearchParams(window.location.search);
+  const sourceFields = {
+    firstTouchSource: 'utm_source',
+    firstTouchMedium: 'utm_medium',
+    firstTouchCampaign: 'utm_campaign',
+    firstTouchContent: 'utm_content',
+    firstTouchTerm: 'utm_term'
+  };
+  for (const [field, param] of Object.entries(sourceFields)) {
+    if (!data[field] && params.has(param)) data[field] = params.get(param);
+  }
+  if (!data.firstTouchSource) {
+    data.firstTouchSource = 'direct';
+    data.firstTouchMedium = 'direct';
+  }
+  for (const field of ['latestTouchSource','latestTouchMedium','latestTouchCampaign','latestTouchContent','latestTouchTerm']) {
+    if (!data[field]) data[field] = data[field.replace('latestTouch','firstTouch')] || '';
+  }
+  if (!data.referralCode) data.referralCode = params.get('ref') || params.get('partner') || '';
+  const target = new URL(link.href);
+  const fields = [
+    'firstTouchSource','firstTouchMedium','firstTouchCampaign','firstTouchContent','firstTouchTerm',
+    'latestTouchSource','latestTouchMedium','latestTouchCampaign','latestTouchContent','latestTouchTerm',
+    'referralCode'
+  ];
+  for (const field of fields) {
+    const value = String(data[field] || '').trim().slice(0, 120);
+    if (value) target.searchParams.set(field, value);
+  }
+  link.href = target.toString();
+})();
+</script>
+
 
 <style>
 .page{max-width:800px;margin:auto;padding:35px 28px 70px}.kicker{font-size:11px;letter-spacing:2px;color:#078f9d;font-weight:800}.page h1{font-size:clamp(38px,5vw,56px);line-height:1.08;letter-spacing:-2px;color:#102b49;margin:20px 0}.lead{font-size:18px;color:#617387;line-height:1.8}.apply-card{margin-top:30px;background:#edf5f6;padding:30px;border-top:4px solid #079eaa}.apply-card h2{color:#102b49;margin:0 0 8px}.apply-card p,.apply-card li{color:#52697b;font-size:15px}.apply-card ul{padding-left:22px;line-height:2;margin:20px 0}.button{display:inline-flex;align-items:center;gap:18px;background:#078f9d;color:#fff;text-decoration:none;font-weight:800;padding:14px 20px;border-radius:4px}.fine{font-size:13px;color:#687b8c;margin-top:20px;line-height:1.7}.contact{font-size:14px;color:#52697b;margin-top:24px}.contact a{color:#078f9d;font-weight:700}
