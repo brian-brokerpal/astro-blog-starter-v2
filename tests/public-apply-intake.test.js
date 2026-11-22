@@ -24,6 +24,11 @@ test('public Apply page captures a financing inquiry without sending borrowers t
   assert.match(page, /not a credit application/i);
 });
 
+test('public inquiry confirmation routes ready borrowers to the full secure application and document upload flow', () => {
+  assert.match(page, /Continue to secure borrower application/);
+  assert.match(page, /https:\/\/yourbrokerpal-los--dscr\.pages\.dev\/apply\.html/);
+});
+
 test('public Apply page preserves contact details and optional property fields for Lead Center intake', () => {
   for (const field of ['entityName','propertyAddress','propertyCity','propertyState','propertyZip','propertyType','units','purchasePrice','estimatedValue','requestedAmount','monthlyMarketRent','programInterest','loanPurpose']) {
     assert.match(page, new RegExp(field + '(?:\\s*:|\\s*,)'));
