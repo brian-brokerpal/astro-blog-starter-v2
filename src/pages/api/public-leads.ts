@@ -42,12 +42,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
   const runtime = (locals as any).runtime;
   const env = runtime?.env || {};
-  const upstream = String(env.LOS_PUBLIC_LEADS_URL || '').trim();
-  if (!upstream) {
-    return new Response(JSON.stringify({ error: 'Secure inquiry intake is not configured yet.' }), {
-      status: 503, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
-    });
-  }
+  // Keep the production website connected to the established LOS Pages API even
+  // when the optional Worker variable has not been populated. Preview requests are
+  // still blocked by the exact production-origin check above; they never fall back
+  // to sending test submissions into the live lead database.
+  const upstream = String(env.LOS_PUBLIC_LEADS_URL || 'https://yourbrokerpal-los--dscr.pages.dev/api/public-leads').trim();
   if (!request.headers.get('content-type')?.toLowerCase().includes('application/json')) {
     return new Response(JSON.stringify({ error: 'Expected a website inquiry submission.' }), {
       status: 415, headers: { 'content-type': 'application/json; charset=utf-8' }
