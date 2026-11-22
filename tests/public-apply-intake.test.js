@@ -24,9 +24,9 @@ test('public Apply page captures a financing inquiry without sending borrowers t
   assert.match(page, /not a credit application/i);
 });
 
-test('public inquiry confirmation routes ready borrowers to the full secure application and document upload flow', () => {
-  assert.match(page, /Continue to secure borrower application/);
-  assert.match(page, /https:\/\/yourbrokerpal-los--dscr\.pages\.dev\/apply\.html/);
+test('public inquiry confirmation does not send visitors to the staff-Access-protected LOS hostname', () => {
+  assert.match(page, /provide the next secure application and document-upload steps/i);
+  assert.doesNotMatch(page, /yourbrokerpal-los--dscr\.pages\.dev/);
 });
 
 test('public Apply page preserves contact details and optional property fields for Lead Center intake', () => {
