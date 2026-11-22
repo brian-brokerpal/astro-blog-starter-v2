@@ -1,29 +1,169 @@
 ---
 import Layout from '../layouts/BlogPost.astro';
-const losApplyUrl = 'https://yourbrokerpal-los--dscr.pages.dev/apply.html';
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 ---
-<Layout title="Start an Investment Loan Inquiry | broker pal" description="Begin an investment property loan inquiry with broker pal.">
-  <div class="page">
-    <div class="kicker">GET STARTED</div>
-    <h1>Start with your property. We'll take it from there.</h1>
-    <p class="lead">Tell us a little about the investment property and financing you're considering. Your inquiry will open the broker pal loan intake form.</p>
-    <div class="apply-card">
-      <h2>Start your loan inquiry</h2>
-      <p>The initial form asks for basic contact information and property details so we can follow up about potential financing options.</p>
-      <ul>
-        <li>Your name and contact information</li>
-        <li>Property address and type</li>
-        <li>Purchase or refinance details</li>
-        <li>Estimated property value, loan amount and monthly rent</li>
-      </ul>
-      <a id="los-apply-link" class="button" href={losApplyUrl}>Continue to Loan Inquiry <span aria-hidden="true">↗</span></a>
-    </div>
-    <p class="fine"><strong>Important:</strong> This is an initial inquiry, not a credit application, approval, or commitment to lend. Do not enter Social Security numbers, dates of birth, bank account details, or upload tax returns, bank statements, or other sensitive documents. The intake form is hosted separately by broker pal's loan system.</p>
-    <p class="contact">Questions? <a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a> · <a href="tel:4046062943">404-606-2943</a></p>
-  </div>
+<Layout title="Start an Investment Loan Inquiry | Broker Pal" description="Securely begin an investment property loan inquiry with Broker Pal.">
+  <main class="apply-page">
+    <div class="apply-kicker">GET STARTED · INVESTMENT LOANS</div>
+    <h1>Tell us about your investment property.</h1>
+    <p class="apply-lead">Share the initial details below. A Broker Pal loan specialist will review your request and follow up about potential financing options.</p>
+    <form id="loan-application-form" class="apply-card">
+      <h2>Borrower information</h2>
+      <div class="apply-grid">
+        <label>First name *<input name="firstName" required maxlength="80" autocomplete="given-name"></label>
+        <label>Last name *<input name="lastName" required maxlength="80" autocomplete="family-name"></label>
+        <label>Email address *<input name="email" type="email" required maxlength="254" autocomplete="email"></label>
+        <label>Phone number *<input name="phone" type="tel" required maxlength="40" autocomplete="tel"></label>
+        <label class="full">Borrowing entity (if applicable)<input name="entity" maxlength="160" placeholder="LLC or company name"></label>
+      </div>
+      <h3>Current residential address</h3>
+      <div class="apply-grid">
+        <label class="full">Street address *<input name="borrowerAddress" required maxlength="160" autocomplete="street-address"></label>
+        <label>City *<input name="borrowerCity" required maxlength="100" autocomplete="address-level2"></label>
+        <label>State *<input name="borrowerState" required maxlength="2" pattern="[A-Za-z]{2}" placeholder="GA" autocomplete="address-level1"></label>
+        <label>ZIP code *<input name="borrowerZip" required pattern="[0-9]{5}(-[0-9]{4})?" maxlength="10" inputmode="numeric" autocomplete="postal-code"></label>
+      </div>
+      <hr>
+      <h2>Investment property</h2>
+      <div class="apply-grid">
+        <label class="full">Property street address *<input name="address" required maxlength="200" autocomplete="off"></label>
+        <label>City *<input name="city" required maxlength="100"></label>
+        <label>State *<input name="state" required maxlength="2" pattern="[A-Za-z]{2}" placeholder="GA"></label>
+        <label>ZIP code *<input name="zip" required pattern="[0-9]{5}(-[0-9]{4})?" maxlength="10" inputmode="numeric"></label>
+        <label>Property type *
+          <select name="propertyType" required>
+            <option value="Single-family rental">Single-family rental</option>
+            <option value="2–4 Unit">2–4 Unit</option>
+            <option value="5+ Unit / Multifamily">5+ Unit / Multifamily</option>
+            <option value="Condominium">Condominium</option>
+            <option value="Townhome">Townhome</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>Number of units *<input name="units" type="number" min="1" max="500" step="1" value="1" required></label>
+      </div>
+      <hr>
+      <h2>Loan request</h2>
+      <div class="apply-grid">
+        <label>Loan purpose *
+          <select name="purpose" required>
+            <option>Purchase</option>
+            <option>Rate &amp; term refinance</option>
+            <option>Cash-out refinance</option>
+          </select>
+        </label>
+        <label>Purchase price ($)<input name="purchasePrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        <label>Estimated property value ($)<input name="estimatedValue" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        <label>Requested loan amount ($)<input name="requestedAmount" type="number" min="0" step="0.01" inputmode="decimal" required></label>
+        <label>Estimated monthly market rent ($)<input name="monthlyRent" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        <label>Estimated closing date<input name="estimatedClosingDate" type="date"></label>
+      </div>
+      <label class="apply-upload">Supporting property documents (optional)
+        <input name="documents" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+        <small>PDF, JPG or PNG · Up to 10 files · 15 MB each. Do not upload Social Security cards, passwords, or account login credentials.</small>
+      </label>
+      <label class="apply-consent"><input name="contactConsent" type="checkbox" value="true" required><span>I authorize Broker Pal, LLC to contact me by phone or email about this specific financing inquiry. This is not consent to automated marketing calls or text messages. I may ask Broker Pal to stop contacting me.</span></label>
+      <p class="apply-disclaimer">This is an initial financing inquiry, not a credit application, loan approval, commitment to lend, rate lock, or guarantee of terms. Do not enter Social Security numbers, dates of birth, bank account details, or account credentials. Information is used to respond to this request and may be shared with prospective lending partners as reasonably necessary to evaluate and process the financing request.</p>
+      <div class="apply-actions"><button type="submit" class="apply-primary">Review my inquiry →</button></div>
+    </form>
+
+    <section id="application-review" class="apply-card" hidden>
+      <h2>Review your information</h2>
+      <p>Please check the details before securely submitting your inquiry.</p>
+      <div id="application-review-items" class="review-grid"></div>
+      <div id="application-turnstile" class="turnstile" data-sitekey={siteKey}></div>
+      <p id="application-status" class="apply-status" role="status" aria-live="polite">Complete the security check to submit.</p>
+      <div class="apply-actions">
+        <button id="application-edit" type="button" class="apply-secondary">Back to edit</button>
+        <button id="application-send" type="button" class="apply-primary" disabled>Submit secure inquiry</button>
+      </div>
+    </section>
+    <section id="application-success" class="apply-card apply-success" hidden>
+      <h2>Your inquiry has been received.</h2>
+      <p>Your reference number is <strong id="application-reference"></strong>.</p>
+      <p>A Broker Pal team member can follow up using the contact information you provided. Please do not email sensitive financial documents.</p>
+      <a class="apply-secondary" href="/">Return to Broker Pal</a>
+    </section>
+    <p class="apply-contact">Questions? <a href="mailto:brian@yourbrokerpal.com">brian@yourbrokerpal.com</a> · <a href="tel:4046062943">404-606-2943</a></p>
+  </main>
 </Layout>
 
+<script define:vars={{ siteKey }}>
+const form=document.getElementById('loan-application-form');
+const review=document.getElementById('application-review');
+const success=document.getElementById('application-success');
+const reviewItems=document.getElementById('application-review-items');
+const statusEl=document.getElementById('application-status');
+const sendButton=document.getElementById('application-send');
+const turnstileTarget=document.getElementById('application-turnstile');
+let turnstileToken='',turnstileWidget=null,turnstileLoading=false;
+let submissionKey=makeSubmissionKey();
+function makeSubmissionKey(){return crypto.randomUUID();}
+function loadTurnstile(){
+ if(!siteKey){statusEl.textContent='Secure online submission is not configured. Please contact Broker Pal directly.';return;}
+ const render=()=>{if(!window.turnstile||turnstileWidget!==null)return;turnstileWidget=window.turnstile.render(turnstileTarget,{sitekey:siteKey,callback:token=>{turnstileToken=token;sendButton.disabled=false;statusEl.textContent='Security check complete. You can submit your inquiry.';},'expired-callback':()=>{turnstileToken='';sendButton.disabled=true;statusEl.textContent='Security check expired. Please complete it again.';},'error-callback':()=>{turnstileToken='';sendButton.disabled=true;statusEl.textContent='Security check could not be completed. Refresh and try again.';}});};
+ if(window.turnstile){render();return;}
+ if(turnstileLoading)return;
+ turnstileLoading=true;
+ const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;script.defer=true;script.onload=render;script.onerror=()=>{statusEl.textContent='The security check could not load. Please refresh and try again.';};document.head.appendChild(script);
+}
+function showReview(){
+ const data=new FormData(form),labels={firstName:'First name',lastName:'Last name',email:'Email',phone:'Phone',entity:'Borrowing entity',borrowerAddress:'Residential address',borrowerCity:'Residential city',borrowerState:'Residential state',borrowerZip:'Residential ZIP',address:'Property address',city:'Property city',state:'Property state',zip:'Property ZIP',propertyType:'Property type',units:'Units',purpose:'Loan purpose',purchasePrice:'Purchase price',estimatedValue:'Estimated value',requestedAmount:'Requested loan amount',monthlyRent:'Estimated monthly rent',estimatedClosingDate:'Estimated closing date'};
+ reviewItems.replaceChildren();
+ Object.entries(labels).forEach(([key,label])=>{const value=String(data.get(key)||'').trim();if(!value)return;const item=document.createElement('div');item.className='review-item';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=['purchasePrice','estimatedValue','requestedAmount','monthlyRent'].includes(key)?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Number(value)):value;item.append(small,strong);reviewItems.append(item);});
+ const files=Array.from(form.elements.documents.files||[]);
+ if(files.length){const item=document.createElement('div');item.className='review-item full';const small=document.createElement('small');small.textContent='Supporting documents';const strong=document.createElement('strong');strong.textContent=files.map(file=>file.name).join(' · ');item.append(small,strong);reviewItems.append(item);}
+ form.hidden=true;review.hidden=false;loadTurnstile();
+}
+form.addEventListener('submit',event=>{event.preventDefault();const files=Array.from(form.elements.documents.files||[]);if(files.length>10||files.some(file=>file.size>15*1024*1024)||files.reduce((total,file)=>total+file.size,0)>50*1024*1024){window.alert('Choose no more than 10 files, 15 MB each, and 50 MB total.');return;}showReview();});
+document.getElementById('application-edit').addEventListener('click',()=>{review.hidden=true;form.hidden=false;});
+sendButton.addEventListener('click',async()=>{
+ if(!turnstileToken){statusEl.textContent='Complete the security check before submitting.';return;}
+ sendButton.disabled=true;document.getElementById('application-edit').disabled=true;statusEl.textContent='Submitting your secure inquiry…';
+ const payload=new FormData(form);payload.set('contactConsent','true');payload.set('turnstileToken',turnstileToken);payload.set('submissionKey',submissionKey);
+ const params=new URLSearchParams(location.search),get=(...keys)=>{for(const key of keys){const value=params.get(key);if(value)return value;}return '';};
+ const firstSource=get('firstTouchSource','utm_source')||'direct',firstMedium=get('firstTouchMedium','utm_medium')||(firstSource==='direct'?'direct':'referral');
+ const attribution={firstTouchSource:firstSource,firstTouchMedium:firstMedium,firstTouchCampaign:get('firstTouchCampaign','utm_campaign'),firstTouchContent:get('firstTouchContent','utm_content'),firstTouchTerm:get('firstTouchTerm','utm_term'),latestTouchSource:get('latestTouchSource')||firstSource,latestTouchMedium:get('latestTouchMedium')||firstMedium,latestTouchCampaign:get('latestTouchCampaign','utm_campaign'),latestTouchContent:get('latestTouchContent','utm_content'),latestTouchTerm:get('latestTouchTerm','utm_term'),referralCode:get('referralCode','ref','partner')};
+ Object.entries(attribution).forEach(([key,value])=>payload.set(key,value));
+ try{
+  const response=await fetch('/api/applications',{method:'POST',body:payload});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'We could not submit your inquiry. Please try again.');
+  document.getElementById('application-reference').textContent=result.reference||'Received';
+  review.hidden=true;success.hidden=false;
+ }catch(error){statusEl.textContent=error.message||'Submission failed. Please try again.';turnstileToken='';if(window.turnstile&&turnstileWidget!==null)window.turnstile.reset(turnstileWidget);sendButton.disabled=true;document.getElementById('application-edit').disabled=false;}
+});
+</script>
 
 <style>
-.page{max-width:800px;margin:auto;padding:35px 28px 70px}.kicker{font-size:11px;letter-spacing:2px;color:#078f9d;font-weight:800}.page h1{font-size:clamp(38px,5vw,56px);line-height:1.08;letter-spacing:-2px;color:#102b49;margin:20px 0}.lead{font-size:18px;color:#617387;line-height:1.8}.apply-card{margin-top:30px;background:#edf5f6;padding:30px;border-top:4px solid #079eaa}.apply-card h2{color:#102b49;margin:0 0 8px}.apply-card p,.apply-card li{color:#52697b;font-size:15px}.apply-card ul{padding-left:22px;line-height:2;margin:20px 0}.button{display:inline-flex;align-items:center;gap:18px;background:#078f9d;color:#fff;text-decoration:none;font-weight:800;padding:14px 20px;border-radius:4px}.fine{font-size:13px;color:#687b8c;margin-top:20px;line-height:1.7}.contact{font-size:14px;color:#52697b;margin-top:24px}.contact a{color:#078f9d;font-weight:700}
+.apply-page{max-width:900px;margin:0 auto;padding:42px 22px 70px;color:#183047}
+.apply-kicker{font-size:11px;letter-spacing:2px;font-weight:800;color:#078f9d}
+.apply-page h1{font-size:clamp(34px,5vw,52px);line-height:1.1;letter-spacing:-1.7px;color:#102b49;margin:14px 0}
+.apply-lead{font-size:17px;color:#5c7083;line-height:1.7;max-width:720px;margin:0 0 28px}
+.apply-card{background:#fff;border:1px solid #dce5eb;border-radius:10px;padding:clamp(18px,3vw,30px);box-shadow:0 8px 28px rgba(16,43,73,.07);margin:20px 0}
+.apply-card h2{font-size:21px;color:#102b49;margin:0 0 18px}
+.apply-card h3{font-size:16px;color:#183b58;margin:22px 0 12px}
+.apply-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.apply-grid label,.apply-upload{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:700;color:#334d63}
+.apply-grid input,.apply-grid select,.apply-upload input{width:100%;box-sizing:border-box;border:1px solid #c8d5de;border-radius:5px;padding:12px;font:inherit;color:#19334b;background:#fff;min-height:44px}
+.apply-grid input:focus,.apply-grid select:focus{outline:2px solid #64cfc5;outline-offset:1px}
+.apply-grid .full,.apply-upload,.apply-consent,.apply-disclaimer,.apply-actions,.review-grid .full{grid-column:1/-1}
+.apply-card hr{border:0;border-top:1px solid #e4ebef;margin:25px 0}
+.apply-upload{margin-top:22px;padding:14px;background:#f4f8fa;border-radius:6px}
+.apply-upload small{font-weight:400;color:#65798a}
+.apply-consent{display:flex;gap:11px;align-items:flex-start;margin:20px 0 12px;font-size:13px;line-height:1.55;color:#334d63}
+.apply-consent input{margin-top:3px;flex:0 0 auto}
+.apply-disclaimer{font-size:12px;line-height:1.6;color:#6b7d8d;margin:15px 0}
+.apply-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.apply-primary,.apply-secondary{border:0;border-radius:5px;padding:13px 18px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.apply-primary{background:#078f9d;color:#fff}.apply-primary:disabled{opacity:.5;cursor:not-allowed}
+.apply-secondary{background:#edf3f6;color:#183b58}
+.review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.review-item{background:#f4f8fa;border-radius:5px;padding:11px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.review-item small{font-size:11px;color:#65798a}.review-item strong{font-size:14px;color:#183047;overflow-wrap:anywhere}
+.turnstile{margin-top:18px;min-height:66px}
+.apply-status{font-size:13px;color:#52697b}
+.apply-success{border-top:4px solid #078f9d}
+.apply-contact{font-size:13px;color:#65798a}.apply-contact a{color:#078f9d;font-weight:700}
+@media(max-width:600px){.apply-grid,.review-grid{grid-template-columns:1fr}.apply-actions{flex-direction:column}.apply-actions button{width:100%}}
 </style>
