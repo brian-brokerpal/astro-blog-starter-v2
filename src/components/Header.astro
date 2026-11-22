@@ -1,20 +1,22 @@
 ---
-import HeaderLink from './HeaderLink.astro';
 const showStaffSignIn = ['yourbrokerpal.com', 'www.yourbrokerpal.com'].includes(Astro.url.hostname);
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (path) => currentPath === path || (path !== '/' && currentPath.startsWith(path + '/'));
+const activeAttrs = (path) => isActive(path) ? { class: 'active', 'aria-current': 'page' } : {};
 ---
 <header class="site-header approved-header">
   <a class="brand" href="/" aria-label="Broker Pal home"><img src="/broker-pal-wordmark.svg" alt="Broker Pal — DSCR and Investment Loans" width="280" height="64" fetchpriority="high" /></a>
   <nav aria-label="Main navigation">
-    <a class="active" href="/">Home</a>
+    <a href="/" {...activeAttrs('/')}>Home</a>
     <a href="/#loan-programs">Loan Programs⌄</a>
-    <a href="/investor">Investor Guide</a>
-    <a href="/llc-guide">LLC Guide</a>
+    <a href="/investor" {...activeAttrs('/investor')}>Investor Guide</a>
+    <a href="/llc-guide" {...activeAttrs('/llc-guide')}>LLC Guide</a>
     <a href="/tools">Tools⌄</a>
-    <a href="/investor-zone">Investors</a>
-    <a href="/realtor-studio">Realtors</a>
+    <a href="/investor-zone" {...activeAttrs('/investor-zone')}>Investors</a>
+    <a href="/realtor-studio" {...activeAttrs('/realtor-studio')}>Realtors</a>
     <a href="/how-it-works">Resources⌄</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
+    <a href="/about" {...activeAttrs('/about')}>About</a>
+    <a href="/contact" {...activeAttrs('/contact')}>Contact</a>
     {showStaffSignIn && <a class="staff-nav-link" href="https://yourbrokerpal-los--dscr.pages.dev/api/staff/loans?login=1">Staff Sign-in</a>}
     <a class="nav-cta" href="/apply">Apply Now <span>→</span></a>
   </nav>
