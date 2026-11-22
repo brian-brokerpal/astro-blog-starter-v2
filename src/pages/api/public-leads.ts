@@ -78,8 +78,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const response = await fetch(upstream, {
       method: 'POST',
       headers,
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      redirect: 'manual'
     });
+    if (response.status >= 300 && response.status < 400) {
+      return new Response(JSON.stringify({ error: 'The LOS intake endpoint is behind Cloudflare Access. The public intake path must be allowed before website inquiries can be delivered.' }), {
+        status: 502, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+      });
+    }
     const payload = await response.text();
     return new Response(payload, {
       status: response.status,
