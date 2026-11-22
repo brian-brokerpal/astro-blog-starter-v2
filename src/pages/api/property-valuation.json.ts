@@ -127,7 +127,7 @@ export async function GET({ request, locals }) {
   } catch (error) {
     return json({
       error: "The property valuation service encountered an unexpected error.",
-      detail: error instanceof Error ? error.message : "Unknown error"
+      detail: "Please retry later. No valuation was returned."
     }, 500);
   }
 }

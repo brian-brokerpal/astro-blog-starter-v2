@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Broker Pal">
+  <rect width="64" height="64" rx="12" fill="#102b49"/>
+  <text x="32" y="27" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="800" letter-spacing="-0.5" fill="#f8fbff">Broker</text>
+  <text x="32" y="46" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="800" letter-spacing="-0.5" fill="#18d0d0">Pal</text>
+</svg>

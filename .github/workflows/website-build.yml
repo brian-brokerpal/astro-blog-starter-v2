@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: website-build-${{ github.ref }}
@@ -18,18 +18,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'security/astro7-dependency-upgrade' && github.event.pull_request.head.sha || '' }}
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Regenerate and commit dependency lockfile for the dedicated upgrade branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'security/astro7-dependency-upgrade' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          npm install --package-lock-only --ignore-scripts
+          npm audit fix --package-lock-only
+          if ! git diff --quiet -- package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "build: regenerate lockfile for Astro 7 security upgrade"
+            git push origin "HEAD:$GITHUB_HEAD_REF"
+          fi
       - name: Install dependencies
         run: npm ci
+      - name: Inventory dependency security advisories
+        shell: bash
+        run: |
+          npm audit --json > /tmp/npm-audit.json || true
+          node -e 'const fs=require("fs");const a=JSON.parse(fs.readFileSync("/tmp/npm-audit.json","utf8"));const v=a.metadata?.vulnerabilities||{};console.log("Dependency audit totals:",JSON.stringify(v));for(const [name,item] of Object.entries(a.vulnerabilities||{})){const via=(item.via||[]).map(x=>typeof x==="string"?x:x.title);console.log(JSON.stringify({package:name,severity:item.severity,isDirect:item.isDirect,range:item.range,fixAvailable:item.fixAvailable,advisories:via}));}if((v.high||0)+(v.critical||0)>0)process.exit(1);'
+      - name: Run intake regression tests
+        run: npm test
       - name: Build website
         run: npm run build
+      - name: Validate Cloudflare Worker bundle
+        run: npx wrangler deploy --dry-run
       - name: Deploy isolated preview
-        if: github.event_name == 'pull_request' && (github.event.pull_request.head.ref == 'feature/investor-education-page' || github.event.pull_request.head.ref == 'fix/about-page-readability') && github.event.pull_request.head.repo.full_name == github.repository
-        run: npx wrangler versions upload --config wrangler.preview.json
+        if: github.event_name == 'pull_request' && (github.event.pull_request.head.ref == 'feature/investor-education-page' || github.event.pull_request.head.ref == 'fix/about-page-readability' || github.event.pull_request.head.ref == 'fix/public-property-report-idempotency' || github.event.pull_request.head.ref == 'security/astro7-dependency-upgrade') && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          npx astro build --config astro.preview.config.mjs
+          npx wrangler versions upload --config dist/server/wrangler.json
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
