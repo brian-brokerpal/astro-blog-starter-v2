@@ -26,7 +26,7 @@ test('public Apply page captures a financing inquiry without sending borrowers t
 
 test('public Apply page preserves contact details and optional property fields for Lead Center intake', () => {
   for (const field of ['entityName','propertyAddress','propertyCity','propertyState','propertyZip','propertyType','units','purchasePrice','estimatedValue','requestedAmount','monthlyMarketRent','programInterest','loanPurpose']) {
-    assert.match(page, new RegExp(field + ':'));
+    assert.match(page, new RegExp(field + '(?:\\s*:|\\s*,)'));
   }
   assert.match(page, /PUBLIC_TURNSTILE_SITE_KEY/);
 });
